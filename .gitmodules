@@ -1,0 +1,12 @@
+[submodule "Axton/vendor/glfw"]
+	path = Axton/vendor/glfw
+	url = git@github.com:Mythidas/glfw.git
+[submodule "Axton/vendor/spdlog"]
+	path = Axton/vendor/spdlog
+	url = git@github.com:Mythidas/spdlog.git
+[submodule "Axton/vendor/glm"]
+	path = Axton/vendor/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "Axton/vendor/stb_image"]
+	path = Axton/vendor/stb_image
+	url = https://github.com/nothings/stb.git

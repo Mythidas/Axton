@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Dist|x64">
+      <Configuration>Dist</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8F02DB0C-FB16-03BE-C498-A61D306CFFEE}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Axton</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\bin\Debug-windows-x86_64\Axton\</OutDir>
+    <IntDir>..\..\bin-int\Debug-windows-x86_64\Axton\</IntDir>
+    <TargetName>Axton</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\bin\Release-windows-x86_64\Axton\</OutDir>
+    <IntDir>..\..\bin-int\Release-windows-x86_64\Axton\</IntDir>
+    <TargetName>Axton</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\bin\Dist-windows-x86_64\Axton\</OutDir>
+    <IntDir>..\..\bin-int\Dist-windows-x86_64\Axton\</IntDir>
+    <TargetName>Axton</TargetName>
+    <TargetExt>.dll</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>axpch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_BUILD_DLL;AX_DEBUG;AX_ASSERTS_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\bin\Debug-windows-x86_64\Axton\Axton.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF EXIST ..\..\bin\Debug-windows-x86_64\Axton\Axton.dll\ (xcopy /Q /E /Y /I ..\..\bin\Debug-windows-x86_64\Axton\Axton.dll ..\..\bin\Debug-windows-x86_64\Sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\..\bin\Debug-windows-x86_64\Axton\Axton.dll ..\..\bin\Debug-windows-x86_64\Sandbox &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>axpch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_BUILD_DLL;AX_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\bin\Release-windows-x86_64\Axton\Axton.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF EXIST ..\..\bin\Release-windows-x86_64\Axton\Axton.dll\ (xcopy /Q /E /Y /I ..\..\bin\Release-windows-x86_64\Axton\Axton.dll ..\..\bin\Release-windows-x86_64\Sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\..\bin\Release-windows-x86_64\Axton\Axton.dll ..\..\bin\Release-windows-x86_64\Sandbox &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>axpch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_BUILD_DLL;AX_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>..\..\bin\Dist-windows-x86_64\Axton\Axton.lib</ImportLibrary>
+    </Link>
+    <PostBuildEvent>
+      <Command>IF EXIST ..\..\bin\Dist-windows-x86_64\Axton\Axton.dll\ (xcopy /Q /E /Y /I ..\..\bin\Dist-windows-x86_64\Axton\Axton.dll ..\..\bin\Dist-windows-x86_64\Sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\..\bin\Dist-windows-x86_64\Axton\Axton.dll ..\..\bin\Dist-windows-x86_64\Sandbox &gt; nul)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Axton.h" />
+    <ClInclude Include="Axton\Core\Application.h" />
+    <ClInclude Include="Axton\Core\Assert.h" />
+    <ClInclude Include="Axton\Core\Defines.h" />
+    <ClInclude Include="Axton\Core\EntryPoint.h" />
+    <ClInclude Include="Axton\Core\KeyCodes.h" />
+    <ClInclude Include="Axton\Core\Window.h" />
+    <ClInclude Include="Axton\Debug\CoreLog.h" />
+    <ClInclude Include="Axton\Debug\Log.h" />
+    <ClInclude Include="Axton\Event\Event.h" />
+    <ClInclude Include="Axton\Event\Events.h" />
+    <ClInclude Include="Axton\Math\Math.h" />
+    <ClInclude Include="Axton\Renderer\Buffer.h" />
+    <ClInclude Include="Axton\Renderer\CameraData.h" />
+    <ClInclude Include="Axton\Renderer\GraphicsContext.h" />
+    <ClInclude Include="Axton\Renderer\RenderCommands.h" />
+    <ClInclude Include="Axton\Renderer\Renderer.h" />
+    <ClInclude Include="Axton\Renderer\Renderer2D.h" />
+    <ClInclude Include="Axton\Renderer\RendererAPI.h" />
+    <ClInclude Include="Axton\Renderer\Shader.h" />
+    <ClInclude Include="Axton\Renderer\Texture2D.h" />
+    <ClInclude Include="Axton\Renderer\VertexArray.h" />
+    <ClInclude Include="Axton\Scene\Component.h" />
+    <ClInclude Include="Axton\Scene\ComponentPool.h" />
+    <ClInclude Include="Axton\Scene\Entity.h" />
+    <ClInclude Include="Axton\Scene\EntityView.h" />
+    <ClInclude Include="Axton\Scene\Level.h" />
+    <ClInclude Include="Axton\Scene\LevelSerializer.h" />
+    <ClInclude Include="Axton\Scene\World.h" />
+    <ClInclude Include="Axton\Utils\FileSystem.h" />
+    <ClInclude Include="Platform\OpenGL\OpenGLBuffer.h" />
+    <ClInclude Include="Platform\OpenGL\OpenGLGraphicsContext.h" />
+    <ClInclude Include="Platform\OpenGL\OpenGLRenderCommands.h" />
+    <ClInclude Include="Platform\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="Platform\OpenGL\OpenGLTexture2D.h" />
+    <ClInclude Include="Platform\OpenGL\OpenGLVertexArray.h" />
+    <ClInclude Include="Platform\Windows\WindowsWindow.h" />
+    <ClInclude Include="axpch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Axton\Core\Application.cpp" />
+    <ClCompile Include="Axton\Core\Window.cpp" />
+    <ClCompile Include="Axton\Debug\CoreLog.cpp" />
+    <ClCompile Include="Axton\Debug\Log.cpp" />
+    <ClCompile Include="Axton\Event\Events.cpp" />
+    <ClCompile Include="Axton\Renderer\Buffer.cpp" />
+    <ClCompile Include="Axton\Renderer\CameraData.cpp" />
+    <ClCompile Include="Axton\Renderer\GraphicsContext.cpp" />
+    <ClCompile Include="Axton\Renderer\RenderCommands.cpp" />
+    <ClCompile Include="Axton\Renderer\Renderer2D.cpp" />
+    <ClCompile Include="Axton\Renderer\RendererAPI.cpp" />
+    <ClCompile Include="Axton\Renderer\Shader.cpp" />
+    <ClCompile Include="Axton\Renderer\Texture2D.cpp" />
+    <ClCompile Include="Axton\Renderer\VertexArray.cpp" />
+    <ClCompile Include="Axton\Scene\Entity.cpp" />
+    <ClCompile Include="Axton\Scene\Level.cpp" />
+    <ClCompile Include="Axton\Utils\FileSystem.cpp" />
+    <ClCompile Include="Platform\OpenGL\OpenGLBuffer.cpp" />
+    <ClCompile Include="Platform\OpenGL\OpenGLGraphicsContext.cpp" />
+    <ClCompile Include="Platform\OpenGL\OpenGLRenderCommands.cpp" />
+    <ClCompile Include="Platform\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="Platform\OpenGL\OpenGLTexture2D.cpp" />
+    <ClCompile Include="Platform\OpenGL\OpenGLVertexArray.cpp" />
+    <ClCompile Include="Platform\Windows\WindowsWindow.cpp" />
+    <ClCompile Include="axpch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vendor\GLFW\GLFW.vcxproj">
+      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\glad\Glad.vcxproj">
+      <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
