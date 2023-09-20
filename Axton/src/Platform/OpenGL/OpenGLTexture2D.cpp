@@ -89,8 +89,8 @@ namespace Axton
 
 	void OpenGLTexture2D::Bind(uint32_t slot) const
 	{
-		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 		glBindTextureUnit(slot, m_RendererID);
+		AX_ASSERT_CORE(glGetError() == 0, "OpenGL Error Post Bind!");
 	}
 
 	void OpenGLTexture2D::Unbind() const
@@ -100,7 +100,8 @@ namespace Axton
 
 	void OpenGLTexture2D::SetData(void* data, uint32_t size)
 	{
-		AX_ASSERT_CORE(size == m_Specs.Width * m_Specs.Height, "Data must be entire texture!");
+		uint32_t bpp = m_Specs.Format == ImageFormat::RGBA8 ? 4 : 3;
+		AX_ASSERT_CORE(size == m_Specs.Width * m_Specs.Height * bpp, "Data must be entire texture!");
 
 		Utils::GLCreateTexture(m_RendererID, m_Specs.Width, m_Specs.Height, m_Specs);
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Specs.Width, m_Specs.Height, Utils::TextureFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);

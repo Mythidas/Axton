@@ -21,6 +21,7 @@ namespace Axton
 		static uint32_t const MAX_QUADS = 1000;
 		static uint32_t const MAX_VERTICES = MAX_QUADS * 4;
 		static uint32_t const MAX_INDICES = MAX_QUADS * 6;
+		static uint32_t const MAX_TEXTURES = 32;
 
 		QuadVertex QuadVertices[MAX_VERTICES];
 		Vector4 QuadVertexPositions[4];
@@ -31,7 +32,10 @@ namespace Axton
 		Ref<VertexArray> QuadVertexArray;
 		Ref<Shader> DefaultShader;
 
+		int Samplers[MAX_TEXTURES];
+		std::array<Ref<Texture2D>, MAX_TEXTURES> TextureSlots;
 		Vector2 TexturePositions[4];
+		UINT32 TextureSlotIndex = 1;
 
 		CameraData Camera;
 	};
@@ -84,10 +88,20 @@ namespace Axton
 		s_Data.TexturePositions[2] = { 0.0f, 0.0f };
 		s_Data.TexturePositions[3] = { 0.0f, 1.0f };
 
+		uint32_t whiteTextureData = 0xffffffff;
+		Ref<Texture2D> whiteTexture = Texture2D::Create(Texture2DSpecs());
+		whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+		s_Data.TextureSlots[0] = whiteTexture;
+
+		for (uint32_t i = 0; i < s_Data.MAX_TEXTURES; i++)
+		{
+			s_Data.Samplers[i] = i;
+		}
+
 		// TODO: Make this not hardcoded
 		s_Data.DefaultShader = Shader::Create(
-			"C:/Programming/Axton/Sandbox/Assets/Shaders/SimpleShader.vert",
-			"C:/Programming/Axton/Sandbox/Assets/Shaders/SimpleShader.frag", false);
+			"C:/Programming/Axton/Sandbox/Assets/Shaders/DefaultShader.vert",
+			"C:/Programming/Axton/Sandbox/Assets/Shaders/DefaultShader.frag", false);
 
 		RenderCommands::SetBlendMode(true);
 	}
@@ -102,6 +116,7 @@ namespace Axton
 		s_Data.DefaultShader->SetMat4("u_Model", Matrix4(1.0f));
 		s_Data.DefaultShader->SetMat4("u_View", camera.ViewMatrix);
 		s_Data.DefaultShader->SetMat4("u_Projection", camera.ProjectionMatrix);
+		s_Data.DefaultShader->SetIArray("u_Textures", s_Data.Samplers, s_Data.MAX_TEXTURES);
 
 		BeginBatch();
 	}
@@ -119,6 +134,11 @@ namespace Axton
 
 	void Renderer2D::EndBatch()
 	{
+		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+		{
+			s_Data.TextureSlots[i]->Bind(i);
+		}
+
 		s_Data.QuadVertexArray->GetVertexBuffer()->SetData(s_Data.QuadVertices, sizeof(s_Data.QuadVertices));
 		s_Data.QuadVertexArray->Bind();
 		RenderCommands::DrawIndexed(s_Data.QuadIndexCount);
@@ -131,9 +151,7 @@ namespace Axton
 		Matrix4 transform = glm::translate(Matrix4(1.0f), position)
 			* glm::scale(Matrix4(1.0f), Vector3(scale.x, scale.y, 1.0f));
 
-		// TODO: Remove Binding
-		texture->Bind();
-		DrawQuad(transform, color, texture->GetRendererID());
+		DrawQuad(transform, color, texture);
 	}
 
 	void Renderer2D::DrawQuad(Vector3 position, Vector2 scale, Vector4 color)
@@ -141,19 +159,13 @@ namespace Axton
 		Matrix4 transform = glm::translate(Matrix4(1.0f), position)
 			* glm::scale(Matrix4(1.0f), Vector3(scale.x, scale.y, 1.0f));
 
-		DrawQuad(transform, color, 0.0f);
+		DrawQuad(transform, color, nullptr);
 	}
 
-	void Renderer2D::DrawQuad(Matrix4 transform, Vector4 color, RendererID textureID)
+	void Renderer2D::DrawQuad(Matrix4 transform, Vector4 color, Ref<Texture2D> texture)
 	{
-		if (s_Data.QuadVertexCount >= s_Data.MAX_VERTICES)
-		{
-			EndBatch();
-			BeginBatch();
-		}
-
-		// TODO: Add Texture array support
-		float texIndex = 0.0f;
+		CheckBatch();
+		float texIndex = GetTextureIndex(texture);
 
 		for (uint32_t i = 0; i < 4; i++)
 		{
@@ -186,19 +198,13 @@ namespace Axton
 			* glm::rotate(Matrix4(1.0f), rotation.z, Vector3(0.0f, 0.0f, 1.0f))
 			* glm::scale(Matrix4(1.0f), Vector3(scale.x, scale.y, 1.0f));
 
-		DrawQuad(transform, color, 0.0f);
+		DrawQuad(transform, color, nullptr);
 	}
 
 	void Renderer2D::DrawRotateQuad(Matrix4 transform, Vector4 color, Ref<Sprite> sprite)
 	{
-		if (s_Data.QuadVertexCount >= s_Data.MAX_VERTICES)
-		{
-			EndBatch();
-			BeginBatch();
-		}
-
-		// TODO: Add Texture array support
-		float texIndex = 0.0f;
+		CheckBatch();
+		float texIndex = GetTextureIndex(sprite->GetTexture());
 
 		for (uint32_t i = 0; i < 4; i++)
 		{
@@ -210,6 +216,40 @@ namespace Axton
 		}
 
 		s_Data.QuadIndexCount += 6;
+	}
+
+	float Renderer2D::GetTextureIndex(Ref<Texture2D> texture)
+	{
+		float texIndex = 0.0f;
+		if (texture)
+		{
+			for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
+			{
+				if (s_Data.TextureSlots[i]->GetRendererID() == texture->GetRendererID())
+				{
+					texIndex = (float)i;
+					break;
+				}
+			}
+
+			if (texIndex == 0)
+			{
+				texIndex = (float)s_Data.TextureSlotIndex;
+				s_Data.TextureSlots[texIndex] = texture;
+				s_Data.TextureSlotIndex++;
+			}
+		}
+
+		return texIndex;
+	}
+
+	void Renderer2D::CheckBatch()
+	{
+		if (s_Data.QuadVertexCount >= s_Data.MAX_VERTICES || s_Data.TextureSlotIndex == s_Data.MAX_TEXTURES)
+		{
+			EndBatch();
+			BeginBatch();
+		}
 	}
 
 	const Renderer2DStats Renderer2D::GetStats()

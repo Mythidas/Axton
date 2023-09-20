@@ -23,7 +23,7 @@ namespace Axton
 		static void DrawQuad(Vector3 position, Vector2 scale, Vector4 color, Ref<Sprite> sprite);
 		static void DrawQuad(Vector3 position, Vector2 scale, Vector4 color, Ref<Texture2D> texture);
 		static void DrawQuad(Vector3 position, Vector2 scale, Vector4 color);
-		static void DrawQuad(Matrix4 transform, Vector4 color, RendererID textureID);
+		static void DrawQuad(Matrix4 transform, Vector4 color, Ref<Texture2D> texture);
 
 		static void DrawRotateQuad(Vector3 position, Vector3 rotation, Vector2 scale, Vector4 color, Ref<Sprite> sprite);
 		static void DrawRotateQuad(Vector3 position, Vector3 rotation, Vector2 scale, Vector4 color);
@@ -34,5 +34,8 @@ namespace Axton
 	private:
 		static void BeginBatch();
 		static void EndBatch();
+
+		static void CheckBatch();
+		static float GetTextureIndex(Ref<Texture2D> texture);
 	};
 }

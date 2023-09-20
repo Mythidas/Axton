@@ -11,7 +11,10 @@ void ExampleLayer::OnAttach()
 	Entity entity = World::CreateEntity();
 	World::GetComponent<Tag>(entity)->Name = "Test";
 	SpriteRenderer* spriteRenderer = World::AddComponent<SpriteRenderer>(entity);
-	spriteRenderer->Color = { 1.0f, 0.0f, 0.2f, 1.0f };
+	//spriteRenderer->Color = { 1.0f, 0.0f, 0.2f, 1.0f };
+	spriteRenderer->Sprite = Sprite::Create(
+		Texture2D::Create(Texture2DSpecs(), "C:\\Programming\\Axton\\Sandbox\\Assets\\Textures\\test.png"),
+		{ 0, 0 }, { 1080, 1080 });
 }
 
 void ExampleLayer::OnUpdate()

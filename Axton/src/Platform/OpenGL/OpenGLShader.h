@@ -18,6 +18,7 @@ namespace Axton
 		virtual void LoadShader() override;
 
 		virtual void SetMat4(const std::string& name, const Matrix4& value) override;
+		virtual void SetIArray(const std::string& name, const int value[], size_t size) override;
 
 	private:
 		RendererID m_RendererID;

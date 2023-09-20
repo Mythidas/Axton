@@ -52,5 +52,7 @@ namespace Axton
 		virtual RendererID GetRendererID() const = 0;
 
 		static Ref<Texture2D> Create(const Texture2DSpecs& specs);
+		static Ref<Texture2D> Create(const Texture2DSpecs& specs, const std::string& path);
+		static Ref<Texture2D> Create(const Texture2DSpecs& specs, void*data, uint32_t size);
 	};
 }

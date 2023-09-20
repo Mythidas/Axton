@@ -119,4 +119,10 @@ namespace Axton
 		int location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
 	}
+
+	void OpenGLShader::SetIArray(const std::string& name, const int value[], size_t size)
+	{
+		int location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform1iv(location, size, value);
+	}
 }
