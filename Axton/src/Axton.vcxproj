@@ -175,6 +175,7 @@
     <ClInclude Include="Axton\Renderer\Renderer2D.h" />
     <ClInclude Include="Axton\Renderer\RendererAPI.h" />
     <ClInclude Include="Axton\Renderer\Shader.h" />
+    <ClInclude Include="Axton\Renderer\Sprite.h" />
     <ClInclude Include="Axton\Renderer\Texture2D.h" />
     <ClInclude Include="Axton\Renderer\VertexArray.h" />
     <ClInclude Include="Axton\Scene\Component.h" />
@@ -183,6 +184,7 @@
     <ClInclude Include="Axton\Scene\EntityView.h" />
     <ClInclude Include="Axton\Scene\Level.h" />
     <ClInclude Include="Axton\Scene\LevelSerializer.h" />
+    <ClInclude Include="Axton\Scene\StandardComponents.h" />
     <ClInclude Include="Axton\Scene\World.h" />
     <ClInclude Include="Axton\Utils\FileSystem.h" />
     <ClInclude Include="Platform\OpenGL\OpenGLBuffer.h" />
@@ -209,10 +211,12 @@
     <ClCompile Include="Axton\Renderer\Renderer2D.cpp" />
     <ClCompile Include="Axton\Renderer\RendererAPI.cpp" />
     <ClCompile Include="Axton\Renderer\Shader.cpp" />
+    <ClCompile Include="Axton\Renderer\Sprite.cpp" />
     <ClCompile Include="Axton\Renderer\Texture2D.cpp" />
     <ClCompile Include="Axton\Renderer\VertexArray.cpp" />
     <ClCompile Include="Axton\Scene\Entity.cpp" />
     <ClCompile Include="Axton\Scene\Level.cpp" />
+    <ClCompile Include="Axton\Scene\World.cpp" />
     <ClCompile Include="Axton\Utils\FileSystem.cpp" />
     <ClCompile Include="Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="Platform\OpenGL\OpenGLGraphicsContext.cpp" />

@@ -9,7 +9,7 @@ namespace Axton
 	class EntityView
 	{
 	public:
-		EntityView(Ref<Level> level)
+		EntityView(const Ref<Level>& level, bool isBase = false)
 			: m_Level(level)
 		{
 			if (sizeof...(Components) == 0)
@@ -18,11 +18,15 @@ namespace Axton
 			}
 			else
 			{
-				int componentIds[] = { 0, m_Level->FindComponentID<Components>()... };
-				for (int i = 1; i < sizeof...(Components) + 1; i++)
+				std::vector<int> empty;
+				std::vector<std::vector<int>> componentIds = { empty, m_Level->FindComponentIDs<Components>(isBase)... };
+				for (int i = 1; i < componentIds.size(); i++)
 				{
-					if (componentIds[i] != -1)
-						m_Mask.set(componentIds[i]);
+					for (int j = 0; j < componentIds[i].size(); j++)
+					{
+						if (componentIds[i][j] != -1)
+							m_Mask.set(componentIds[i][j]);
+					}
 				}
 			}
 		}
@@ -73,14 +77,14 @@ namespace Axton
 		const Iterator begin() const
 		{
 			int firstIndex = 0;
-			Entity ent = m_Level->FindEntity(firstIndex);
 			while (!m_All && firstIndex < m_Level->GetEntityCount() &&
-				(m_Mask != ent.Components || !ent.ID.IsValid()))
+				(m_Mask != (m_Mask & m_Level->FindEntity(firstIndex).Components) || 
+					!m_Level->FindEntity(firstIndex).ID.IsValid()))
 			{
 				firstIndex++;
 			}
 
-			if (firstIndex == 0 && m_Mask != ent.Components && !m_All)
+			if (firstIndex == 0 && m_Mask != (m_Mask & m_Level->FindEntity(firstIndex).Components) && !m_All)
 				return end();
 
 			return Iterator(firstIndex, m_Level, m_Mask, m_All);

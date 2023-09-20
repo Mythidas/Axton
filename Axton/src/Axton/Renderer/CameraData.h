@@ -14,7 +14,7 @@ namespace Axton
 
 		ProjectionFormat Format = ProjectionFormat::Orthographic;
 		float FOV = 45.0f;
-		float NearClip = 0.1f;
+		float NearClip = 0.01f;
 		float FarClip = 100.0f;
 		float AspectRatio = 16.0f / 9.0f;
 		float OrthoSize = 2.0f;

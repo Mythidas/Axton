@@ -2,8 +2,12 @@
 
 // Application
 #include "Axton/Core/Application.h"
-#include "Axton/Core/EntryPoint.h"
 #include "Axton/Core/Layer.h"
+
+// Scene
+#include "Axton/Scene/Level.h"
+#include "Axton/Scene/World.h"
+#include "Axton/Scene/StandardComponents.h"
 
 // Debugging
 #include "Axton/Debug/Log.h"

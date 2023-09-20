@@ -1,13 +1,6 @@
 #include <Axton.h>
-
-class ExampleLayer : public Axton::Layer
-{
-public:
-	virtual void OnAttach() override
-	{
-		Axton::Log::Info("ExampleLayer::OnAttach");
-	}
-};
+#include <Axton/Core/EntryPoint.h>
+#include "ExampleLayer.h"
 
 class SandboxApplication : public Axton::Application
 {

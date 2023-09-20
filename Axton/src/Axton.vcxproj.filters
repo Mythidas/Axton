@@ -130,6 +130,8 @@
     <ClInclude Include="Axton\Core\Time.h" />
     <ClInclude Include="Axton\Core\LayerStack.h" />
     <ClInclude Include="Axton\Core\Layer.h" />
+    <ClInclude Include="Axton\Renderer\Sprite.h" />
+    <ClInclude Include="Axton\Scene\StandardComponents.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -201,5 +203,7 @@
     <ClCompile Include="Axton\Scene\Entity.cpp" />
     <ClCompile Include="Axton\Core\Time.cpp" />
     <ClCompile Include="Axton\Core\LayerStack.cpp" />
+    <ClCompile Include="Axton\Renderer\Sprite.cpp" />
+    <ClCompile Include="Axton\Scene\World.cpp" />
   </ItemGroup>
 </Project>

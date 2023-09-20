@@ -31,6 +31,8 @@ namespace Axton
 
 		template <typename T>
 		int FindComponentID();
+		template <typename T>
+		std::vector<int> FindComponentIDs(bool isBase = false);
 
 		size_t GetEntityCount() const { return m_Entities.size(); }
 
@@ -96,12 +98,43 @@ namespace Axton
 	{
 		for (int i = 0; i < m_ComponentCount; i++)
 		{
-			if (m_ComponentPools[i]->IsType(GetTypeName<T>()) ||
-				m_ComponentPools[i]->IsType(T::GetBaseType()))
+			if (m_ComponentPools[i]->IsType(GetTypeName<T>()))
+			{
 				return i;
+			}
 		}
 
 		return -1;
+	}
+
+	template<typename T>
+	inline std::vector<int> Level::FindComponentIDs(bool isBase)
+	{
+		std::vector<int> componentIDs;
+
+		if (isBase)
+		{
+			for (int i = 0; i < m_ComponentCount; i++)
+			{
+				if (m_ComponentPools[i]->IsType(GetTypeName<T>()) ||
+					m_ComponentPools[i]->IsType(T::GetBaseType()))
+				{
+					componentIDs.push_back(i);
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i < m_ComponentCount; i++)
+			{
+				if (m_ComponentPools[i]->IsType(GetTypeName<T>()))
+				{
+					componentIDs.push_back(i);
+				}
+			}
+		}
+
+		return componentIDs;
 	}
 
 	template<typename T>

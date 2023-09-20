@@ -1,7 +1,9 @@
 #include "axpch.h"
 #include "Level.h"
-#include "Axton/Renderer/Renderer2D.h"
+#include "World.h"
+#include "EntityView.h"
 #include "StandardComponents.h"
+#include "Axton/Renderer/Renderer2D.h"
 
 namespace Axton
 {
@@ -12,16 +14,46 @@ namespace Axton
 
 	Level::~Level()
 	{
-		for (auto* pool : m_ComponentPools)
-		{
-			delete pool;
-		}
+		//for (auto* pool : m_ComponentPools)
+		//{
+		//	delete pool;
+		//}
 	}
 
 	void Level::OnUpdate()
 	{
-		//Renderer2D::BeginFrame();
-		//Renderer2D::EndFrame();
+		Camera* camera = nullptr;
+		for (const Entity& entity : EntityView<Camera>(World::GetActiveLevel()))
+		{
+			camera = GetComponent<Camera>(entity);
+			Transform* transform = GetComponent<Transform>(entity);
+
+			camera->Data.RecalculateViewMatrix(transform->Position);
+			camera->Data.RecalculateProjectionMatrix();
+			break;
+		}
+		if (!camera) return;
+
+		Renderer2D::BeginFrame(camera->Data);
+
+		for (const Entity& entity : EntityView<SpriteRenderer>(World::GetActiveLevel()))
+		{
+			Transform* transform = GetComponent<Transform>(entity);
+			SpriteRenderer* spriteRenderer = GetComponent<SpriteRenderer>(entity);
+
+			if (spriteRenderer->Sprite)
+			{
+				Renderer2D::DrawRotateQuad(transform->Position, transform->Rotation, transform->Scale,
+					spriteRenderer->Color, spriteRenderer->Sprite);
+			}
+			else
+			{
+				Renderer2D::DrawRotateQuad(transform->Position, transform->Rotation, transform->Scale,
+					spriteRenderer->Color);
+			}
+		}
+
+		Renderer2D::EndFrame();
 	}
 
 	Entity Level::CreateEntity()

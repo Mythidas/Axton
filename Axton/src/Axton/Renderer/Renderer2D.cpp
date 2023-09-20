@@ -167,6 +167,51 @@ namespace Axton
 		s_Data.QuadIndexCount += 6;
 	}
 
+	void Renderer2D::DrawRotateQuad(Vector3 position, Vector3 rotation, Vector2 scale, Vector4 color, Ref<Sprite> sprite)
+	{
+		Matrix4 transform = glm::translate(Matrix4(1.0f), position)
+			* glm::rotate(Matrix4(1.0f), rotation.x, Vector3(1.0f, 0.0f, 0.0f))
+			* glm::rotate(Matrix4(1.0f), rotation.y, Vector3(0.0f, 1.0f, 0.0f))
+			* glm::rotate(Matrix4(1.0f), rotation.z, Vector3(0.0f, 0.0f, 1.0f))
+			* glm::scale(Matrix4(1.0f), Vector3(scale.x, scale.y, 1.0f));
+
+		DrawRotateQuad(transform, color, sprite);
+	}
+
+	void Renderer2D::DrawRotateQuad(Vector3 position, Vector3 rotation, Vector2 scale, Vector4 color)
+	{
+		Matrix4 transform = glm::translate(Matrix4(1.0f), position)
+			* glm::rotate(Matrix4(1.0f), rotation.x, Vector3(1.0f, 0.0f, 0.0f))
+			* glm::rotate(Matrix4(1.0f), rotation.y, Vector3(0.0f, 1.0f, 0.0f))
+			* glm::rotate(Matrix4(1.0f), rotation.z, Vector3(0.0f, 0.0f, 1.0f))
+			* glm::scale(Matrix4(1.0f), Vector3(scale.x, scale.y, 1.0f));
+
+		DrawQuad(transform, color, 0.0f);
+	}
+
+	void Renderer2D::DrawRotateQuad(Matrix4 transform, Vector4 color, Ref<Sprite> sprite)
+	{
+		if (s_Data.QuadVertexCount >= s_Data.MAX_VERTICES)
+		{
+			EndBatch();
+			BeginBatch();
+		}
+
+		// TODO: Add Texture array support
+		float texIndex = 0.0f;
+
+		for (uint32_t i = 0; i < 4; i++)
+		{
+			s_Data.QuadVertices[s_Data.QuadVertexCount].Position = transform * s_Data.QuadVertexPositions[i];
+			s_Data.QuadVertices[s_Data.QuadVertexCount].Color = color;
+			s_Data.QuadVertices[s_Data.QuadVertexCount].TexCoord = sprite->GetTexCoords()[i];
+			s_Data.QuadVertices[s_Data.QuadVertexCount].TexIndex = texIndex;
+			s_Data.QuadVertexCount++;
+		}
+
+		s_Data.QuadIndexCount += 6;
+	}
+
 	const Renderer2DStats Renderer2D::GetStats()
 	{
 		return s_Stats;
