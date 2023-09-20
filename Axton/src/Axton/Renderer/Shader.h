@@ -14,6 +14,8 @@ namespace Axton
 
 		virtual void LoadShader() = 0;
 
+		virtual void SetMat4(const std::string& name, const Matrix4& value) = 0;
+
 		static Ref<Shader> Create(const std::string& vertexSrc, const std::string& fragmentSrc, bool lateLoad);
 	};
 }

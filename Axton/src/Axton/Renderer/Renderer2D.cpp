@@ -32,6 +32,8 @@ namespace Axton
 		Ref<Shader> DefaultShader;
 
 		Vector2 TexturePositions[4];
+
+		CameraData Camera;
 	};
 
 	static Renderer2DData s_Data;
@@ -82,6 +84,7 @@ namespace Axton
 		s_Data.TexturePositions[2] = { 0.0f, 0.0f };
 		s_Data.TexturePositions[3] = { 0.0f, 1.0f };
 
+		// TODO: Make this not hardcoded
 		s_Data.DefaultShader = Shader::Create(
 			"C:/Programming/Axton/Sandbox/Assets/Shaders/SimpleShader.vert",
 			"C:/Programming/Axton/Sandbox/Assets/Shaders/SimpleShader.frag", false);
@@ -89,12 +92,16 @@ namespace Axton
 		RenderCommands::SetBlendMode(true);
 	}
 
-	void Renderer2D::BeginFrame()
+	void Renderer2D::BeginFrame(const CameraData& camera)
 	{
+		s_Data.Camera = camera;
 		RenderCommands::SetClearColor({ 0.0f, 0.0f, 0.1f, 1.0f });
 		RenderCommands::ClearScreen();
 
 		s_Data.DefaultShader->Bind();
+		s_Data.DefaultShader->SetMat4("u_Model", Matrix4(1.0f));
+		s_Data.DefaultShader->SetMat4("u_View", camera.ViewMatrix);
+		s_Data.DefaultShader->SetMat4("u_Projection", camera.ProjectionMatrix);
 
 		BeginBatch();
 	}

@@ -113,4 +113,10 @@ namespace Axton
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
 	}
+
+	void OpenGLShader::SetMat4(const std::string& name, const Matrix4& value)
+	{
+		int location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
+	}
 }

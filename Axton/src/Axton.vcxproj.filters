@@ -127,6 +127,9 @@
     <ClInclude Include="Axton\Scene\World.h" />
     <ClInclude Include="Axton\Scene\EntityView.h" />
     <ClInclude Include="Axton\Scene\ComponentPool.h" />
+    <ClInclude Include="Axton\Core\Time.h" />
+    <ClInclude Include="Axton\Core\LayerStack.h" />
+    <ClInclude Include="Axton\Core\Layer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -196,5 +199,7 @@
     <ClCompile Include="Axton\Renderer\CameraData.cpp" />
     <ClCompile Include="Axton\Scene\Level.cpp" />
     <ClCompile Include="Axton\Scene\Entity.cpp" />
+    <ClCompile Include="Axton\Core\Time.cpp" />
+    <ClCompile Include="Axton\Core\LayerStack.cpp" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 #include "axpch.h"
 #include "Level.h"
 #include "Axton/Renderer/Renderer2D.h"
+#include "StandardComponents.h"
 
 namespace Axton
 {
@@ -19,11 +20,8 @@ namespace Axton
 
 	void Level::OnUpdate()
 	{
-		Renderer2D::BeginFrame();
-
-		Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f });
-
-		Renderer2D::EndFrame();
+		//Renderer2D::BeginFrame();
+		//Renderer2D::EndFrame();
 	}
 
 	Entity Level::CreateEntity()
@@ -34,10 +32,14 @@ namespace Axton
 			m_FreeEntities.pop_back();
 			newID.Version = m_Entities[newID.Index]->ID.Version;
 			m_Entities[newID.Index]->ID.Index = newID.Index;
+			AddComponent<Tag>(*m_Entities[newID.Index]);
+			AddComponent<Transform>(*m_Entities[newID.Index]);
 			return Entity(newID);
 		}
 
-		m_Entities.push_back(CreateScope<Entity>(EntityID(m_Entities.size(), 0)));
+		m_Entities.push_back(CreateRef<Entity>(EntityID(m_Entities.size(), 0)));
+		AddComponent<Tag>(*m_Entities.back());
+		AddComponent<Transform>(*m_Entities.back());
 		return Entity(m_Entities.back()->ID);
 	}
 
@@ -77,8 +79,8 @@ namespace Axton
 		{
 			m_Entities[entity.ID.Index]->ID.Version++;
 			m_Entities[entity.ID.Index]->ID.Index = -1;
+			m_Entities[entity.ID.Index]->Components.reset();
+			m_FreeEntities.push_back(entity.ID);
 		}
-
-		m_FreeEntities.push_back(entity.ID);
 	}
 }

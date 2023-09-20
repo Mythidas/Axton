@@ -2,6 +2,7 @@
 
 #include "Axton/Renderer/RendererAPI.h"
 #include "Axton/Renderer/Shader.h"
+#include "Axton/Math/Math.h"
 
 namespace Axton
 {
@@ -15,6 +16,8 @@ namespace Axton
 		virtual void Unbind() const override;
 
 		virtual void LoadShader() override;
+
+		virtual void SetMat4(const std::string& name, const Matrix4& value) override;
 
 	private:
 		RendererID m_RendererID;

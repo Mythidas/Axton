@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Texture2D.h"
+#include "CameraData.h"
 #include "Axton/Math/Math.h"
 
 namespace Axton
@@ -15,7 +16,7 @@ namespace Axton
 	public:
 		static void Construct();
 
-		static void BeginFrame();
+		static void BeginFrame(const CameraData& camera);
 		static void EndFrame();
 
 		static void DrawQuad(Vector3 position, Vector2 scale, Vector4 color, Ref<Texture2D> texture);

@@ -15,7 +15,7 @@ namespace Axton
 
 		~ComponentPool()
 		{
-
+			delete[] m_Data;
 		}
 
 		void* Get(size_t index)
