@@ -32,6 +32,15 @@ namespace Axton
 		}
 	}
 
+	void RenderCommands::SetViewport(int& width, int& height)
+	{
+		switch (RendererAPI::GetAPI())
+		{
+			case RendererAPI::API::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); return;
+			case RendererAPI::API::OpenGL:  OpenGLRenderCommands::SetViewport(width, height); return;
+		}
+	}
+
 	void RenderCommands::DrawIndexed(uint32_t count)
 	{
 		switch (RendererAPI::GetAPI())

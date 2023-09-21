@@ -4,4 +4,5 @@
 namespace Axton
 {
 	Event<> Events::OnWindowClose;
+	Event<int, int>	Events::OnWindowResize;
 }

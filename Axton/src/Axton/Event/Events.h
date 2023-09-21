@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Event.h"
+#include "Axton/Core/Defines.h"
 
 namespace Axton
 {
-	class Events
+	class AX_API Events
 	{
 	public:
 		static Event<> OnWindowClose;
+		static Event<int, int> OnWindowResize;
 	};
 }

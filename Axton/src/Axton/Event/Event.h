@@ -1,11 +1,13 @@
 #pragma once
 
+#include "Axton/Core/Defines.h"
+
 #include <functional>
 
 namespace Axton
 {
 	template <typename... Args>
-	class Event
+	class AX_API Event
 	{
 		typedef std::function<void(Args...)> Func;
 	public:

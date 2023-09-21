@@ -27,6 +27,7 @@ namespace Axton
 
 	private:
 		void OnWindowClose();
+		void OnWindowResize(int width, int height);
 	};
 
 	// To be defined in CLIENT

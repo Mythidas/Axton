@@ -34,6 +34,15 @@ namespace Axton
 			Events::OnWindowClose();
 		});
 
+		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
+		{
+			WindowSpecs& specs = ((WindowsWindow*)glfwGetWindowUserPointer(window))->m_Specs;
+			specs.Width = width;
+			specs.Height = height;
+
+			Events::OnWindowResize(width, height);
+		});
+
 		CoreLog::Info("Window Created {0} {1}:{2}", specs.Title, specs.Width, specs.Height);
 	}
 

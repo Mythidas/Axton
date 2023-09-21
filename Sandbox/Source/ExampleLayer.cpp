@@ -6,7 +6,7 @@ void ExampleLayer::OnAttach()
 
 	Entity cameraEntity = World::CreateEntity();
 	Camera* camera = World::AddComponent<Camera>(cameraEntity);
-	World::GetComponent<Transform>(cameraEntity)->Position = { 0.0f, 0.0f, -1.0f };
+	World::GetComponent<Transform>(cameraEntity)->Position = { 1.0f, 0.0f, -1.0f };
 
 	Entity entity = World::CreateEntity();
 	World::GetComponent<Tag>(entity)->Name = "Test";

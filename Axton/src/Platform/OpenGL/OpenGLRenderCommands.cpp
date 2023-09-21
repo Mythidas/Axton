@@ -28,6 +28,12 @@ namespace Axton
 		}
 	}
 
+	void OpenGLRenderCommands::SetViewport(int& width, int& height)
+	{
+		glViewport(0, 0, width, height);
+		AX_ASSERT_CORE(glGetError() == GL_NO_ERROR, "OpenGL Error!");
+	}
+
 	void OpenGLRenderCommands::DrawIndexed(uint32_t count)
 	{
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);

@@ -1,6 +1,7 @@
 #include "axpch.h"
 #include "OpenGLGraphicsContext.h"
 #include "Axton/Core/Assert.h"
+#include "Axton/Renderer/RenderCommands.h"
 
 #include <glad/glad.h>
 

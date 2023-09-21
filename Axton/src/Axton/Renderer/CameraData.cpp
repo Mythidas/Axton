@@ -14,8 +14,8 @@ namespace Axton
 	{
 		if (Format == ProjectionFormat::Orthographic)
 		{
-			ProjectionMatrix = glm::ortho(-OrthoSize, OrthoSize, 
-				-OrthoSize * AspectRatio, OrthoSize * AspectRatio, 
+			ProjectionMatrix = glm::ortho(-OrthoSize * AspectRatio, OrthoSize * AspectRatio, 
+				-OrthoSize, OrthoSize, 
 				NearClip, FarClip);
 		}
 		else if (Format == ProjectionFormat::Perspective)

@@ -5,6 +5,7 @@
 #include "Axton/Debug/Log.h"
 #include "Axton/Event/Events.h"
 #include "Axton/Renderer/Renderer2D.h"
+#include "Axton/Renderer/RenderCommands.h"
 
 namespace Axton
 {
@@ -20,6 +21,7 @@ namespace Axton
 		CoreLog::Info("Application Created!");
 
 		Events::OnWindowClose += AX_BIND_FNC(Application::OnWindowClose);
+		Events::OnWindowResize += AX_BIND_FNC(Application::OnWindowResize);
 	}
 
 	void Application::Run()
@@ -49,5 +51,10 @@ namespace Axton
 		m_Running = false;
 
 		CoreLog::Info("Application Closing...");
+	}
+
+	void Application::OnWindowResize(int width, int height)
+	{
+		RenderCommands::SetViewport(width, height);
 	}
 }
