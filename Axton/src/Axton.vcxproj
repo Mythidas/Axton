@@ -157,6 +157,7 @@
     <ClInclude Include="Axton\Core\Assert.h" />
     <ClInclude Include="Axton\Core\Defines.h" />
     <ClInclude Include="Axton\Core\EntryPoint.h" />
+    <ClInclude Include="Axton\Core\Input.h" />
     <ClInclude Include="Axton\Core\KeyCodes.h" />
     <ClInclude Include="Axton\Core\Layer.h" />
     <ClInclude Include="Axton\Core\LayerStack.h" />
@@ -198,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp" />
+    <ClCompile Include="Axton\Core\Input.cpp" />
     <ClCompile Include="Axton\Core\LayerStack.cpp" />
     <ClCompile Include="Axton\Core\Time.cpp" />
     <ClCompile Include="Axton\Core\Window.cpp" />

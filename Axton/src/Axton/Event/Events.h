@@ -10,5 +10,7 @@ namespace Axton
 	public:
 		static Event<> OnWindowClose;
 		static Event<int, int> OnWindowResize;
+		static Event<int> OnKeyPressed;
+		static Event<int> OnKeyReleased;
 	};
 }

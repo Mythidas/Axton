@@ -43,6 +43,14 @@ namespace Axton
 			Events::OnWindowResize(width, height);
 		});
 
+		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+		{
+			if (action == GLFW_PRESS)
+				Events::OnKeyPressed(key);
+			else if (action == GLFW_RELEASE)
+				Events::OnKeyReleased(key);
+		});
+
 		CoreLog::Info("Window Created {0} {1}:{2}", specs.Title, specs.Width, specs.Height);
 	}
 

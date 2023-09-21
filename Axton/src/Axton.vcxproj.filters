@@ -132,6 +132,7 @@
     <ClInclude Include="Axton\Core\Layer.h" />
     <ClInclude Include="Axton\Renderer\Sprite.h" />
     <ClInclude Include="Axton\Scene\StandardComponents.h" />
+    <ClInclude Include="Axton\Core\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -205,5 +206,6 @@
     <ClCompile Include="Axton\Core\LayerStack.cpp" />
     <ClCompile Include="Axton\Renderer\Sprite.cpp" />
     <ClCompile Include="Axton\Scene\World.cpp" />
+    <ClCompile Include="Axton\Core\Input.cpp" />
   </ItemGroup>
 </Project>

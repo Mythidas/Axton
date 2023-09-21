@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Time.h"
+#include "Input.h"
 #include "Axton/Debug/Log.h"
 #include "Axton/Event/Events.h"
 #include "Axton/Renderer/Renderer2D.h"
@@ -14,6 +15,7 @@ namespace Axton
 		Log::Construct();
 		CoreLog::Construct();
 		Time::Construct();
+		Input::Construct();
 
 		m_Window = Window::Create();
 		Renderer2D::Construct();

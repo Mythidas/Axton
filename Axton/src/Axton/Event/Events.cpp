@@ -5,4 +5,6 @@ namespace Axton
 {
 	Event<> Events::OnWindowClose;
 	Event<int, int>	Events::OnWindowResize;
+	Event<int> Events::OnKeyPressed;
+	Event<int> Events::OnKeyReleased;
 }

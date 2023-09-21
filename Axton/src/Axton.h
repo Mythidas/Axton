@@ -3,6 +3,7 @@
 // Application
 #include "Axton/Core/Application.h"
 #include "Axton/Core/Layer.h"
+#include "Axton/Core/Input.h"
 
 // Scene
 #include "Axton/Scene/Level.h"

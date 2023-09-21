@@ -20,4 +20,7 @@ void ExampleLayer::OnAttach()
 void ExampleLayer::OnUpdate()
 {
 	World::GetActiveLevel()->OnUpdate();
+
+	if (Input::IsKeyPressed(Keys::A))
+		Log::Info("A Pressed");
 }
