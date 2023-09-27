@@ -20,7 +20,7 @@ namespace Axton
 			: Width(width), Height(height), Depth(depth) {}
 	};
 
-	class AX_API Texture3D
+	class Texture3D
 	{
 	public:
 		virtual ~Texture3D() = default;

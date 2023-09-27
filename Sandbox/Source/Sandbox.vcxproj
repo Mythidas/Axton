@@ -78,12 +78,12 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\GLFW\include;..\..\Axton\vendor\glad\include;..\..\Axton\vendor\stb_image;..\..\Axton\vendor\glm;..\..\Axton\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>AX_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -95,15 +95,15 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\GLFW\include;..\..\Axton\vendor\glad\include;..\..\Axton\vendor\stb_image;..\..\Axton\vendor\glm;..\..\Axton\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>AX_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -116,15 +116,15 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\GLFW\include;..\..\Axton\vendor\glad\include;..\..\Axton\vendor\stb_image;..\..\Axton\vendor\glm;..\..\Axton\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>AX_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -134,12 +134,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ExampleLayer.h" />
-    <ClInclude Include="FlyCamera.h" />
     <ClInclude Include="RayRenderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ExampleLayer.cpp" />
     <ClCompile Include="RayRenderer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

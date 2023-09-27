@@ -7,7 +7,7 @@ namespace Axton
 {
 	namespace FS = std::filesystem;
 
-	class AX_API FileSystem
+	class FileSystem
 	{
 	public:
 		FileSystem(const char* path);

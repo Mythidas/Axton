@@ -7,7 +7,7 @@
 namespace Axton
 {
 	template <typename... Args>
-	class AX_API Event
+	class Event
 	{
 		typedef std::function<void(Args...)> Func;
 	public:

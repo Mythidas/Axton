@@ -28,7 +28,7 @@ namespace Axton
 		REPEAT
 	};
 
-	class AX_API RendererAPI
+	class RendererAPI
 	{
 	public:
 		enum class API

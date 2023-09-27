@@ -4,14 +4,14 @@
 
 namespace Axton
 {
-	class AX_API Mathf
+	class Mathf
 	{
 	public:
 		static const float Pi;
 
 		static float ToRadians(float degrees);
 
-		class AX_API Infinity
+		class Infinity
 		{
 		public:
 			static const float Float;
@@ -19,14 +19,14 @@ namespace Axton
 			static const int Int;
 		};
 
-		class AX_API Clamp
+		class Clamp
 		{
 		public:
 			static float Float(float value, float min, float max);
 			static int Int(int value, int min, int max);
 		};
 
-		class AX_API Random
+		class Random
 		{
 		public:
 			static float Float();

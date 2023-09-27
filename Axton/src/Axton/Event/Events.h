@@ -5,7 +5,7 @@
 
 namespace Axton
 {
-	class AX_API Events
+	class Events
 	{
 	public:
 		static Event<> OnWindowClose; // No arguments

@@ -12,6 +12,9 @@ public:
 
 	Ref<Texture2D> GetFinalImage() const { return m_FinalImage; }
 
+	Vector3 TempColor;
+	Vector3 TempLight;
+
 private:
 	Vector4 PerPixel(Vector2 coord);
 

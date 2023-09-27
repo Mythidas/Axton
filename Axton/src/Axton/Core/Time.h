@@ -6,7 +6,7 @@
 
 namespace Axton
 {
-	class AX_API Time
+	class Time
 	{
 		typedef std::chrono::steady_clock::time_point TimePoint;
 	public:

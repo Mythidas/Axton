@@ -6,7 +6,7 @@
 
 namespace Axton
 {
-	class AX_API Input
+	class Input
 	{
 		Input();
 	public:

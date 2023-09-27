@@ -2,6 +2,7 @@ include "dependencies.lua"
 
 workspace "Axton"
     architecture "x64"
+    startproject "Sandbox"
 
     configurations
     {

@@ -2,8 +2,9 @@ include "dependencies.lua"
 
 project "Axton"
     location "src"
-    kind "SharedLib"
+    kind "StaticLib"
     language "C++"
+    cppdialect "C++latest"
     staticruntime "off"
 
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
@@ -17,6 +18,12 @@ project "Axton"
         "src/**.h",
         "src/**.cpp",
     }
+
+    defines
+	{
+		"_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE"
+	}
 
     includedirs
     {
@@ -37,19 +44,14 @@ project "Axton"
         "opengl32.lib"
     }
 
+    flags { "NoPCH" }
+
     filter "system:windows"
-        cppdialect "C++latest"
         systemversion "latest"
 
         defines
         {
             "AX_PLAT_WINDOWS",
-            "AX_BUILD_DLL"
-        }
-
-        postbuildcommands
-        {
-            ("{COPY} %{cfg.buildtarget.relpath} ../../bin/" .. outputdir .. "/Sandbox")
         }
 
     filter "configurations:Debug"
@@ -59,11 +61,14 @@ project "Axton"
             "AX_ASSERTS_ENABLED"
         }
         symbols "On"
+        runtime "Debug"
 
     filter "configurations:Release"
         defines "AX_RELEASE"
         optimize "On"
+        runtime "Release"
 
     filter "configurations:Dist"
         defines "AX_DIST"
         optimize "On"
+        runtime "Release"

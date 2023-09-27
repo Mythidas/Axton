@@ -5,7 +5,7 @@
 
 namespace Axton
 {
-	struct AX_API Ray
+	struct Ray
 	{
 		Ray() = default;
 		Ray(const Ray& ray);

@@ -6,11 +6,16 @@
 
 namespace Axton
 {
-	class AX_API Timer
+	class Timer
 	{
 	public:
+		Timer();
 		Timer(const std::string& name);
 		~Timer();
+
+		void Reset();
+		float Elapsed();
+		float ElapsedMill();
 
 	private:
 		std::string m_Name;

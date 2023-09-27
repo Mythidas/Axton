@@ -1,5 +1,7 @@
 #pragma once
 
+#define AX_PLAT_WINDOWS
+
 #ifdef AX_PLAT_WINDOWS
 
 extern Axton::Application* Axton::CreateApplication();

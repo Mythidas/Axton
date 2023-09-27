@@ -40,6 +40,7 @@ namespace Axton
 		while (m_Running)
 		{
 			Time::OnUpdate();
+			m_Window->OnUpdate();
 
 			for (Layer* layer : m_LayerStack)
 			{
@@ -63,8 +64,6 @@ namespace Axton
 				}
 				m_ImGUILayer->EndUI();
 			}
-
-			m_Window->OnUpdate();
 		}
 	}
 

@@ -5,7 +5,7 @@
 
 namespace Axton
 {
-	class AX_API ImGUILayer : public Layer
+	class ImGUILayer : public Layer
 	{
 	public:
 		virtual void OnAttach() override;

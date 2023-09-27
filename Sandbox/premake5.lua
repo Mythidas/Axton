@@ -2,6 +2,8 @@ project "Sandbox"
     location "Source"
     kind "ConsoleApp"
     language "C++"
+    cppdialect "C++17"
+    staticruntime "off"
 
     targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
     objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
@@ -15,12 +17,9 @@ project "Sandbox"
     includedirs
     {
         "%{wks.location}/Axton/src",
+        "%{wks.location}/Axton/vendor",
         "%{IncludeDir.LOG}",
-        "%{IncludeDir.GLFW}",
-        "%{IncludeDir.GLAD}",
-        "%{IncludeDir.STB}",
         "%{IncludeDir.GLM}",
-        "%{IncludeDir.IMGUI}",
     }
 
     links
@@ -29,23 +28,19 @@ project "Sandbox"
     }
 
     filter "system:windows"
-        cppdialect "C++latest"
-        staticruntime "On"
         systemversion "latest"
-
-        defines
-        {
-            "AX_PLAT_WINDOWS"
-        }
 
     filter "configurations:Debug"
         defines "AX_DEBUG"
+        runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
         defines "AX_RELEASE"
         optimize "On"
+        runtime "Release"
 
     filter "configurations:Dist"
         defines "AX_DIST"
         optimize "On"
+        runtime "Release"

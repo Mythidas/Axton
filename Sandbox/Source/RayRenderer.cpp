@@ -10,8 +10,6 @@ namespace Utils
 
 void RayRenderer::Render()
 {
-	Timer timer("RayRenderer::Render");
-
 	float aspectRatio = (float)m_FinalImage->GetWidth() / (float)m_FinalImage->GetHeight();
 
 	for (int y = 0; y < m_FinalImage->GetHeight(); y++)
@@ -50,6 +48,7 @@ Vector4 RayRenderer::PerPixel(Vector2 coord)
 
 	Vector3 camera = { 0.0f, 0.0f, 1.0f };
 	Vector3 center = { 0.0f, 0.0f, -1.0f };
+	Vector3 lightDir = Vector::UnitVector(TempLight);
 
 	Ray ray(camera, { coord.x, coord.y, -1.0f});
 	Vector3 oc = ray.Origin - center;
@@ -74,11 +73,12 @@ Vector4 RayRenderer::PerPixel(Vector2 coord)
 			{
 				Vector3 point = ray.GetPoint(t[i]);
 				Vector3 normal = Vector::UnitVector(point - center);
-				Vector3 color = 0.5f * (normal + 1.0f);
+				float d = Mathf::Clamp::Float(Vector::Dot(normal, -lightDir), 0.0f, Mathf::Infinity::Float);
+				Vector3 color = TempColor * d;
 				return Vector4(color, 1.0f);
 			}
 		}
 	}
 
-	return Vector4(-coord.y * 0.9f + 0.2f, -coord.y * 0.9f + 0.2f, 0.9f, 1.0f);
+	return Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 }

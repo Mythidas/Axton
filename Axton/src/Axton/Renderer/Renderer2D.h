@@ -13,7 +13,7 @@ namespace Axton
 		uint32_t DrawCalls = 0;
 	};
 
-	class AX_API Renderer2D
+	class Renderer2D
 	{
 	public:
 		static void Construct();

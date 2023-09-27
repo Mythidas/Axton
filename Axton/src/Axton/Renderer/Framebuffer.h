@@ -41,7 +41,7 @@ namespace Axton
 		bool SwapChainTarget = false;
 	};
 
-	class AX_API Framebuffer
+	class Framebuffer
 	{
 	public:
 		virtual ~Framebuffer() = default;

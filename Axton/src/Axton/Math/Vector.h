@@ -8,7 +8,7 @@ namespace Axton
 	typedef glm::vec3 Vector3;
 	typedef glm::vec4 Vector4;
 
-	class AX_API Vector
+	class Vector
 	{
 	public:
 		// Vector3

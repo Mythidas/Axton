@@ -8,7 +8,7 @@ namespace Axton
 {
 	class ImGUILayer;
 
-	class AX_API Application
+	class Application
 	{
 	public:
 		Application();

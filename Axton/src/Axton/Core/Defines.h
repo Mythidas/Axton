@@ -4,14 +4,6 @@
 #include <functional>
 #include <string>
 
-#ifdef AX_PLAT_WINDOWS
-	#ifdef AX_BUILD_DLL
-		#define AX_API __declspec(dllexport)
-	#else
-		#define AX_API __declspec(dllimport)
-	#endif
-#endif
-
 #define AX_BIND_FNC(fn)  [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
 namespace Axton

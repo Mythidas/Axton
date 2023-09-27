@@ -4,7 +4,7 @@
 
 namespace Axton
 {
-	struct AX_API Interval
+	struct Interval
 	{
 	public:
 		float Min;

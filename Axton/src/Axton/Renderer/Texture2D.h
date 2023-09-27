@@ -18,7 +18,7 @@ namespace Axton
 		Texture2DSpecs(uint32_t width, uint32_t height) : Width(width), Height(height) {}
 	};
 
-	class AX_API Texture2D
+	class Texture2D
 	{
 	public:
 		virtual ~Texture2D() = default;

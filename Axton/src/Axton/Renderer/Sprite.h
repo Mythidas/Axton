@@ -6,7 +6,7 @@
 
 namespace Axton
 {
-	class AX_API Sprite
+	class Sprite
 	{
 	public:
 		Sprite(const Ref<Texture2D>& texture, const Vector2& min, const Vector2& max);

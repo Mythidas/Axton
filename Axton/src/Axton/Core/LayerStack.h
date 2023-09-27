@@ -4,7 +4,7 @@
 
 namespace Axton
 {
-	class AX_API LayerStack
+	class LayerStack
 	{
 	public:
 		LayerStack();

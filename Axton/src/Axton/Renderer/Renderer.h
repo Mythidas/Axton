@@ -4,7 +4,7 @@
 
 namespace Axton
 {
-	class AX_API Renderer
+	class Renderer
 	{
 	public:
 		static void Construct();

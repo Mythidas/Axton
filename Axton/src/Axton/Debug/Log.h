@@ -14,7 +14,7 @@ namespace spdlog
 namespace Axton
 {
 	// Client Console logging
-	class AX_API Log
+	class Log
 	{
 	public:
 		static void Construct();

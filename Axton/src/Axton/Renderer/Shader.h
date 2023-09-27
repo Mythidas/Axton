@@ -5,7 +5,7 @@
 
 namespace Axton
 {
-	class AX_API Shader
+	class Shader
 	{
 	public:
 		virtual ~Shader() = default;

@@ -5,7 +5,7 @@
 
 namespace Axton
 {
-	class AX_API SpriteSheet
+	class SpriteSheet
 	{
 	public:
 		SpriteSheet();

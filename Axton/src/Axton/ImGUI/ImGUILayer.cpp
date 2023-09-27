@@ -15,15 +15,19 @@ namespace Axton
 	void ImGUILayer::OnAttach()
 	{
 		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
+		ImGuiContext* context = ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		io.DisplaySize = ImVec2(1280.0f, 720.0f);
 
 		ImGui::StyleColorsDark();
 
-		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), true);
-		ImGui_ImplOpenGL3_Init("#version 430");
+		GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init("#version 410");
 	}
 
 	void ImGUILayer::OnDetach()
@@ -39,13 +43,23 @@ namespace Axton
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		bool showDemoWindow = true;
-		ImGui::ShowDemoWindow(&showDemoWindow);
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 	}
 
 	void ImGUILayer::EndUI()
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			GLFWwindow* backupContext = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backupContext);
+		}
 	}
 }
