@@ -9,13 +9,14 @@ namespace Axton
 	{
 		m_Specs = specs;
 
-		AX_ASSERT_CORE(glfwInit(), "Failed to Init GLFW");
+		int glfw = glfwInit();
+		AX_ASSERT_CORE(glfw, "Failed to Init GLFW");
 
+		m_Context = GraphicsContext::Create();
 		m_Window = glfwCreateWindow((int)specs.Width, (int)specs.Height, specs.Title.c_str(), nullptr, nullptr);
 		AX_ASSERT_CORE(m_Window, "Failed to create GLFW window");
 
-		m_Context = GraphicsContext::Create(m_Window);
-		m_Context->Init();
+		m_Context->Init(m_Window);
 
 		glfwSetWindowUserPointer(m_Window, this);
 
@@ -51,6 +52,21 @@ namespace Axton
 				Events::OnKeyReleased(key);
 		});
 
+		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos)
+		{
+			Events::OnMouseMoved(xpos, ypos);
+		});
+
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
+		{
+			if (action == GLFW_PRESS)
+			{
+				Events::OnMouseButtonPressed(button);
+			}
+			else if (action == GLFW_RELEASE)
+				Events::OnMouseButtonReleased(button);
+		});
+
 		CoreLog::Info("Window Created {0} {1}:{2}", specs.Title, specs.Width, specs.Height);
 	}
 
@@ -66,5 +82,13 @@ namespace Axton
 	{
 		glfwPollEvents();
 		m_Context->SwapBuffers();
+	}
+
+	void WindowsWindow::SetCursorMode(bool locked)
+	{
+		if (locked)
+			glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		else
+			glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 }

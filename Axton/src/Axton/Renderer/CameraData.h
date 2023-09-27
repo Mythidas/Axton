@@ -1,10 +1,13 @@
 #pragma once
+
 #include "Axton/Core/Defines.h"
 #include "Axton/Math/Math.h"
 
 namespace Axton
 {
-	struct CameraData
+	class Transform;
+
+	struct AX_API CameraData
 	{
 		enum class ProjectionFormat
 		{
@@ -12,8 +15,9 @@ namespace Axton
 			Orthographic = 1
 		};
 
-		ProjectionFormat Format = ProjectionFormat::Orthographic;
-		float FOV = 45.0f;
+		ProjectionFormat Format = ProjectionFormat::Perspective;
+		float FOV = 60.0f;
+		float MaxFOV = 120.0f;
 		float NearClip = 0.01f;
 		float FarClip = 100.0f;
 		float AspectRatio = 16.0f / 9.0f;
@@ -21,7 +25,8 @@ namespace Axton
 		Matrix4 ViewMatrix;
 		Matrix4 ProjectionMatrix;
 
-		void RecalculateViewMatrix(Vector3 position);
+		void RecalculateViewMatrix(Vector3 position, Vector3 forward, Vector3 right);
 		void RecalculateProjectionMatrix();
+		Matrix4 GetViewProjectionMatrix() const;
 	};
 }

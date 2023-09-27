@@ -2,11 +2,11 @@
 
 namespace Axton
 {
-	using KeyCode = unsigned short;
+	using Key = unsigned short;
 
-	namespace Keys
+	namespace KeyCode
 	{
-		enum : KeyCode
+		enum : Key
 		{
 			// From glfw3.h
 			Space = 32,
@@ -138,7 +138,12 @@ namespace Axton
 			RightControl = 345,
 			RightAlt = 346,
 			RightSuper = 347,
-			Menu = 348
+			Menu = 348,
+
+			/* Mouse Codes */
+			LeftMouseButton = 349,
+			RightMouseButton = 350,
+			MiddleMouseButton = 351,
 		};
 	}
 }

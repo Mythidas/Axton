@@ -21,17 +21,19 @@ project "Axton"
     includedirs
     {
         "src",
-        "vendor/spdlog/include",
+        "%{IncludeDir.LOG}",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.GLAD}",
         "%{IncludeDir.STB}",
         "%{IncludeDir.GLM}",
+        "%{IncludeDir.IMGUI}",
     }
 
     links
     {
         "GLFW",
         "Glad",
+        "ImGui",
         "opengl32.lib"
     }
 

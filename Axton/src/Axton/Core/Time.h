@@ -2,6 +2,8 @@
 
 #include "Defines.h"
 
+#include <chrono>
+
 namespace Axton
 {
 	class AX_API Time

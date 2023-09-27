@@ -5,35 +5,17 @@
 
 namespace Axton
 {
-	enum class ImageFormat
-	{
-		None = 0,
-		R8,
-		RGB8,
-		RGBA8,
-		RGBA32F
-	};
-
-	enum class FilterFormat
-	{
-		NEAREST,
-		LINEAR
-	};
-
-	enum class WrapFormat
-	{
-		CLAMP,
-		REPEAT
-	};
-
 	struct Texture2DSpecs
 	{
-		int Width = 1;
-		int Height = 1;
+		uint32_t Width = 1;
+		uint32_t Height = 1;
 		ImageFormat Format = ImageFormat::RGBA8;
 		FilterFormat Filter = FilterFormat::NEAREST;
 		WrapFormat Wrap = WrapFormat::REPEAT;
 		bool GenerateMipmaps = true;
+
+		Texture2DSpecs() {}
+		Texture2DSpecs(uint32_t width, uint32_t height) : Width(width), Height(height) {}
 	};
 
 	class AX_API Texture2D

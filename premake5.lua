@@ -15,6 +15,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 group "Dependencies"
     include "Axton/vendor/GLFW"
     include "Axton/vendor/glad"
+    include "Axton/vendor/imgui"
 group ""
 
 group "Core"

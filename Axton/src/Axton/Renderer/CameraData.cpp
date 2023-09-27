@@ -5,9 +5,9 @@
 
 namespace Axton
 {
-	void CameraData::RecalculateViewMatrix(Vector3 position)
+	void CameraData::RecalculateViewMatrix(Vector3 position, Vector3 forward, Vector3 right)
 	{
-		ViewMatrix = glm::translate(Matrix4(1.0f), position);
+		ViewMatrix = glm::lookAt(position, position + forward, right);
 	}
 
 	void CameraData::RecalculateProjectionMatrix()
@@ -23,5 +23,10 @@ namespace Axton
 			ProjectionMatrix = glm::perspective(glm::radians(FOV), AspectRatio,
 				NearClip, FarClip);
 		}
+	}
+
+	Matrix4 CameraData::GetViewProjectionMatrix() const
+	{
+		return ProjectionMatrix * ViewMatrix;
 	}
 }

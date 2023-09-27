@@ -1,6 +1,6 @@
 #include "axpch.h"
 #include "Texture2D.h"
-#include "Platform/OpenGL/OpenGLTexture2D.h"
+#include "Platform/OpenGL/Texture2D.h"
 
 namespace Axton
 {
@@ -9,7 +9,7 @@ namespace Axton
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL:  return CreateRef<OpenGLTexture2D>(specs);
+			case RendererAPI::API::OpenGL:  return CreateRef<OpenGL::Texture2D>(specs);
 		}
 
 		AX_ASSERT_CORE(false, "Unknown RendererAPI!");
@@ -22,7 +22,7 @@ namespace Axton
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL:  texture = CreateRef<OpenGLTexture2D>(specs); break;
+			case RendererAPI::API::OpenGL:  texture = CreateRef<OpenGL::Texture2D>(specs); break;
 		}
 
 		if (texture)
@@ -41,7 +41,7 @@ namespace Axton
 		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  texture = CreateRef<OpenGLTexture2D>(specs); break;
+		case RendererAPI::API::OpenGL:  texture = CreateRef<OpenGL::Texture2D>(specs); break;
 		}
 
 		if (texture)

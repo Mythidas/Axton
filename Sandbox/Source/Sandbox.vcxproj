@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\GLFW\include;..\..\Axton\vendor\glad\include;..\..\Axton\vendor\stb_image;..\..\Axton\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\GLFW\include;..\..\Axton\vendor\glad\include;..\..\Axton\vendor\stb_image;..\..\Axton\vendor\glm;..\..\Axton\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -96,7 +96,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\GLFW\include;..\..\Axton\vendor\glad\include;..\..\Axton\vendor\stb_image;..\..\Axton\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\GLFW\include;..\..\Axton\vendor\glad\include;..\..\Axton\vendor\stb_image;..\..\Axton\vendor\glm;..\..\Axton\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -117,7 +117,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\GLFW\include;..\..\Axton\vendor\glad\include;..\..\Axton\vendor\stb_image;..\..\Axton\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Axton\src;..\..\Axton\vendor\spdlog\include;..\..\Axton\vendor\GLFW\include;..\..\Axton\vendor\glad\include;..\..\Axton\vendor\stb_image;..\..\Axton\vendor\glm;..\..\Axton\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -134,16 +134,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ExampleLayer.h" />
+    <ClInclude Include="FlyCamera.h" />
+    <ClInclude Include="RayRenderer.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="ExampleLayer.cpp" />
+    <ClCompile Include="RayRenderer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Axton\src\Axton.vcxproj">
       <Project>{8F02DB0C-FB16-03BE-C498-A61D306CFFEE}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ExampleLayer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

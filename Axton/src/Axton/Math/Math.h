@@ -1,12 +1,7 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
-namespace Axton
-{
-	typedef glm::vec2 Vector2;
-	typedef glm::vec3 Vector3;
-	typedef glm::vec4 Vector4;
-
-	typedef glm::mat4 Matrix4;
-}
+#include "Mathf.h"
+#include "Interval.h"
+#include "Ray.h"
+#include "Vector.h"
+#include "Matrix.h"

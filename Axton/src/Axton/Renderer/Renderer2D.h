@@ -4,6 +4,7 @@
 #include "Sprite.h"
 #include "CameraData.h"
 #include "Axton/Math/Math.h"
+#include "Axton/Core/Defines.h"
 
 namespace Axton
 {
@@ -12,10 +13,11 @@ namespace Axton
 		uint32_t DrawCalls = 0;
 	};
 
-	class Renderer2D
+	class AX_API Renderer2D
 	{
 	public:
 		static void Construct();
+		static void Destruct();
 
 		static void BeginFrame(const CameraData& camera);
 		static void EndFrame();
@@ -29,13 +31,20 @@ namespace Axton
 		static void DrawRotateQuad(Vector3 position, Vector3 rotation, Vector2 scale, Vector4 color);
 		static void DrawRotateQuad(Matrix4 transform, Vector4 color, Ref<Sprite> sprite);
 
-		static const Renderer2DStats GetStats();
+		static void DrawQuadUI(Vector2 position, Vector2 scale, Vector4 color, Ref<Texture2D> texture);
+		static void DrawQuadUI(Matrix4 transform, Vector4 color, Ref<Texture2D> texture);
+		static void DrawQuadUI(Matrix4 transform, Vector4 color, Ref<Sprite> sprite);
+
+		static void DrawRotateQuadUI(Vector2 position, float rotation, Vector2 scale, Vector4 color, Ref<Texture2D> texture);
+		static void DrawRotateQuadUI(Vector2 position, float rotation, Vector2 scale, Vector4 color, Ref<Sprite> sprite);
 
 	private:
 		static void BeginBatch();
 		static void EndBatch();
 
 		static void CheckBatch();
-		static float GetTextureIndex(Ref<Texture2D> texture);
+
+		static float GetQuadTextureIndex(Ref<Texture2D> texture);
+		static float GetUIQuadTextureIndex(Ref<Texture2D> texture);
 	};
 }

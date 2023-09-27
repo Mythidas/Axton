@@ -10,3 +10,6 @@
 [submodule "Axton/vendor/stb_image"]
 	path = Axton/vendor/stb_image
 	url = https://github.com/nothings/stb.git
+[submodule "Axton/vendor/imgui"]
+	path = Axton/vendor/imgui
+	url = git@github.com:Mythidas/imgui.git

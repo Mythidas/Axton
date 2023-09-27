@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>axpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_BUILD_DLL;AX_DEBUG;AX_ASSERTS_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -103,7 +103,7 @@
       <PrecompiledHeaderFile>axpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_BUILD_DLL;AX_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -130,7 +130,7 @@
       <PrecompiledHeaderFile>axpch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>AX_PLAT_WINDOWS;AX_BUILD_DLL;AX_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -165,11 +165,19 @@
     <ClInclude Include="Axton\Core\Window.h" />
     <ClInclude Include="Axton\Debug\CoreLog.h" />
     <ClInclude Include="Axton\Debug\Log.h" />
+    <ClInclude Include="Axton\Debug\Timer.h" />
     <ClInclude Include="Axton\Event\Event.h" />
     <ClInclude Include="Axton\Event\Events.h" />
+    <ClInclude Include="Axton\ImGUI\ImGUILayer.h" />
+    <ClInclude Include="Axton\Math\Interval.h" />
     <ClInclude Include="Axton\Math\Math.h" />
+    <ClInclude Include="Axton\Math\Mathf.h" />
+    <ClInclude Include="Axton\Math\Matrix.h" />
+    <ClInclude Include="Axton\Math\Ray.h" />
+    <ClInclude Include="Axton\Math\Vector.h" />
     <ClInclude Include="Axton\Renderer\Buffer.h" />
     <ClInclude Include="Axton\Renderer\CameraData.h" />
+    <ClInclude Include="Axton\Renderer\Framebuffer.h" />
     <ClInclude Include="Axton\Renderer\GraphicsContext.h" />
     <ClInclude Include="Axton\Renderer\RenderCommands.h" />
     <ClInclude Include="Axton\Renderer\Renderer.h" />
@@ -177,23 +185,21 @@
     <ClInclude Include="Axton\Renderer\RendererAPI.h" />
     <ClInclude Include="Axton\Renderer\Shader.h" />
     <ClInclude Include="Axton\Renderer\Sprite.h" />
+    <ClInclude Include="Axton\Renderer\SpriteSheet.h" />
     <ClInclude Include="Axton\Renderer\Texture2D.h" />
+    <ClInclude Include="Axton\Renderer\Texture3D.h" />
+    <ClInclude Include="Axton\Renderer\UniformBuffer.h" />
     <ClInclude Include="Axton\Renderer\VertexArray.h" />
-    <ClInclude Include="Axton\Scene\Component.h" />
-    <ClInclude Include="Axton\Scene\ComponentPool.h" />
-    <ClInclude Include="Axton\Scene\Entity.h" />
-    <ClInclude Include="Axton\Scene\EntityView.h" />
-    <ClInclude Include="Axton\Scene\Level.h" />
-    <ClInclude Include="Axton\Scene\LevelSerializer.h" />
-    <ClInclude Include="Axton\Scene\StandardComponents.h" />
-    <ClInclude Include="Axton\Scene\World.h" />
     <ClInclude Include="Axton\Utils\FileSystem.h" />
-    <ClInclude Include="Platform\OpenGL\OpenGLBuffer.h" />
-    <ClInclude Include="Platform\OpenGL\OpenGLGraphicsContext.h" />
-    <ClInclude Include="Platform\OpenGL\OpenGLRenderCommands.h" />
-    <ClInclude Include="Platform\OpenGL\OpenGLShader.h" />
-    <ClInclude Include="Platform\OpenGL\OpenGLTexture2D.h" />
-    <ClInclude Include="Platform\OpenGL\OpenGLVertexArray.h" />
+    <ClInclude Include="Platform\OpenGL\Buffer.h" />
+    <ClInclude Include="Platform\OpenGL\Framebuffer.h" />
+    <ClInclude Include="Platform\OpenGL\GraphicsContext.h" />
+    <ClInclude Include="Platform\OpenGL\RendererAPI.h" />
+    <ClInclude Include="Platform\OpenGL\Shader.h" />
+    <ClInclude Include="Platform\OpenGL\Texture2D.h" />
+    <ClInclude Include="Platform\OpenGL\Texture3D.h" />
+    <ClInclude Include="Platform\OpenGL\UniformBuffer.h" />
+    <ClInclude Include="Platform\OpenGL\VertexArray.h" />
     <ClInclude Include="Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="axpch.h" />
   </ItemGroup>
@@ -205,27 +211,57 @@
     <ClCompile Include="Axton\Core\Window.cpp" />
     <ClCompile Include="Axton\Debug\CoreLog.cpp" />
     <ClCompile Include="Axton\Debug\Log.cpp" />
+    <ClCompile Include="Axton\Debug\Timer.cpp" />
     <ClCompile Include="Axton\Event\Events.cpp" />
+    <ClCompile Include="Axton\ImGUI\ImGUI.cpp" />
+    <ClCompile Include="Axton\ImGUI\ImGUILayer.cpp" />
+    <ClCompile Include="Axton\Math\Interval.cpp" />
+    <ClCompile Include="Axton\Math\Mathf.cpp" />
+    <ClCompile Include="Axton\Math\Ray.cpp" />
+    <ClCompile Include="Axton\Math\Vector.cpp" />
     <ClCompile Include="Axton\Renderer\Buffer.cpp" />
     <ClCompile Include="Axton\Renderer\CameraData.cpp" />
+    <ClCompile Include="Axton\Renderer\Framebuffer.cpp" />
     <ClCompile Include="Axton\Renderer\GraphicsContext.cpp" />
     <ClCompile Include="Axton\Renderer\RenderCommands.cpp" />
+    <ClCompile Include="Axton\Renderer\Renderer.cpp" />
     <ClCompile Include="Axton\Renderer\Renderer2D.cpp" />
     <ClCompile Include="Axton\Renderer\RendererAPI.cpp" />
     <ClCompile Include="Axton\Renderer\Shader.cpp" />
     <ClCompile Include="Axton\Renderer\Sprite.cpp" />
+    <ClCompile Include="Axton\Renderer\SpriteSheet.cpp" />
     <ClCompile Include="Axton\Renderer\Texture2D.cpp" />
+    <ClCompile Include="Axton\Renderer\Texture3D.cpp" />
+    <ClCompile Include="Axton\Renderer\UniformBuffer.cpp" />
     <ClCompile Include="Axton\Renderer\VertexArray.cpp" />
-    <ClCompile Include="Axton\Scene\Entity.cpp" />
-    <ClCompile Include="Axton\Scene\Level.cpp" />
-    <ClCompile Include="Axton\Scene\World.cpp" />
     <ClCompile Include="Axton\Utils\FileSystem.cpp" />
-    <ClCompile Include="Platform\OpenGL\OpenGLBuffer.cpp" />
-    <ClCompile Include="Platform\OpenGL\OpenGLGraphicsContext.cpp" />
-    <ClCompile Include="Platform\OpenGL\OpenGLRenderCommands.cpp" />
-    <ClCompile Include="Platform\OpenGL\OpenGLShader.cpp" />
-    <ClCompile Include="Platform\OpenGL\OpenGLTexture2D.cpp" />
-    <ClCompile Include="Platform\OpenGL\OpenGLVertexArray.cpp" />
+    <ClCompile Include="Platform\OpenGL\Buffer.cpp">
+      <ObjectFileName>$(IntDir)\Buffer1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\Framebuffer.cpp">
+      <ObjectFileName>$(IntDir)\Framebuffer1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\GraphicsContext.cpp">
+      <ObjectFileName>$(IntDir)\GraphicsContext1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\RendererAPI.cpp">
+      <ObjectFileName>$(IntDir)\RendererAPI1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\Shader.cpp">
+      <ObjectFileName>$(IntDir)\Shader1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\Texture2D.cpp">
+      <ObjectFileName>$(IntDir)\Texture2D1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\Texture3D.cpp">
+      <ObjectFileName>$(IntDir)\Texture3D1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\UniformBuffer.cpp">
+      <ObjectFileName>$(IntDir)\UniformBuffer1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\VertexArray.cpp">
+      <ObjectFileName>$(IntDir)\VertexArray1.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="axpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -237,6 +273,9 @@
     </ProjectReference>
     <ProjectReference Include="..\vendor\glad\Glad.vcxproj">
       <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\imgui\ImGui.vcxproj">
+      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

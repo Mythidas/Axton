@@ -13,6 +13,9 @@
     <Filter Include="Axton\Event">
       <UniqueIdentifier>{20F3216C-8CA8-9A61-159D-943881519165}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Axton\ImGUI">
+      <UniqueIdentifier>{B9E2646C-2598-DD61-AE8C-D7381A41D465}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Axton\Math">
       <UniqueIdentifier>{C8581C49-B410-5E96-1D18-37F209EFF886}</UniqueIdentifier>
     </Filter>
@@ -46,7 +49,19 @@
     <ClInclude Include="Axton\Core\EntryPoint.h">
       <Filter>Axton\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Axton\Core\Input.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
     <ClInclude Include="Axton\Core\KeyCodes.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\Layer.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\LayerStack.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\Time.h">
       <Filter>Axton\Core</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Core\Window.h">
@@ -58,16 +73,43 @@
     <ClInclude Include="Axton\Debug\Log.h">
       <Filter>Axton\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="Axton\Debug\Timer.h">
+      <Filter>Axton\Debug</Filter>
+    </ClInclude>
     <ClInclude Include="Axton\Event\Event.h">
       <Filter>Axton\Event</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Event\Events.h">
       <Filter>Axton\Event</Filter>
     </ClInclude>
+    <ClInclude Include="Axton\ImGUI\ImGUILayer.h">
+      <Filter>Axton\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Math\Interval.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
     <ClInclude Include="Axton\Math\Math.h">
       <Filter>Axton\Math</Filter>
     </ClInclude>
+    <ClInclude Include="Axton\Math\Mathf.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Math\Matrix.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Math\Ray.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Math\Vector.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
     <ClInclude Include="Axton\Renderer\Buffer.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Renderer\CameraData.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Renderer\Framebuffer.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Renderer\GraphicsContext.h">
@@ -88,7 +130,19 @@
     <ClInclude Include="Axton\Renderer\Shader.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Axton\Renderer\Sprite.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Renderer\SpriteSheet.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="Axton\Renderer\Texture2D.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Renderer\Texture3D.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Renderer\UniformBuffer.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Renderer\VertexArray.h">
@@ -97,45 +151,49 @@
     <ClInclude Include="Axton\Utils\FileSystem.h">
       <Filter>Axton\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\OpenGLBuffer.h">
+    <ClInclude Include="Platform\OpenGL\Buffer.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\OpenGLGraphicsContext.h">
+    <ClInclude Include="Platform\OpenGL\Framebuffer.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\OpenGLRenderCommands.h">
+    <ClInclude Include="Platform\OpenGL\GraphicsContext.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\OpenGLShader.h">
+    <ClInclude Include="Platform\OpenGL\RendererAPI.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\OpenGLTexture2D.h">
+    <ClInclude Include="Platform\OpenGL\Shader.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\OpenGLVertexArray.h">
+    <ClInclude Include="Platform\OpenGL\Texture2D.h">
+      <Filter>Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\OpenGL\Texture3D.h">
+      <Filter>Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\OpenGL\UniformBuffer.h">
+      <Filter>Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\OpenGL\VertexArray.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Windows\WindowsWindow.h">
       <Filter>Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="axpch.h" />
-    <ClInclude Include="Axton\Renderer\CameraData.h" />
-    <ClInclude Include="Axton\Scene\Level.h" />
-    <ClInclude Include="Axton\Scene\Entity.h" />
-    <ClInclude Include="Axton\Scene\Component.h" />
-    <ClInclude Include="Axton\Scene\LevelSerializer.h" />
-    <ClInclude Include="Axton\Scene\World.h" />
-    <ClInclude Include="Axton\Scene\EntityView.h" />
-    <ClInclude Include="Axton\Scene\ComponentPool.h" />
-    <ClInclude Include="Axton\Core\Time.h" />
-    <ClInclude Include="Axton\Core\LayerStack.h" />
-    <ClInclude Include="Axton\Core\Layer.h" />
-    <ClInclude Include="Axton\Renderer\Sprite.h" />
-    <ClInclude Include="Axton\Scene\StandardComponents.h" />
-    <ClInclude Include="Axton\Core\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
+      <Filter>Axton\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Core\Input.cpp">
+      <Filter>Axton\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Core\LayerStack.cpp">
+      <Filter>Axton\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Core\Time.cpp">
       <Filter>Axton\Core</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Core\Window.cpp">
@@ -147,16 +205,46 @@
     <ClCompile Include="Axton\Debug\Log.cpp">
       <Filter>Axton\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="Axton\Debug\Timer.cpp">
+      <Filter>Axton\Debug</Filter>
+    </ClCompile>
     <ClCompile Include="Axton\Event\Events.cpp">
       <Filter>Axton\Event</Filter>
     </ClCompile>
+    <ClCompile Include="Axton\ImGUI\ImGUI.cpp">
+      <Filter>Axton\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\ImGUI\ImGUILayer.cpp">
+      <Filter>Axton\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Math\Interval.cpp">
+      <Filter>Axton\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Math\Mathf.cpp">
+      <Filter>Axton\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Math\Ray.cpp">
+      <Filter>Axton\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Math\Vector.cpp">
+      <Filter>Axton\Math</Filter>
+    </ClCompile>
     <ClCompile Include="Axton\Renderer\Buffer.cpp">
+      <Filter>Axton\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Renderer\CameraData.cpp">
+      <Filter>Axton\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Renderer\Framebuffer.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Renderer\GraphicsContext.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Renderer\RenderCommands.cpp">
+      <Filter>Axton\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Renderer\Renderer.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Renderer\Renderer2D.cpp">
@@ -168,7 +256,19 @@
     <ClCompile Include="Axton\Renderer\Shader.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Axton\Renderer\Sprite.cpp">
+      <Filter>Axton\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Renderer\SpriteSheet.cpp">
+      <Filter>Axton\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="Axton\Renderer\Texture2D.cpp">
+      <Filter>Axton\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Renderer\Texture3D.cpp">
+      <Filter>Axton\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Renderer\UniformBuffer.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Renderer\VertexArray.cpp">
@@ -177,35 +277,36 @@
     <ClCompile Include="Axton\Utils\FileSystem.cpp">
       <Filter>Axton\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\OpenGLBuffer.cpp">
+    <ClCompile Include="Platform\OpenGL\Buffer.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\OpenGLGraphicsContext.cpp">
+    <ClCompile Include="Platform\OpenGL\Framebuffer.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\OpenGLRenderCommands.cpp">
+    <ClCompile Include="Platform\OpenGL\GraphicsContext.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\OpenGLShader.cpp">
+    <ClCompile Include="Platform\OpenGL\RendererAPI.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\OpenGLTexture2D.cpp">
+    <ClCompile Include="Platform\OpenGL\Shader.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\OpenGLVertexArray.cpp">
+    <ClCompile Include="Platform\OpenGL\Texture2D.cpp">
+      <Filter>Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\Texture3D.cpp">
+      <Filter>Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\UniformBuffer.cpp">
+      <Filter>Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\VertexArray.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Windows\WindowsWindow.cpp">
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="axpch.cpp" />
-    <ClCompile Include="Axton\Renderer\CameraData.cpp" />
-    <ClCompile Include="Axton\Scene\Level.cpp" />
-    <ClCompile Include="Axton\Scene\Entity.cpp" />
-    <ClCompile Include="Axton\Core\Time.cpp" />
-    <ClCompile Include="Axton\Core\LayerStack.cpp" />
-    <ClCompile Include="Axton\Renderer\Sprite.cpp" />
-    <ClCompile Include="Axton\Scene\World.cpp" />
-    <ClCompile Include="Axton\Core\Input.cpp" />
   </ItemGroup>
 </Project>

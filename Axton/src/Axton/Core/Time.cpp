@@ -1,8 +1,6 @@
 #include "axpch.h"
 #include "Time.h"
 
-#include <chrono>
-
 namespace Axton
 {
 	const float Time::FixedDeltaTime = 0.02f;

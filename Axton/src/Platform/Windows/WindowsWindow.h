@@ -18,7 +18,10 @@ namespace Axton
 		virtual uint32_t GetWidth() const override { return m_Specs.Width; }
 		virtual uint32_t GetHeight() const override { return m_Specs.Height; }
 
+		virtual void SetCursorMode(bool locked) override;
+
 		virtual void* GetNativeWindow() const override { return m_Window; }
+		virtual GraphicsContext& GetContext() const override { return *m_Context; }
 
 	private:
 		GLFWwindow* m_Window;

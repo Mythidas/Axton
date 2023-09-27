@@ -8,9 +8,12 @@ namespace Axton
 	class AX_API Events
 	{
 	public:
-		static Event<> OnWindowClose;
-		static Event<int, int> OnWindowResize;
-		static Event<int> OnKeyPressed;
-		static Event<int> OnKeyReleased;
+		static Event<> OnWindowClose; // No arguments
+		static Event<int, int> OnWindowResize; // Width, Height
+		static Event<int> OnKeyPressed; // Key
+		static Event<int> OnKeyReleased; // Key
+		static Event<double, double> OnMouseMoved; // Mouse X, Mouse Y
+		static Event<int> OnMouseButtonPressed; // Button
+		static Event<int> OnMouseButtonReleased; // Button
 	};
 }

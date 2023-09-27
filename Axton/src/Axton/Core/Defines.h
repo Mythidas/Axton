@@ -40,9 +40,6 @@ namespace Axton
 	template <typename T>
 	using WeakRef = std::weak_ptr<T>;
 
-	template <typename... Args>
-	using Function = std::function<void(Args...)>;
-
 	// Type Traverse
 	template <typename T> 
 	std::string GetTypeName()
@@ -50,4 +47,6 @@ namespace Axton
 		typedef typename std::remove_reference<T>::type TR;
 		return typeid(TR).name();
 	}
+
+	typedef unsigned char Byte;
 }

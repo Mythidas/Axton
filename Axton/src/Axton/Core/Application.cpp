@@ -5,20 +5,29 @@
 #include "Input.h"
 #include "Axton/Debug/Log.h"
 #include "Axton/Event/Events.h"
-#include "Axton/Renderer/Renderer2D.h"
+#include "Axton/Renderer/Renderer.h"
 #include "Axton/Renderer/RenderCommands.h"
+#include "Axton/ImGUI/ImGUILayer.h"
 
 namespace Axton
 {
+	Application* Application::s_Instance = nullptr;
+
 	Application::Application()
 	{
+		AX_ASSERT_CORE(!s_Instance, "Application already exists!");
+		s_Instance = this;
+
 		Log::Construct();
 		CoreLog::Construct();
 		Time::Construct();
 		Input::Construct();
 
 		m_Window = Window::Create();
-		Renderer2D::Construct();
+		Renderer::Construct();
+
+		m_ImGUILayer = new ImGUILayer();
+		PushOverlay(m_ImGUILayer);
 
 		CoreLog::Info("Application Created!");
 
@@ -31,7 +40,6 @@ namespace Axton
 		while (m_Running)
 		{
 			Time::OnUpdate();
-			m_Window->OnUpdate();
 
 			for (Layer* layer : m_LayerStack)
 			{
@@ -45,6 +53,18 @@ namespace Axton
 					layer->OnFixedUpdate();
 				}
 			}
+
+			if (m_ImGUILayer)
+			{
+				m_ImGUILayer->BeginUI();
+				for (Layer* layer : m_LayerStack)
+				{
+					layer->OnRenderUI();
+				}
+				m_ImGUILayer->EndUI();
+			}
+
+			m_Window->OnUpdate();
 		}
 	}
 

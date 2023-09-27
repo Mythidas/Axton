@@ -3,6 +3,7 @@
 #include "VertexArray.h"
 #include "Shader.h"
 #include "RenderCommands.h"
+#include "UniformBuffer.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -16,50 +17,67 @@ namespace Axton
 		float TexIndex;
 	};
 
-	struct Renderer2DData
+	struct UIQuadVertex
 	{
-		static uint32_t const MAX_QUADS = 1000;
-		static uint32_t const MAX_VERTICES = MAX_QUADS * 4;
-		static uint32_t const MAX_INDICES = MAX_QUADS * 6;
-		static uint32_t const MAX_TEXTURES = 32;
-
-		QuadVertex QuadVertices[MAX_VERTICES];
-		Vector4 QuadVertexPositions[4];
-
-		uint32_t QuadVertexCount = 0;
-		uint32_t QuadIndexCount = 0;
-
-		Ref<VertexArray> QuadVertexArray;
-		Ref<Shader> DefaultShader;
-
-		int Samplers[MAX_TEXTURES];
-		std::array<Ref<Texture2D>, MAX_TEXTURES> TextureSlots;
-		Vector2 TexturePositions[4];
-		UINT32 TextureSlotIndex = 1;
-
-		CameraData Camera;
+		Vector2 Position;
+		Vector4 Color;
+		Vector2 TexCoord;
+		float TexIndex;
 	};
 
-	static Renderer2DData s_Data;
-	static Renderer2DStats s_Stats;
+	struct Renderer2DData
+	{
+		static int const MAX_QUADS = 1000;
+		static int const MAX_VERTICES = MAX_QUADS * 4;
+		static int const MAX_INDICES = MAX_QUADS * 6;
+		static int const MAX_TEXTURES = 32;
+
+		Ref<VertexArray> QuadVertexArray;
+		Ref<Shader> QuadShader;
+
+		Ref<VertexArray> UIQuadVertexArray;
+		Ref<Shader> UIQuadShader;
+
+		int QuadIndexCount = 0;
+		QuadVertex* QuadVertexBuffer = nullptr;
+		QuadVertex* QuadVertexBufferPtr = nullptr;
+
+		int UIQuadIndexCount = 0;
+		UIQuadVertex* UIQuadVertexBuffer = nullptr;
+		UIQuadVertex* UIQuadVertexBufferPtr = nullptr;
+
+		Vector4 QuadVertexPositions[4];
+
+		std::array<Ref<Texture2D>, MAX_TEXTURES> QuadTextureSlots;
+		int QuadTextureSlotIndex = 1;
+
+
+		std::array<Ref<Texture2D>, MAX_TEXTURES> UIQuadTextureSlots;
+		int UIQuadTextureSlotIndex = 1;
+
+		Vector2 TexturePositions[4];
+
+		struct CameraBuffer
+		{
+			Matrix4 ViewProjection;
+		};
+
+		CameraBuffer CameraBuffer;
+		Ref<UniformBuffer> CameraUniformBuffer;
+	};
+
+	static Renderer2DData s_Data2D;
 
 	void Renderer2D::Construct()
 	{
-		s_Data.QuadVertexArray = VertexArray::Create();
-		s_Data.QuadVertexArray->Bind();
+		s_Data2D.QuadVertexBuffer = new QuadVertex[s_Data2D.MAX_VERTICES];
+		s_Data2D.UIQuadVertexBuffer = new UIQuadVertex[s_Data2D.MAX_VERTICES];
 
-		Ref<VertexBuffer> vertexBuffer = VertexBuffer::Create(sizeof(s_Data.QuadVertices));
-		vertexBuffer->SetLayout({
-			{ VertexAttrib::VAType::Float3, false },
-			{ VertexAttrib::VAType::Float4, false },
-			{ VertexAttrib::VAType::Float2, false },
-			{ VertexAttrib::VAType::Float, false },
-		});
-
-		uint32_t indices[s_Data.MAX_INDICES];
-		uint32_t index = 0;
-		uint32_t offset = 0;
-		while (index < s_Data.MAX_INDICES)
+		// Index Buffer
+		uint32_t* indices = new uint32_t[s_Data2D.MAX_INDICES];
+		int index = 0;
+		int offset = 0;
+		while (index < s_Data2D.MAX_INDICES)
 		{
 			indices[index + 0] = offset + 0;
 			indices[index + 1] = offset + 1;
@@ -73,50 +91,80 @@ namespace Axton
 			index += 6;
 		}
 
-		Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(indices, s_Data.MAX_INDICES);
+		Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(indices, s_Data2D.MAX_INDICES);
+		delete[] indices;
 
-		s_Data.QuadVertexArray->AddBuffers(vertexBuffer, indexBuffer);
-		s_Data.QuadVertexArray->Unbind();
+		// Quad Vertex Array
+		s_Data2D.QuadVertexArray = VertexArray::Create();
+		s_Data2D.QuadVertexArray->Bind();
 
-		s_Data.QuadVertexPositions[0] = { 0.5f, 0.5f, 0.0f, 1.0f };
-		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
-		s_Data.QuadVertexPositions[2] = { -0.5f, -0.5f, 0.0f, 1.0f };
-		s_Data.QuadVertexPositions[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
+		Ref<VertexBuffer> quadVertexBuffer = VertexBuffer::Create(s_Data2D.MAX_VERTICES * sizeof(QuadVertex));
+		quadVertexBuffer->SetLayout({
+			{ VertexAttrib::VAType::Float3, false },
+			{ VertexAttrib::VAType::Float4, false },
+			{ VertexAttrib::VAType::Float2, false },
+			{ VertexAttrib::VAType::Float, false },
+		});
 
-		s_Data.TexturePositions[0] = { 1.0f, 1.0f };
-		s_Data.TexturePositions[1] = { 1.0f, 0.0f };
-		s_Data.TexturePositions[2] = { 0.0f, 0.0f };
-		s_Data.TexturePositions[3] = { 0.0f, 1.0f };
+		s_Data2D.QuadVertexArray->AddBuffers(quadVertexBuffer, indexBuffer);
+		s_Data2D.QuadVertexArray->Unbind();
 
-		uint32_t whiteTextureData = 0xffffffff;
+		// UI Quad Vertex Array
+		s_Data2D.UIQuadVertexArray = VertexArray::Create();
+		s_Data2D.UIQuadVertexArray->Bind();
+
+		Ref<VertexBuffer> uiQuadVertexBuffer = VertexBuffer::Create(s_Data2D.MAX_VERTICES * sizeof(UIQuadVertex));
+		uiQuadVertexBuffer->SetLayout({
+			{ VertexAttrib::VAType::Float2, false },
+			{ VertexAttrib::VAType::Float4, false },
+			{ VertexAttrib::VAType::Float2, false },
+			{ VertexAttrib::VAType::Float, false },
+			});
+
+		s_Data2D.UIQuadVertexArray->AddBuffers(uiQuadVertexBuffer, indexBuffer);
+		s_Data2D.UIQuadVertexArray->Unbind();
+
+		s_Data2D.QuadVertexPositions[0] = { 0.5f, 0.5f, 0.0f, 1.0f };
+		s_Data2D.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data2D.QuadVertexPositions[2] = { -0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data2D.QuadVertexPositions[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
+
+		s_Data2D.TexturePositions[0] = { 1.0f, 1.0f };
+		s_Data2D.TexturePositions[1] = { 1.0f, 0.0f };
+		s_Data2D.TexturePositions[2] = { 0.0f, 0.0f };
+		s_Data2D.TexturePositions[3] = { 0.0f, 1.0f };
+
+		uint32_t whiteTextureData = 0xff5082d3;
 		Ref<Texture2D> whiteTexture = Texture2D::Create(Texture2DSpecs());
 		whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
-		s_Data.TextureSlots[0] = whiteTexture;
-
-		for (uint32_t i = 0; i < s_Data.MAX_TEXTURES; i++)
-		{
-			s_Data.Samplers[i] = i;
-		}
+		s_Data2D.QuadTextureSlots[0] = whiteTexture;
+		s_Data2D.UIQuadTextureSlots[0] = whiteTexture;
 
 		// TODO: Make this not hardcoded
-		s_Data.DefaultShader = Shader::Create(
-			"C:/Programming/Axton/Sandbox/Assets/Shaders/DefaultShader.vert",
-			"C:/Programming/Axton/Sandbox/Assets/Shaders/DefaultShader.frag", false);
+		s_Data2D.QuadShader = Shader::Create(
+			"C:/Programming/Axton/Sandbox/Assets/Shaders/QuadShader.vert",
+			"C:/Programming/Axton/Sandbox/Assets/Shaders/QuadShader.frag", false);
+
+		s_Data2D.UIQuadShader = Shader::Create(
+			"C:/Programming/Axton/Sandbox/Assets/Shaders/UIQuadShader.vert",
+			"C:/Programming/Axton/Sandbox/Assets/Shaders/UIQuadShader.frag", false);
+
+		s_Data2D.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraBuffer), 0);
 
 		RenderCommands::SetBlendMode(true);
 	}
 
+	void Renderer2D::Destruct()
+	{
+		delete[] s_Data2D.QuadVertexBuffer;
+		delete[] s_Data2D.UIQuadVertexBuffer;
+	}
+
 	void Renderer2D::BeginFrame(const CameraData& camera)
 	{
-		s_Data.Camera = camera;
-		RenderCommands::SetClearColor({ 0.0f, 0.0f, 0.1f, 1.0f });
-		RenderCommands::ClearScreen();
+		s_Data2D.CameraBuffer.ViewProjection = camera.GetViewProjectionMatrix();
 
-		s_Data.DefaultShader->Bind();
-		s_Data.DefaultShader->SetMat4("u_Model", Matrix4(1.0f));
-		s_Data.DefaultShader->SetMat4("u_View", camera.ViewMatrix);
-		s_Data.DefaultShader->SetMat4("u_Projection", camera.ProjectionMatrix);
-		s_Data.DefaultShader->SetIArray("u_Textures", s_Data.Samplers, s_Data.MAX_TEXTURES);
+		s_Data2D.CameraUniformBuffer->SetData(&s_Data2D.CameraBuffer, sizeof(Renderer2DData::CameraBuffer));
 
 		BeginBatch();
 	}
@@ -128,22 +176,48 @@ namespace Axton
 
 	void Renderer2D::BeginBatch()
 	{
-		s_Data.QuadVertexCount = 0;
-		s_Data.QuadIndexCount = 0;
+		s_Data2D.QuadIndexCount = 0;
+		s_Data2D.QuadTextureSlotIndex = 1;
+
+		s_Data2D.QuadVertexBufferPtr = s_Data2D.QuadVertexBuffer;
+
+		s_Data2D.UIQuadIndexCount = 0;
+		s_Data2D.UIQuadTextureSlotIndex = 1;
+
+		s_Data2D.UIQuadVertexBufferPtr = s_Data2D.UIQuadVertexBuffer;
 	}
 
 	void Renderer2D::EndBatch()
 	{
-		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+		if (s_Data2D.QuadIndexCount)
 		{
-			s_Data.TextureSlots[i]->Bind(i);
+			for (uint32_t i = 0; i < s_Data2D.QuadTextureSlotIndex; i++)
+			{
+				s_Data2D.QuadTextureSlots[i]->Bind(i);
+			}
+
+			signed long long size = (uint8_t*)s_Data2D.QuadVertexBufferPtr - (uint8_t*)s_Data2D.QuadVertexBuffer;
+			s_Data2D.QuadVertexArray->GetVertexBuffer()->SetData(s_Data2D.QuadVertexBuffer, size);
+
+			s_Data2D.QuadShader->Bind();
+			s_Data2D.QuadVertexArray->Bind();
+			RenderCommands::DrawIndexed(s_Data2D.QuadIndexCount);
 		}
 
-		s_Data.QuadVertexArray->GetVertexBuffer()->SetData(s_Data.QuadVertices, sizeof(s_Data.QuadVertices));
-		s_Data.QuadVertexArray->Bind();
-		RenderCommands::DrawIndexed(s_Data.QuadIndexCount);
+		if (s_Data2D.UIQuadIndexCount)
+		{
+			for (uint32_t i = 0; i < s_Data2D.UIQuadTextureSlotIndex; i++)
+			{
+				s_Data2D.UIQuadTextureSlots[i]->Bind(i);
+			}
 
-		s_Stats.DrawCalls++;
+			signed long long size = (uint8_t*)s_Data2D.UIQuadVertexBufferPtr - (uint8_t*)s_Data2D.UIQuadVertexBuffer;
+			s_Data2D.UIQuadVertexArray->GetVertexBuffer()->SetData(s_Data2D.UIQuadVertexBuffer, size);
+
+			s_Data2D.UIQuadVertexArray->Bind();
+			s_Data2D.UIQuadShader->Bind();
+			RenderCommands::DrawIndexed(s_Data2D.UIQuadIndexCount);
+		}
 	}
 
 	void Renderer2D::DrawQuad(Vector3 position, Vector2 scale, Vector4 color, Ref<Texture2D> texture)
@@ -165,18 +239,18 @@ namespace Axton
 	void Renderer2D::DrawQuad(Matrix4 transform, Vector4 color, Ref<Texture2D> texture)
 	{
 		CheckBatch();
-		float texIndex = GetTextureIndex(texture);
+		float texIndex = GetQuadTextureIndex(texture);
 
 		for (uint32_t i = 0; i < 4; i++)
 		{
-			s_Data.QuadVertices[s_Data.QuadVertexCount].Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertices[s_Data.QuadVertexCount].Color = color;
-			s_Data.QuadVertices[s_Data.QuadVertexCount].TexCoord = s_Data.TexturePositions[i];
-			s_Data.QuadVertices[s_Data.QuadVertexCount].TexIndex = texIndex;
-			s_Data.QuadVertexCount++;
+			s_Data2D.QuadVertexBufferPtr->Position = transform * s_Data2D.QuadVertexPositions[i];
+			s_Data2D.QuadVertexBufferPtr->Color = color;
+			s_Data2D.QuadVertexBufferPtr->TexCoord = s_Data2D.TexturePositions[i];
+			s_Data2D.QuadVertexBufferPtr->TexIndex = texIndex;
+			s_Data2D.QuadVertexBufferPtr++;
 		}
 
-		s_Data.QuadIndexCount += 6;
+		s_Data2D.QuadIndexCount += 6;
 	}
 
 	void Renderer2D::DrawRotateQuad(Vector3 position, Vector3 rotation, Vector2 scale, Vector4 color, Ref<Sprite> sprite)
@@ -204,28 +278,102 @@ namespace Axton
 	void Renderer2D::DrawRotateQuad(Matrix4 transform, Vector4 color, Ref<Sprite> sprite)
 	{
 		CheckBatch();
-		float texIndex = GetTextureIndex(sprite->GetTexture());
+		float texIndex = GetQuadTextureIndex(sprite->GetTexture());
 
 		for (uint32_t i = 0; i < 4; i++)
 		{
-			s_Data.QuadVertices[s_Data.QuadVertexCount].Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertices[s_Data.QuadVertexCount].Color = color;
-			s_Data.QuadVertices[s_Data.QuadVertexCount].TexCoord = sprite->GetTexCoords()[i];
-			s_Data.QuadVertices[s_Data.QuadVertexCount].TexIndex = texIndex;
-			s_Data.QuadVertexCount++;
+			s_Data2D.QuadVertexBufferPtr->Position = transform * s_Data2D.QuadVertexPositions[i];
+			s_Data2D.QuadVertexBufferPtr->Color = color;
+			s_Data2D.QuadVertexBufferPtr->TexCoord = sprite->GetTexCoords()[i];
+			s_Data2D.QuadVertexBufferPtr->TexIndex = texIndex;
+			s_Data2D.QuadVertexBufferPtr++;
 		}
 
-		s_Data.QuadIndexCount += 6;
+		s_Data2D.QuadIndexCount += 6;
 	}
 
-	float Renderer2D::GetTextureIndex(Ref<Texture2D> texture)
+	void Renderer2D::DrawQuadUI(Vector2 position, Vector2 scale, Vector4 color, Ref<Texture2D> texture)
+	{
+		Matrix4 transform = glm::translate(Matrix4(1.0f), Vector3(position.x, position.y, 0.0f))
+			* glm::scale(Matrix4(1.0f), Vector3(scale.x, scale.y, 1.0f));
+
+		DrawQuadUI(transform, color, texture);
+	}
+
+	void Renderer2D::DrawQuadUI(Matrix4 transform, Vector4 color, Ref<Texture2D> texture)
+	{
+		CheckBatch();
+		float texIndex = GetUIQuadTextureIndex(texture);
+
+		for (uint32_t i = 0; i < 4; i++)
+		{
+			s_Data2D.UIQuadVertexBufferPtr->Position = transform * s_Data2D.QuadVertexPositions[i];
+			s_Data2D.UIQuadVertexBufferPtr->Color = color;
+			s_Data2D.UIQuadVertexBufferPtr->TexCoord = s_Data2D.TexturePositions[i];
+			s_Data2D.UIQuadVertexBufferPtr->TexIndex = texIndex;
+			s_Data2D.UIQuadVertexBufferPtr++;
+		}
+
+		s_Data2D.UIQuadIndexCount += 6;
+	}
+
+	void Renderer2D::DrawQuadUI(Matrix4 transform, Vector4 color, Ref<Sprite> sprite)
+	{
+		CheckBatch();
+		float texIndex = 0.0f;
+		if (sprite)
+		{
+			texIndex = GetUIQuadTextureIndex(sprite->GetTexture());
+		}
+
+		for (uint32_t i = 0; i < 4; i++)
+		{
+			s_Data2D.UIQuadVertexBufferPtr->Position = transform * s_Data2D.QuadVertexPositions[i];
+			s_Data2D.UIQuadVertexBufferPtr->Color = color;
+			s_Data2D.UIQuadVertexBufferPtr->TexCoord = sprite->GetTexCoords()[i];
+			s_Data2D.UIQuadVertexBufferPtr->TexIndex = texIndex;
+			s_Data2D.UIQuadVertexBufferPtr++;
+		}
+
+		s_Data2D.UIQuadIndexCount += 6;
+	}
+
+	void Renderer2D::DrawRotateQuadUI(Vector2 position, float rotation, Vector2 scale, Vector4 color, Ref<Texture2D> texture)
+	{
+		Matrix4 transform = glm::translate(Matrix4(1.0f), Vector3(position.x, position.y, 0.0f))
+			* glm::rotate(Matrix4(1.0f), rotation, Vector3(0.0f, 0.0f, 1.0f))
+			* glm::scale(Matrix4(1.0f), Vector3(scale.x, scale.y, 1.0f));
+
+		DrawQuadUI(transform, color, texture);
+	}
+
+	void Renderer2D::DrawRotateQuadUI(Vector2 position, float rotation, Vector2 scale, Vector4 color, Ref<Sprite> sprite)
+	{
+		Matrix4 transform = glm::translate(Matrix4(1.0f), Vector3(position.x, position.y, 0.0f))
+			* glm::rotate(Matrix4(1.0f), rotation, Vector3(0.0f, 0.0f, 1.0f))
+			* glm::scale(Matrix4(1.0f), Vector3(scale.x, scale.y, 1.0f));
+
+		DrawQuadUI(transform, color, sprite);
+	}
+
+	void Renderer2D::CheckBatch()
+	{
+		if (s_Data2D.QuadIndexCount >= s_Data2D.MAX_INDICES || s_Data2D.QuadTextureSlotIndex == s_Data2D.MAX_TEXTURES
+			|| s_Data2D.UIQuadIndexCount >= s_Data2D.MAX_INDICES || s_Data2D.UIQuadTextureSlotIndex == s_Data2D.MAX_TEXTURES)
+		{
+			EndBatch();
+			BeginBatch();
+		}
+	}
+
+	float Renderer2D::GetQuadTextureIndex(Ref<Texture2D> texture)
 	{
 		float texIndex = 0.0f;
 		if (texture)
 		{
-			for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
+			for (uint32_t i = 1; i < s_Data2D.QuadTextureSlotIndex; i++)
 			{
-				if (s_Data.TextureSlots[i]->GetRendererID() == texture->GetRendererID())
+				if (s_Data2D.QuadTextureSlots[i]->GetRendererID() == texture->GetRendererID())
 				{
 					texIndex = (float)i;
 					break;
@@ -234,26 +382,37 @@ namespace Axton
 
 			if (texIndex == 0)
 			{
-				texIndex = (float)s_Data.TextureSlotIndex;
-				s_Data.TextureSlots[texIndex] = texture;
-				s_Data.TextureSlotIndex++;
+				texIndex = (float)s_Data2D.QuadTextureSlotIndex;
+				s_Data2D.QuadTextureSlots[texIndex] = texture;
+				s_Data2D.QuadTextureSlotIndex++;
 			}
 		}
 
 		return texIndex;
 	}
 
-	void Renderer2D::CheckBatch()
+	float Renderer2D::GetUIQuadTextureIndex(Ref<Texture2D> texture)
 	{
-		if (s_Data.QuadVertexCount >= s_Data.MAX_VERTICES || s_Data.TextureSlotIndex == s_Data.MAX_TEXTURES)
+		float texIndex = 0.0f;
+		if (texture)
 		{
-			EndBatch();
-			BeginBatch();
-		}
-	}
+			for (uint32_t i = 1; i < s_Data2D.UIQuadTextureSlotIndex; i++)
+			{
+				if (s_Data2D.UIQuadTextureSlots[i]->GetRendererID() == texture->GetRendererID())
+				{
+					texIndex = (float)i;
+					break;
+				}
+			}
 
-	const Renderer2DStats Renderer2D::GetStats()
-	{
-		return s_Stats;
+			if (texIndex == 0)
+			{
+				texIndex = (float)s_Data2D.UIQuadTextureSlotIndex;
+				s_Data2D.UIQuadTextureSlots[texIndex] = texture;
+				s_Data2D.UIQuadTextureSlotIndex++;
+			}
+		}
+
+		return texIndex;
 	}
 }

@@ -14,12 +14,13 @@ project "Sandbox"
 
     includedirs
     {
-        "../Axton/src",
-        "../Axton/vendor/spdlog/include",
+        "%{wks.location}/Axton/src",
+        "%{IncludeDir.LOG}",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.GLAD}",
         "%{IncludeDir.STB}",
-        "%{IncludeDir.GLM}"
+        "%{IncludeDir.GLM}",
+        "%{IncludeDir.IMGUI}",
     }
 
     links
