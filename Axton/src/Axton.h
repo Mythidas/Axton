@@ -12,6 +12,9 @@
 #include "Axton/Renderer/Renderer2D.h"
 #include "Axton/Renderer/Sprite.h"
 #include "Axton/Renderer/SpriteSheet.h"
+#include "Axton/Renderer/ComputeShader.h"
+#include "Axton/Renderer/Image.h"
+#include "Axton/Renderer/UniformBuffer.h"
 
 // Debugging
 #include "Axton/Debug/Log.h"

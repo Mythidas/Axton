@@ -2,15 +2,14 @@
 
 #include "Axton/Renderer/GraphicsContext.h"
 
-#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 namespace Axton::OpenGL
 {
-	class GraphicsContext : public Axton::GraphicsContext
+	class OGLGraphicsContext : public Axton::GraphicsContext
 	{
 	public:
-		GraphicsContext();
+		OGLGraphicsContext();
 
 		virtual void Init(void* window) override;
 		virtual void SwapBuffers() override;

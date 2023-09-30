@@ -30,7 +30,7 @@ namespace Axton
 		virtual void Unbind() const = 0;
 
 		virtual void SetLayout(const std::vector<VertexAttrib>& attribs) = 0;
-		virtual void SetData(const void* data, uint32_t size) = 0;
+		virtual void SetData(const void* data, long long size) = 0;
 
 		static Ref<VertexBuffer> Create(const size_t& size);
 	};

@@ -1,21 +1,21 @@
 #include "axpch.h"
-#include "RendererAPI.h"
+#include "OGLRendererAPI.h"
 
 #include <glad/glad.h>
 
-namespace Axton
+namespace Axton::OpenGL
 {
-	void OpenGL::RendererAPI::ClearScreen()
+	void OGLRendererAPI::ClearScreen()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGL::RendererAPI::SetClearColor(const Vector4& color)
+	void OGLRendererAPI::SetClearColor(const Vector4& color)
 	{
 		glClearColor(color.x, color.y, color.z, color.w);
 	}
 
-	void OpenGL::RendererAPI::SetBlendMode(bool enabled)
+	void OGLRendererAPI::SetBlendMode(bool enabled)
 	{
 		if (enabled)
 		{
@@ -28,13 +28,13 @@ namespace Axton
 		}
 	}
 
-	void OpenGL::RendererAPI::SetViewport(int& width, int& height)
+	void OGLRendererAPI::SetViewport(int& width, int& height)
 	{
 		glViewport(0, 0, width, height);
 		AX_ASSERT_CORE(glGetError() == GL_NO_ERROR, "OpenGL:: Error!");
 	}
 
-	void OpenGL::RendererAPI::EnableDepthTest(bool enabled)
+	void OGLRendererAPI::EnableDepthTest(bool enabled)
 	{
 		if (enabled)
 			glEnable(GL_DEPTH_TEST);
@@ -42,7 +42,7 @@ namespace Axton
 			glDisable(GL_DEPTH_TEST);
 	}
 
-	void OpenGL::RendererAPI::DrawIndexed(uint32_t count)
+	void OGLRendererAPI::DrawIndexed(uint32_t count)
 	{
 		if (int error = glGetError())
 		{

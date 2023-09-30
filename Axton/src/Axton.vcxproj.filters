@@ -97,6 +97,9 @@
     <ClInclude Include="Axton\Math\Matrix.h">
       <Filter>Axton\Math</Filter>
     </ClInclude>
+    <ClInclude Include="Axton\Math\Quaternion.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
     <ClInclude Include="Axton\Math\Ray.h">
       <Filter>Axton\Math</Filter>
     </ClInclude>
@@ -106,7 +109,7 @@
     <ClInclude Include="Axton\Renderer\Buffer.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Axton\Renderer\CameraData.h">
+    <ClInclude Include="Axton\Renderer\CameraSpecs.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Renderer\Framebuffer.h">
@@ -151,37 +154,44 @@
     <ClInclude Include="Axton\Utils\FileSystem.h">
       <Filter>Axton\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\Buffer.h">
+    <ClInclude Include="Platform\OpenGL\OGLBuffer.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\Framebuffer.h">
+    <ClInclude Include="Platform\OpenGL\OGLFramebuffer.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\GraphicsContext.h">
+    <ClInclude Include="Platform\OpenGL\OGLGraphicsContext.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\RendererAPI.h">
+    <ClInclude Include="Platform\OpenGL\OGLImGUILayer.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\Shader.h">
+    <ClInclude Include="Platform\OpenGL\OGLRendererAPI.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\Texture2D.h">
+    <ClInclude Include="Platform\OpenGL\OGLShader.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\Texture3D.h">
+    <ClInclude Include="Platform\OpenGL\OGLTexture2D.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\UniformBuffer.h">
+    <ClInclude Include="Platform\OpenGL\OGLTexture3D.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\VertexArray.h">
+    <ClInclude Include="Platform\OpenGL\OGLUniformBuffer.h">
+      <Filter>Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\OpenGL\OGLVertexArray.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Windows\WindowsWindow.h">
       <Filter>Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="axpch.h" />
+    <ClInclude Include="Axton\Renderer\ComputeShader.h" />
+    <ClInclude Include="Axton\Renderer\Image.h" />
+    <ClInclude Include="Platform\OpenGL\OGLImage.h" />
+    <ClInclude Include="Platform\OpenGL\OGLComputeShader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -232,7 +242,7 @@
     <ClCompile Include="Axton\Renderer\Buffer.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Axton\Renderer\CameraData.cpp">
+    <ClCompile Include="Axton\Renderer\CameraSpecs.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Renderer\Framebuffer.cpp">
@@ -277,36 +287,43 @@
     <ClCompile Include="Axton\Utils\FileSystem.cpp">
       <Filter>Axton\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\Buffer.cpp">
+    <ClCompile Include="Platform\OpenGL\OGLBuffer.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\Framebuffer.cpp">
+    <ClCompile Include="Platform\OpenGL\OGLFramebuffer.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\GraphicsContext.cpp">
+    <ClCompile Include="Platform\OpenGL\OGLGraphicsContext.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\RendererAPI.cpp">
+    <ClCompile Include="Platform\OpenGL\OGLImGUILayer.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\Shader.cpp">
+    <ClCompile Include="Platform\OpenGL\OGLRendererAPI.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\Texture2D.cpp">
+    <ClCompile Include="Platform\OpenGL\OGLShader.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\Texture3D.cpp">
+    <ClCompile Include="Platform\OpenGL\OGLTexture2D.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\UniformBuffer.cpp">
+    <ClCompile Include="Platform\OpenGL\OGLTexture3D.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\VertexArray.cpp">
+    <ClCompile Include="Platform\OpenGL\OGLUniformBuffer.cpp">
+      <Filter>Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\OGLVertexArray.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Windows\WindowsWindow.cpp">
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="axpch.cpp" />
+    <ClCompile Include="Axton\Renderer\Image.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLImage.cpp" />
+    <ClCompile Include="Axton\Renderer\ComputeShader.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLComputeShader.cpp" />
   </ItemGroup>
 </Project>

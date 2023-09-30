@@ -6,11 +6,11 @@
 
 namespace Axton::OpenGL
 {
-	class Shader : public Axton::Shader
+	class OGLShader : public Axton::Shader
 	{
 	public:
-		Shader(const std::string& vertexSrc, const std::string& fragmentSrc, bool lateLoad);
-		~Shader();
+		OGLShader(const std::string& vertexSrc, const std::string& fragmentSrc, bool lateLoad);
+		~OGLShader();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;

@@ -8,18 +8,18 @@ namespace Utils
 	}
 }
 
-void RayRenderer::Render()
+void RayRenderer::Render(const Camera& camera, const Scene& scene)
 {
-	float aspectRatio = (float)m_FinalImage->GetWidth() / (float)m_FinalImage->GetHeight();
+	m_ActiveScene = &scene;
+	m_ActiveCamera = &camera;
 
-	for (int y = 0; y < m_FinalImage->GetHeight(); y++)
+	const Vector3& rayOrigin = camera.GetPosition();
+
+	for (uint32_t y = 0; y < m_FinalImage->GetHeight(); y++)
 	{
-		for (int x = 0; x < m_FinalImage->GetWidth(); x++)
+		for (uint32_t x = 0; x < m_FinalImage->GetWidth(); x++)
 		{
-			Vector2 coord = { (float)x / (float)m_FinalImage->GetWidth(), (float)y / (float)m_FinalImage->GetHeight() };
-			coord = coord * 2.0f - 1.0f;
-			coord.x *= aspectRatio;
-			Vector4 color = Vector::Clamp(PerPixel(coord), Vector4(0.0f), Vector4(1.0f));
+			Vector4 color = PerPixel(x, y);
 			m_ImageData[x + y * m_FinalImage->GetWidth()] = Utils::ConvertToRGBA(color);
 		}
 	}
@@ -38,47 +38,88 @@ void RayRenderer::Resize(uint32_t width, uint32_t height)
 	} 
 }
 
-Vector4 RayRenderer::PerPixel(Vector2 coord)
+Vector4 RayRenderer::PerPixel(uint32_t x, uint32_t y)
 {
-	// (bx^2 + by^2 + bz^2)t^2 + (2(axbx + ayby + azbz))t + (ax^2 + ay^2 + az^2 - r^2) = 0
-	// a = Ray Origin
-	// b = Ray Direction
-	// r = radius
-	// t = Hit Distance
-
-	Vector3 camera = { 0.0f, 0.0f, 1.0f };
-	Vector3 center = { 0.0f, 0.0f, -1.0f };
 	Vector3 lightDir = Vector::UnitVector(TempLight);
+	const Vector3& rayDirection = m_ActiveCamera->GetRayDirections()[(size_t)(x + y * m_FinalImage->GetWidth())];
+	Ray ray(m_ActiveCamera->GetPosition(), rayDirection);
 
-	Ray ray(camera, { coord.x, coord.y, -1.0f});
-	Vector3 oc = ray.Origin - center;
+	Vector3 color(0.0f);
 
-	float a = Vector::Dot(ray.Direction, ray.Direction);
-	float b = 2.0f * Vector::Dot(ray.Direction, oc);
-	float c = Vector::Dot(oc, oc) - 0.5f * 0.5f;
-
-	float discriminant = b * b - 4.0f * a * c;
-
-	if (discriminant >= 0.0f)
+	float bounceStrength = 0.5f;
+	int bounces = 2;
+	for (int i = 0; i < bounces; i++)
 	{
-		float t[2] =
+		RayHitPayload payload = TraceRay(ray);
+
+		if (payload.Distance < 0.0f)
 		{
-			(-b - sqrt(discriminant)) / (2.0f * a),
-			(-b + sqrt(discriminant)) / (2.0f * a)
-		};
-		
-		for (int i = 0; i < 2; i++)
+			color += Vector3(0.0f) * bounceStrength;
+			bounceStrength *= 0.7f;
+			break;
+		}
+
+		const Sphere& sphere = m_ActiveScene->Spheres[payload.ObjectIndex];
+		const Material& material = m_ActiveScene->Materials[sphere.MatIndex];
+
+		float d = Mathf::Clamp::Float(Vector::Dot(payload.Normal, -lightDir), 0.0f, Mathf::Infinity::Float);
+		color += material.Albedo * d * bounceStrength;
+
+		bounceStrength *= 0.7f;
+
+		ray.Origin = payload.Point + (payload.Normal * 0.0001f);
+		ray.Direction = Vector::Reflect(ray.Direction, payload.Normal);
+	}
+
+	return Vector4(color, 1.0f);
+}
+
+RayHitPayload RayRenderer::TraceRay(const Ray& ray)
+{
+	int closestSphere = -1;
+	float closest = Mathf::Infinity::Float;
+	for (int i = 0; i < m_ActiveScene->Spheres.size(); i++)
+	{
+		const Sphere& sphere = m_ActiveScene->Spheres[i];
+		Vector3 oc = ray.Origin - sphere.Position;
+
+		float a = Vector::Dot(ray.Direction, ray.Direction);
+		float b = 2.0f * Vector::Dot(ray.Direction, oc);
+		float c = Vector::Dot(oc, oc) - sphere.Radius * sphere.Radius;
+
+		float discriminant = b * b - 4.0f * a * c;
+
+		if (discriminant >= 0.0f)
 		{
-			if (t[i] > 0.0f)
+			float distance = (-b - sqrt(discriminant)) / (2.0f * a);
+
+			if (distance > 0.0f && distance < closest)
 			{
-				Vector3 point = ray.GetPoint(t[i]);
-				Vector3 normal = Vector::UnitVector(point - center);
-				float d = Mathf::Clamp::Float(Vector::Dot(normal, -lightDir), 0.0f, Mathf::Infinity::Float);
-				Vector3 color = TempColor * d;
-				return Vector4(color, 1.0f);
+				closest = distance;
+				closestSphere = i;
 			}
 		}
 	}
 
-	return Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+	if (closestSphere < 0) 
+		return Miss(ray);
+
+	return ClosestHit(ray, closest, closestSphere);
+}
+
+RayHitPayload RayRenderer::ClosestHit(const Ray& ray, float hitDistance, int objectIndex)
+{
+	RayHitPayload payload;
+	payload.Distance = hitDistance;
+	payload.ObjectIndex = objectIndex;
+	payload.Point = ray.GetPoint(hitDistance);
+	payload.Normal = Vector::UnitVector(payload.Point - m_ActiveScene->Spheres[objectIndex].Position);
+	return payload;
+}
+
+RayHitPayload RayRenderer::Miss(const Ray& ray)
+{
+	RayHitPayload payload;
+	payload.Distance = -1;
+	return payload;
 }

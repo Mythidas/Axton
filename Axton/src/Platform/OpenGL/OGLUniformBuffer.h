@@ -5,11 +5,11 @@
 
 namespace Axton::OpenGL
 {
-	class UniformBuffer : public Axton::UniformBuffer
+	class OGLUniformBuffer : public Axton::UniformBuffer
 	{
 	public:
-		UniformBuffer(uint32_t size, uint32_t binding);
-		~UniformBuffer();
+		OGLUniformBuffer(uint32_t size, uint32_t binding);
+		~OGLUniformBuffer();
 
 		virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) override;
 

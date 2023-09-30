@@ -5,27 +5,27 @@
 
 namespace Axton::OpenGL
 {
-	class VertexBuffer : public Axton::VertexBuffer
+	class OGLVertexBuffer : public Axton::VertexBuffer
 	{
 	public:
-		VertexBuffer(const size_t& size);
-		~VertexBuffer();
+		OGLVertexBuffer(const size_t& size);
+		~OGLVertexBuffer();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
 		virtual void SetLayout(const std::vector<VertexAttrib>& attribs) override;
-		virtual void SetData(const void* data, uint32_t size) override;
+		virtual void SetData(const void* data, long long size) override;
 
 	private:
 		RendererID m_RendererID;
 	};
 
-	class IndexBuffer : public Axton::IndexBuffer
+	class OGLIndexBuffer : public Axton::IndexBuffer
 	{
 	public:
-		IndexBuffer(const uint32_t* indices, const uint32_t count);
-		~IndexBuffer();
+		OGLIndexBuffer(const uint32_t* indices, const uint32_t count);
+		~OGLIndexBuffer();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;

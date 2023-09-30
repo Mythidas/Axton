@@ -34,6 +34,7 @@ project "Axton"
         "%{IncludeDir.STB}",
         "%{IncludeDir.GLM}",
         "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.VULKAN}",
     }
 
     links
@@ -41,7 +42,8 @@ project "Axton"
         "GLFW",
         "Glad",
         "ImGui",
-        "opengl32.lib"
+        "opengl32.lib",
+        "%{Library.VULKAN}"
     }
 
     flags { "NoPCH" }

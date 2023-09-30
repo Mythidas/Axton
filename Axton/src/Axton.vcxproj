@@ -76,7 +76,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;AX_PLAT_WINDOWS;AX_DEBUG;AX_ASSERTS_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.243.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -88,7 +88,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -96,7 +96,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;AX_PLAT_WINDOWS;AX_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.243.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -112,7 +112,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -120,7 +120,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;AX_PLAT_WINDOWS;AX_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.243.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -136,7 +136,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -161,12 +161,15 @@
     <ClInclude Include="Axton\Math\Math.h" />
     <ClInclude Include="Axton\Math\Mathf.h" />
     <ClInclude Include="Axton\Math\Matrix.h" />
+    <ClInclude Include="Axton\Math\Quaternion.h" />
     <ClInclude Include="Axton\Math\Ray.h" />
     <ClInclude Include="Axton\Math\Vector.h" />
     <ClInclude Include="Axton\Renderer\Buffer.h" />
-    <ClInclude Include="Axton\Renderer\CameraData.h" />
+    <ClInclude Include="Axton\Renderer\CameraSpecs.h" />
+    <ClInclude Include="Axton\Renderer\ComputeShader.h" />
     <ClInclude Include="Axton\Renderer\Framebuffer.h" />
     <ClInclude Include="Axton\Renderer\GraphicsContext.h" />
+    <ClInclude Include="Axton\Renderer\Image.h" />
     <ClInclude Include="Axton\Renderer\RenderCommands.h" />
     <ClInclude Include="Axton\Renderer\Renderer.h" />
     <ClInclude Include="Axton\Renderer\Renderer2D.h" />
@@ -179,15 +182,18 @@
     <ClInclude Include="Axton\Renderer\UniformBuffer.h" />
     <ClInclude Include="Axton\Renderer\VertexArray.h" />
     <ClInclude Include="Axton\Utils\FileSystem.h" />
-    <ClInclude Include="Platform\OpenGL\Buffer.h" />
-    <ClInclude Include="Platform\OpenGL\Framebuffer.h" />
-    <ClInclude Include="Platform\OpenGL\GraphicsContext.h" />
-    <ClInclude Include="Platform\OpenGL\RendererAPI.h" />
-    <ClInclude Include="Platform\OpenGL\Shader.h" />
-    <ClInclude Include="Platform\OpenGL\Texture2D.h" />
-    <ClInclude Include="Platform\OpenGL\Texture3D.h" />
-    <ClInclude Include="Platform\OpenGL\UniformBuffer.h" />
-    <ClInclude Include="Platform\OpenGL\VertexArray.h" />
+    <ClInclude Include="Platform\OpenGL\OGLBuffer.h" />
+    <ClInclude Include="Platform\OpenGL\OGLComputeShader.h" />
+    <ClInclude Include="Platform\OpenGL\OGLFramebuffer.h" />
+    <ClInclude Include="Platform\OpenGL\OGLGraphicsContext.h" />
+    <ClInclude Include="Platform\OpenGL\OGLImage.h" />
+    <ClInclude Include="Platform\OpenGL\OGLImGUILayer.h" />
+    <ClInclude Include="Platform\OpenGL\OGLRendererAPI.h" />
+    <ClInclude Include="Platform\OpenGL\OGLShader.h" />
+    <ClInclude Include="Platform\OpenGL\OGLTexture2D.h" />
+    <ClInclude Include="Platform\OpenGL\OGLTexture3D.h" />
+    <ClInclude Include="Platform\OpenGL\OGLUniformBuffer.h" />
+    <ClInclude Include="Platform\OpenGL\OGLVertexArray.h" />
     <ClInclude Include="Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="axpch.h" />
   </ItemGroup>
@@ -208,9 +214,11 @@
     <ClCompile Include="Axton\Math\Ray.cpp" />
     <ClCompile Include="Axton\Math\Vector.cpp" />
     <ClCompile Include="Axton\Renderer\Buffer.cpp" />
-    <ClCompile Include="Axton\Renderer\CameraData.cpp" />
+    <ClCompile Include="Axton\Renderer\CameraSpecs.cpp" />
+    <ClCompile Include="Axton\Renderer\ComputeShader.cpp" />
     <ClCompile Include="Axton\Renderer\Framebuffer.cpp" />
     <ClCompile Include="Axton\Renderer\GraphicsContext.cpp" />
+    <ClCompile Include="Axton\Renderer\Image.cpp" />
     <ClCompile Include="Axton\Renderer\RenderCommands.cpp" />
     <ClCompile Include="Axton\Renderer\Renderer.cpp" />
     <ClCompile Include="Axton\Renderer\Renderer2D.cpp" />
@@ -223,33 +231,18 @@
     <ClCompile Include="Axton\Renderer\UniformBuffer.cpp" />
     <ClCompile Include="Axton\Renderer\VertexArray.cpp" />
     <ClCompile Include="Axton\Utils\FileSystem.cpp" />
-    <ClCompile Include="Platform\OpenGL\Buffer.cpp">
-      <ObjectFileName>$(IntDir)\Buffer1.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="Platform\OpenGL\Framebuffer.cpp">
-      <ObjectFileName>$(IntDir)\Framebuffer1.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="Platform\OpenGL\GraphicsContext.cpp">
-      <ObjectFileName>$(IntDir)\GraphicsContext1.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="Platform\OpenGL\RendererAPI.cpp">
-      <ObjectFileName>$(IntDir)\RendererAPI1.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="Platform\OpenGL\Shader.cpp">
-      <ObjectFileName>$(IntDir)\Shader1.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="Platform\OpenGL\Texture2D.cpp">
-      <ObjectFileName>$(IntDir)\Texture2D1.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="Platform\OpenGL\Texture3D.cpp">
-      <ObjectFileName>$(IntDir)\Texture3D1.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="Platform\OpenGL\UniformBuffer.cpp">
-      <ObjectFileName>$(IntDir)\UniformBuffer1.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="Platform\OpenGL\VertexArray.cpp">
-      <ObjectFileName>$(IntDir)\VertexArray1.obj</ObjectFileName>
-    </ClCompile>
+    <ClCompile Include="Platform\OpenGL\OGLBuffer.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLComputeShader.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLFramebuffer.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLGraphicsContext.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLImage.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLImGUILayer.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLRendererAPI.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLShader.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLTexture2D.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLTexture3D.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLUniformBuffer.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLVertexArray.cpp" />
     <ClCompile Include="Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="axpch.cpp" />
   </ItemGroup>

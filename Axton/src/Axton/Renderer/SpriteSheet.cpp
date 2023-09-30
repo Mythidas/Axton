@@ -12,7 +12,7 @@ namespace Axton
 	SpriteSheet::SpriteSheet(float fps)
 		: m_FPS(fps)
 	{
-		m_CurrentFrameTime = 1000 / m_FPS;
+		m_CurrentFrameTime = 1000.0f / m_FPS;
 	}
 
 	void SpriteSheet::AddSprite(const std::string& name, const Ref<Sprite>& sprite)
@@ -52,7 +52,7 @@ namespace Axton
 
 		if (m_CurrentFrameTime <= 0)
 		{
-			m_CurrentFrameTime = 1000 / m_FPS;
+			m_CurrentFrameTime = 1000.0f / m_FPS;
 			m_CurrentSpriteIndex++;
 			if (m_CurrentSpriteIndex >= m_Sprites.size())
 				m_CurrentSpriteIndex = 0;

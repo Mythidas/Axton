@@ -1,20 +1,20 @@
 #include "axpch.h"
-#include "GraphicsContext.h"
+#include "OGLGraphicsContext.h"
 #include "Axton/Core/Assert.h"
 #include "Axton/Renderer/RenderCommands.h"
 
 #include <glad/glad.h>
 
-namespace Axton
+namespace Axton::OpenGL
 {
-	OpenGL::GraphicsContext::GraphicsContext()
+	OGLGraphicsContext::OGLGraphicsContext()
 		: m_WindowHandle(nullptr)
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	}
 
-	void OpenGL::GraphicsContext::Init(void* windowHandle)
+	void OGLGraphicsContext::Init(void* windowHandle)
 	{
 		m_WindowHandle = static_cast<GLFWwindow*>(windowHandle);
 		AX_ASSERT_CORE(m_WindowHandle, "Window handle is null!");
@@ -24,7 +24,7 @@ namespace Axton
 		AX_ASSERT_CORE(glad, "Failed to load GLAD GL!");
 	}
 
-	void OpenGL::GraphicsContext::SwapBuffers()
+	void OGLGraphicsContext::SwapBuffers()
 	{
 		glfwSwapBuffers(m_WindowHandle);
 		RenderCommands::SetClearColor({ 1.0f, 1.0f, 1.0f, 1.0f });

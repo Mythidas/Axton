@@ -1,9 +1,9 @@
 #include "axpch.h"
-#include "Framebuffer.h"
+#include "OGLFramebuffer.h"
 
 #include <glad/glad.h>
 
-namespace Axton
+namespace Axton::OpenGL
 {
 	static const uint32_t MAX_FRAMEBUFFER_SIZE = 8192;
 
@@ -19,12 +19,12 @@ namespace Axton
 			return multiSampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 		}
 
-		static void CreateTextures(bool multiSampled, RendererID* outID, uint32_t count)
+		static void CreateTextures(bool multiSampled, RendererID* outID, size_t count)
 		{
-			glCreateTextures(TextureTarget(multiSampled), count, outID);
+			glCreateTextures(TextureTarget(multiSampled), (GLsizei)count, outID);
 		}
 
-		static void AttachColorTexture(RendererID id, int samples, GLenum format, uint32_t width, uint32_t height, int index)
+		static void AttachColorTexture(RendererID id, int samples, GLenum format, uint32_t width, uint32_t height, size_t index)
 		{
 			bool multiSampled = samples > 1;
 			if (multiSampled)
@@ -74,10 +74,10 @@ namespace Axton
 		}
 	}
 
-	OpenGL::Framebuffer::Framebuffer(const FramebufferSpec& spec)
+	OGLFramebuffer::OGLFramebuffer(const FramebufferSpec& spec)
 		: m_Spec(spec)
 	{
-		for (auto format : spec.Attachments.Attachments)
+		for (auto& format : spec.Attachments.Attachments)
 		{
 			if (!Utils::IsDepthFormat(format.TextureFormat))
 			{
@@ -90,24 +90,24 @@ namespace Axton
 		}
 	}
 
-	OpenGL::Framebuffer::~Framebuffer()
+	OGLFramebuffer::~OGLFramebuffer()
 	{
 		glDeleteFramebuffers(1, &m_RendererID);
 		glDeleteTextures(1, &m_DepthAttachment);
-		glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
+		glDeleteTextures((GLsizei)m_ColorAttachments.size(), m_ColorAttachments.data());
 	}
 
-	void OpenGL::Framebuffer::Bind()
+	void OGLFramebuffer::Bind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 	}
 
-	void OpenGL::Framebuffer::Unbind()
+	void OGLFramebuffer::Unbind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void OpenGL::Framebuffer::Resize(uint32_t width, uint32_t height)
+	void OGLFramebuffer::Resize(uint32_t width, uint32_t height)
 	{
 		if (width == 0 || height == 0)
 		{
@@ -120,12 +120,12 @@ namespace Axton
 		Invalidate();
 	}
 
-	void OpenGL::Framebuffer::Invalidate()
+	void OGLFramebuffer::Invalidate()
 	{
 		if (m_RendererID)
 		{
 			glDeleteFramebuffers(1, &m_RendererID);
-			glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
+			glDeleteTextures((GLsizei)m_ColorAttachments.size(), m_ColorAttachments.data());
 			glDeleteTextures(1, &m_DepthAttachment);
 
 			m_ColorAttachments.clear();
@@ -173,7 +173,7 @@ namespace Axton
 		{
 			AX_ASSERT_CORE(m_ColorAttachments.size() <= 4);
 			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-			glDrawBuffers(m_ColorAttachments.size(), buffers);
+			glDrawBuffers((GLsizei)m_ColorAttachments.size(), buffers);
 		}
 		else if (m_ColorAttachments.empty())
 		{
@@ -183,7 +183,7 @@ namespace Axton
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	const RendererID OpenGL::Framebuffer::GetColorAttachmentID(uint32_t index) const
+	const RendererID OGLFramebuffer::GetColorAttachmentID(uint32_t index) const
 	{
 		AX_ASSERT_CORE(index < m_ColorAttachments.size());
 		return m_ColorAttachments[index];

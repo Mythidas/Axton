@@ -1,9 +1,9 @@
 #include "axpch.h"
-#include "Buffer.h"
+#include "OGLBuffer.h"
 
 #include <glad/glad.h>
 
-namespace Axton
+namespace Axton::OpenGL
 {
 	///////////////// VERTEX BUFFER ///////////////////////
 
@@ -31,37 +31,38 @@ namespace Axton
 		}
 	}
 
-	OpenGL::VertexBuffer::VertexBuffer(const size_t& size)
+	OGLVertexBuffer::OGLVertexBuffer(const size_t& size)
+		: m_RendererID(0)
 	{
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 	}
 
-	OpenGL::VertexBuffer::~VertexBuffer()
+	OGLVertexBuffer::~OGLVertexBuffer()
 	{
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
-	void OpenGL::VertexBuffer::Bind() const
+	void OGLVertexBuffer::Bind() const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 	}
 
-	void OpenGL::VertexBuffer::Unbind() const
+	void OGLVertexBuffer::Unbind() const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	void OpenGL::VertexBuffer::SetLayout(const std::vector<VertexAttrib>& attribs)
+	void OGLVertexBuffer::SetLayout(const std::vector<VertexAttrib>& attribs)
 	{
-		size_t stride = 0;
+		GLsizei stride = 0;
 		for (const auto& attrib : attribs)
 		{
 			stride += attrib.GetTypeSize();
 		}
 
-		size_t index = 0;
+		GLuint index = 0;
 		size_t offset = 0;
 		for (const auto& attrib : attribs)
 		{
@@ -75,7 +76,7 @@ namespace Axton
 		}
 	}
 
-	void OpenGL::VertexBuffer::SetData(const void* data, uint32_t size)
+	void OGLVertexBuffer::SetData(const void* data, long long size)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
@@ -83,7 +84,7 @@ namespace Axton
 
 	///////////////// INDEX BUFFER ///////////////////////
 
-	OpenGL::IndexBuffer::IndexBuffer(const uint32_t* indices, const uint32_t count)
+	OGLIndexBuffer::OGLIndexBuffer(const uint32_t* indices, const uint32_t count)
 	{
 		glCreateBuffers(1, &m_RendererID);
 
@@ -93,16 +94,16 @@ namespace Axton
 		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 	}
 
-	OpenGL::IndexBuffer::~IndexBuffer()
+	OGLIndexBuffer::~OGLIndexBuffer()
 	{
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
-	void OpenGL::IndexBuffer::Bind() const
+	void OGLIndexBuffer::Bind() const
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
 	}
-	void OpenGL::IndexBuffer::Unbind() const
+	void OGLIndexBuffer::Unbind() const
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}

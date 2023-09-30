@@ -2,7 +2,7 @@
 
 #include "Texture2D.h"
 #include "Sprite.h"
-#include "CameraData.h"
+#include "CameraSpecs.h"
 #include "Axton/Math/Math.h"
 #include "Axton/Core/Defines.h"
 
@@ -19,7 +19,7 @@ namespace Axton
 		static void Construct();
 		static void Destruct();
 
-		static void BeginFrame(const CameraData& camera);
+		static void BeginFrame(const CameraSpecs& camera);
 		static void EndFrame();
 
 		static void DrawQuad(Vector3 position, Vector2 scale, Vector4 color, Ref<Sprite> sprite);

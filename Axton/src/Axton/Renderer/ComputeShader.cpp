@@ -1,16 +1,15 @@
 #include "axpch.h"
-#include "ImGUILayer.h"
-#include "Axton/Renderer/RendererAPI.h"
-#include "Platform/OpenGL/OGLImGUILayer.h"
+#include "ComputeShader.h"
+#include "Platform/OpenGL/OGLComputeShader.h"
 
 namespace Axton
 {
-	ImGUILayer* ImGUILayer::Create()
+	Ref<ComputeShader> ComputeShader::Create(const std::string& srcPath)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return new OpenGL::OGLImGUILayer();
+		case RendererAPI::API::OpenGL:  return CreateRef<OpenGL::OGLComputeShader>(srcPath);
 		}
 
 		AX_ASSERT_CORE(false, "Unknown RendererAPI!");

@@ -1,32 +1,32 @@
 #include "axpch.h"
-#include "VertexArray.h"
+#include "OGLVertexArray.h"
 
 #include <glad/glad.h>
 
-namespace Axton
+namespace Axton::OpenGL
 {
-	OpenGL::VertexArray::VertexArray()
+	OGLVertexArray::OGLVertexArray()
 	{
 		glGenVertexArrays(1, &m_RendererID);
 		glBindVertexArray(m_RendererID);
 	}
 
-	OpenGL::VertexArray::~VertexArray()
+	OGLVertexArray::~OGLVertexArray()
 	{
 		glDeleteVertexArrays(1, &m_RendererID);
 	}
 
-	void OpenGL::VertexArray::Bind() const
+	void OGLVertexArray::Bind() const
 	{
 		glBindVertexArray(m_RendererID);
 	}
 
-	void OpenGL::VertexArray::Unbind() const
+	void OGLVertexArray::Unbind() const
 	{
 		glBindVertexArray(0);
 	}
 
-	void OpenGL::VertexArray::AddBuffers(Ref<VertexBuffer> vertexBuffer, Ref<IndexBuffer> indexBuffer)
+	void OGLVertexArray::AddBuffers(Ref<VertexBuffer> vertexBuffer, Ref<IndexBuffer> indexBuffer)
 	{
 		Bind();
 		m_VertexBuffer = vertexBuffer;

@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "UniformBuffer.h"
 #include "RendererAPI.h"
-#include "Platform/OpenGL/UniformBuffer.h"
+#include "Platform/OpenGL/OGLUniformBuffer.h"
 
 namespace Axton
 {
@@ -10,7 +10,7 @@ namespace Axton
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None: AX_ASSERT_CORE(false, "RendererAPI::None not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL: return CreateRef<OpenGL::UniformBuffer>(size, binding);
+			case RendererAPI::API::OpenGL: return CreateRef<OpenGL::OGLUniformBuffer>(size, binding);
 		}
 
 		AX_ASSERT_CORE(false, "RendererAPI not recognized!");

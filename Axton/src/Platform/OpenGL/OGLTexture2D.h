@@ -4,11 +4,11 @@
 
 namespace Axton::OpenGL
 {
-	class Texture2D : public Axton::Texture2D
+	class OGLTexture2D : public Axton::Texture2D
 	{
 	public:
-		Texture2D(const Texture2DSpecs& specs);
-		~Texture2D();
+		OGLTexture2D(const Texture2DSpecs& specs);
+		~OGLTexture2D();
 
 		virtual void Bind(uint32_t slot) const;
 		virtual void Unbind() const;

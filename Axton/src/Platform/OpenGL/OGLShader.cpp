@@ -1,10 +1,10 @@
 #include "axpch.h"
-#include "Shader.h"
+#include "OGLShader.h"
 #include "Axton/Utils/FileSystem.h"
 
 #include <glad/glad.h>
 
-namespace Axton
+namespace Axton::OpenGL
 {
 	namespace Utils
 	{
@@ -51,37 +51,34 @@ namespace Axton
 		}
 	}
 
-	OpenGL::Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc, bool lateLoad)
+	OGLShader::OGLShader(const std::string& vertexSrc, const std::string& fragmentSrc, bool lateLoad)
 		: m_VertexSource(vertexSrc), m_FragmentSource(fragmentSrc), m_LateLoad(lateLoad)
 	{
 		if (!lateLoad) LoadShader();
 	}
 
-	OpenGL::Shader::~Shader()
+	OGLShader::~OGLShader()
 	{
 		glDeleteShader(m_RendererID);
 	}
 
-	void OpenGL::Shader::Bind() const
+	void OGLShader::Bind() const
 	{
 		glUseProgram(m_RendererID);
 	}
 
-	void OpenGL::Shader::Unbind() const
+	void OGLShader::Unbind() const
 	{
 		glUseProgram(0);
 	}
 
-	void OpenGL::Shader::LoadShader()
+	void OGLShader::LoadShader()
 	{
 		std::string vertFile = FileSystem(m_VertexSource).ReadFile();
 		std::string fragFile = FileSystem(m_FragmentSource).ReadFile();
 
 		const char* vertexSource = vertFile.c_str();
 		const char* fragmentSource = fragFile.c_str();
-
-		int success;
-		char infoLog[512];
 
 		// Vertex Shader
 
@@ -114,21 +111,21 @@ namespace Axton
 		glDeleteShader(fragmentShader);
 	}
 
-	void OpenGL::Shader::SetMat4(const std::string& name, const Matrix4& value)
+	void OGLShader::SetMat4(const std::string& name, const Matrix4& value)
 	{
 		int location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
 	}
 
-	void OpenGL::Shader::SetInt(const std::string& name, const int value)
+	void OGLShader::SetInt(const std::string& name, const int value)
 	{
 		int location = glGetUniformLocation(m_RendererID, name.c_str());
 		glUniform1i(location, value);
 	}
 
-	void OpenGL::Shader::SetIntArray(const std::string& name, const int value[], size_t size)
+	void OGLShader::SetIntArray(const std::string& name, const int value[], size_t size)
 	{
 		int location = glGetUniformLocation(m_RendererID, name.c_str());
-		glUniform1iv(location, size, value);
+		glUniform1iv(location, (GLsizei)size, value);
 	}
 }

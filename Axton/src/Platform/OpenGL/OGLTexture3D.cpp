@@ -1,9 +1,9 @@
 #include "axpch.h"
-#include "Texture3D.h"
+#include "OGLTexture3D.h"
 
 #include <glad/glad.h>
 
-namespace Axton
+namespace Axton::OpenGL
 {
 	namespace Utils
 	{
@@ -78,17 +78,17 @@ namespace Axton
 		}
 	}
 
-	OpenGL::Texture3D::Texture3D(const Texture3DSpecs& specs)
+	OGLTexture3D::OGLTexture3D(const Texture3DSpecs& specs)
 		: m_Specs(specs)
 	{
 	}
 
-	OpenGL::Texture3D::~Texture3D()
+	OGLTexture3D::~OGLTexture3D()
 	{
 		glDeleteTextures(1, &m_RendererID);
 	}
 
-	void OpenGL::Texture3D::Bind(uint32_t slot) const
+	void OGLTexture3D::Bind(uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);
 		if (int error = glGetError())
@@ -98,12 +98,12 @@ namespace Axton
 		}
 	}
 
-	void OpenGL::Texture3D::Unbind() const
+	void OGLTexture3D::Unbind() const
 	{
 		glBindTexture(GL_TEXTURE_3D, 0);
 	}
 
-	void OpenGL::Texture3D::SetData(void* data, int size)
+	void OGLTexture3D::SetData(void* data, int size)
 	{
 		//uint32_t bpp = m_Specs.Format == ImageFormat::RGBA8 ? 4 : 3;
 		//AX_ASSERT_CORE(size == m_Specs.Width * m_Specs.Height * m_Specs.Depth * bpp, "Data must be entire texture!");

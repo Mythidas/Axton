@@ -1,6 +1,6 @@
 #include "axpch.h"
 #include "RendererAPI.h"
-#include "Platform/OpenGL/RendererAPI.h"
+#include "Platform/OpenGL/OGLRendererAPI.h"
 
 namespace Axton
 {
@@ -11,7 +11,7 @@ namespace Axton
 		switch (s_API)
 		{
 		case RendererAPI::API::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateScope<OpenGL::RendererAPI>();
+		case RendererAPI::API::OpenGL:  return CreateScope<OpenGL::OGLRendererAPI>();
 		}
 
 		AX_ASSERT_CORE(false, "Uknown RendererAPI!");

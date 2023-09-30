@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "Buffer.h"
 #include "Axton/Renderer/RendererAPI.h"
-#include "Platform/OpenGL/Buffer.h"
+#include "Platform/OpenGL/OGLBuffer.h"
 
 namespace Axton
 {
@@ -52,7 +52,7 @@ namespace Axton
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL:  return CreateRef<OpenGL::VertexBuffer>(size);
+			case RendererAPI::API::OpenGL:  return CreateRef<OpenGL::OGLVertexBuffer>(size);
 		}
 
 		AX_ASSERT_CORE(false, "Unknown RendererAPI!");
@@ -64,7 +64,7 @@ namespace Axton
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL:  return CreateRef<OpenGL::IndexBuffer>(indices, count);
+			case RendererAPI::API::OpenGL:  return CreateRef<OpenGL::OGLIndexBuffer>(indices, count);
 		}
 
 		AX_ASSERT_CORE(false, "Unknown RendererAPI!");

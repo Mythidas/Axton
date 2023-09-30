@@ -7,7 +7,7 @@ namespace Axton
 {
 	class Transform;
 
-	struct CameraData
+	struct CameraSpecs
 	{
 		enum class ProjectionFormat
 		{

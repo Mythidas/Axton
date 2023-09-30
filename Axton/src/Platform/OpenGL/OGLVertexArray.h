@@ -5,11 +5,11 @@
 
 namespace Axton::OpenGL
 {
-	class VertexArray : public Axton::VertexArray
+	class OGLVertexArray : public Axton::VertexArray
 	{
 	public:
-		VertexArray();
-		~VertexArray();
+		OGLVertexArray();
+		~OGLVertexArray();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;

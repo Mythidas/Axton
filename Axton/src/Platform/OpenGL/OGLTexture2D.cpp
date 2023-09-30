@@ -1,11 +1,11 @@
 #include "axpch.h"
-#include "Texture2D.h"
+#include "OGLTexture2D.h"
 
 #include <glad/glad.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-namespace Axton
+namespace Axton::OpenGL
 {
 	namespace Utils
 	{
@@ -77,36 +77,36 @@ namespace Axton
 		}
 	}
 
-	OpenGL::Texture2D::Texture2D(const Texture2DSpecs& specs)
+	OGLTexture2D::OGLTexture2D(const Texture2DSpecs& specs)
 		: m_Specs(specs)
 	{
 		Utils::GLCreateTexture(m_RendererID, m_Specs.Width, m_Specs.Height, m_Specs);
 	}
 
-	OpenGL::Texture2D::~Texture2D()
+	OGLTexture2D::~OGLTexture2D()
 	{
 		glDeleteTextures(1, &m_RendererID);
 	}
 
-	void OpenGL::Texture2D::Bind(uint32_t slot) const
+	void OGLTexture2D::Bind(uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);
 		AX_ASSERT_CORE(glGetError() == 0, "OpenGL Error Post Bind!");
 	}
 
-	void OpenGL::Texture2D::Unbind() const
+	void OGLTexture2D::Unbind() const
 	{
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void OpenGL::Texture2D::SetData(void* data, uint32_t size)
+	void OGLTexture2D::SetData(void* data, uint32_t size)
 	{
 		size_t bpp = m_Specs.Format == ImageFormat::RGBA8 ? 4 : 3;
 		AX_ASSERT_CORE(size == m_Specs.Width * m_Specs.Height * bpp, "Texture2D Data size must fill entire Texture!");
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Specs.Width, m_Specs.Height, Utils::TextureFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
 	}
 
-	void OpenGL::Texture2D::SetData(const std::string& path)
+	void OGLTexture2D::SetData(const std::string& path)
 	{
 		int width, height, channels;
 		stbi_set_flip_vertically_on_load(1);

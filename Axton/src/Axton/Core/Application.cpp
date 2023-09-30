@@ -26,7 +26,7 @@ namespace Axton
 		m_Window = Window::Create();
 		Renderer::Construct();
 
-		m_ImGUILayer = new ImGUILayer();
+		m_ImGUILayer = ImGUILayer::Create();
 		PushOverlay(m_ImGUILayer);
 
 		CoreLog::Info("Application Created!");

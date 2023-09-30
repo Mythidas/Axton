@@ -4,7 +4,7 @@
 
 namespace Axton::OpenGL
 {
-	class RendererAPI : public Axton::RendererAPI
+	class OGLRendererAPI : public Axton::RendererAPI
 	{
 	public:
 		virtual void ClearScreen() override;

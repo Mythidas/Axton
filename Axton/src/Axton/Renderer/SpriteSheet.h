@@ -22,7 +22,7 @@ namespace Axton
 		std::vector<std::string> m_SpriteNames;
 
 		float m_FPS{ 0.0f };
-		int m_CurrentFrameTime{ 0 };
+		float m_CurrentFrameTime{ 0 };
 		int m_CurrentSpriteIndex{ 0 };
 	};
 }

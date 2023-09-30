@@ -46,23 +46,23 @@ namespace Axton
 		UIQuadVertex* UIQuadVertexBuffer = nullptr;
 		UIQuadVertex* UIQuadVertexBufferPtr = nullptr;
 
-		Vector4 QuadVertexPositions[4];
+		Vector4 QuadVertexPositions[4]{};
 
 		std::array<Ref<Texture2D>, MAX_TEXTURES> QuadTextureSlots;
-		int QuadTextureSlotIndex = 1;
+		uint32_t QuadTextureSlotIndex = 1;
 
 
 		std::array<Ref<Texture2D>, MAX_TEXTURES> UIQuadTextureSlots;
-		int UIQuadTextureSlotIndex = 1;
+		uint32_t UIQuadTextureSlotIndex = 1;
 
-		Vector2 TexturePositions[4];
+		Vector2 TexturePositions[4]{};
 
 		struct CameraBuffer
 		{
-			Matrix4 ViewProjection;
+			Matrix4 ViewProjection{ 1.0f };
 		};
 
-		CameraBuffer CameraBuffer;
+		CameraBuffer CameraBuffer{};
 		Ref<UniformBuffer> CameraUniformBuffer;
 	};
 
@@ -160,7 +160,7 @@ namespace Axton
 		delete[] s_Data2D.UIQuadVertexBuffer;
 	}
 
-	void Renderer2D::BeginFrame(const CameraData& camera)
+	void Renderer2D::BeginFrame(const CameraSpecs& camera)
 	{
 		s_Data2D.CameraBuffer.ViewProjection = camera.GetViewProjectionMatrix();
 
@@ -196,7 +196,7 @@ namespace Axton
 				s_Data2D.QuadTextureSlots[i]->Bind(i);
 			}
 
-			signed long long size = (uint8_t*)s_Data2D.QuadVertexBufferPtr - (uint8_t*)s_Data2D.QuadVertexBuffer;
+			LONG64 size = (uint8_t*)s_Data2D.QuadVertexBufferPtr - (uint8_t*)s_Data2D.QuadVertexBuffer;
 			s_Data2D.QuadVertexArray->GetVertexBuffer()->SetData(s_Data2D.QuadVertexBuffer, size);
 
 			s_Data2D.QuadShader->Bind();
@@ -211,7 +211,7 @@ namespace Axton
 				s_Data2D.UIQuadTextureSlots[i]->Bind(i);
 			}
 
-			signed long long size = (uint8_t*)s_Data2D.UIQuadVertexBufferPtr - (uint8_t*)s_Data2D.UIQuadVertexBuffer;
+			LONG64 size = (uint8_t*)s_Data2D.UIQuadVertexBufferPtr - (uint8_t*)s_Data2D.UIQuadVertexBuffer;
 			s_Data2D.UIQuadVertexArray->GetVertexBuffer()->SetData(s_Data2D.UIQuadVertexBuffer, size);
 
 			s_Data2D.UIQuadVertexArray->Bind();
@@ -383,7 +383,7 @@ namespace Axton
 			if (texIndex == 0)
 			{
 				texIndex = (float)s_Data2D.QuadTextureSlotIndex;
-				s_Data2D.QuadTextureSlots[texIndex] = texture;
+				s_Data2D.QuadTextureSlots[(size_t)texIndex] = texture;
 				s_Data2D.QuadTextureSlotIndex++;
 			}
 		}
@@ -408,7 +408,7 @@ namespace Axton
 			if (texIndex == 0)
 			{
 				texIndex = (float)s_Data2D.UIQuadTextureSlotIndex;
-				s_Data2D.UIQuadTextureSlots[texIndex] = texture;
+				s_Data2D.UIQuadTextureSlots[(size_t)texIndex] = texture;
 				s_Data2D.UIQuadTextureSlotIndex++;
 			}
 		}

@@ -5,11 +5,11 @@
 
 namespace Axton::OpenGL
 {
-	class Framebuffer : public Axton::Framebuffer
+	class OGLFramebuffer : public Axton::Framebuffer
 	{
 	public:
-		Framebuffer(const FramebufferSpec& specs);
-		virtual ~Framebuffer();
+		OGLFramebuffer(const FramebufferSpec& specs);
+		virtual ~OGLFramebuffer();
 
 		virtual void Bind() override;
 		virtual void Unbind() override;
