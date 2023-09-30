@@ -92,8 +92,9 @@ namespace Axton::OpenGL
 		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 	}
 
-	void OGLImage::SetData(void* data) const
+	void OGLImage::SetData(void* data, uint32_t width, uint32_t height)
 	{
+		OGLImage::Resize(width, height);
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Specs.Width, m_Specs.Height, Utils::TextureFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
 	}
 

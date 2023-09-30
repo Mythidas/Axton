@@ -11,7 +11,7 @@ namespace Axton::OpenGL
 		~OGLImage();
 
 		virtual void Bind() const override;
-		virtual void SetData(void* data) const;
+		virtual void SetData(void* data, uint32_t width, uint32_t height) override;
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
 		virtual uint32_t GetWidth() const override { return m_Specs.Width; }

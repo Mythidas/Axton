@@ -11,9 +11,38 @@ Camera::Camera(float vFov, float nearClip, float farClip)
 	m_Position = Vector3(0.0f, 0.0f, 3.0f);
 
 	RecalculateView();
+
+	m_CameraTransform = UniformBuffer::Create(sizeof(CameraTransformData), 0);
 }
 
 void Camera::OnUpdate()
+{
+	ProcessMovement();
+
+	m_CameraTransformData.Position = Vector4(m_Position, 0);
+	m_CameraTransformData.Direction = Vector4(m_Direction, 0);
+	m_CameraTransformData.Projection = m_InverseProjection;
+	m_CameraTransformData.View = m_InverseView;
+
+	m_CameraTransform->SetData(&m_CameraTransformData, sizeof(CameraTransformData));
+}
+
+void Camera::OnResize(uint32_t width, uint32_t height)
+{
+	if (width == m_ViewportWidth && height == m_ViewportHeight) return;
+
+	m_ViewportWidth = width;
+	m_ViewportHeight = height;
+
+	RecalculateProjection();
+}
+
+float Camera::GetRotationSpeed()
+{
+	return 0.3f;
+}
+
+void Camera::ProcessMovement()
 {
 	Vector2 mousePos = Input::GetMousePosition();
 	Vector2 delta = (mousePos - m_LastMousePosition) * 0.002f;
@@ -80,24 +109,7 @@ void Camera::OnUpdate()
 	if (moved)
 	{
 		RecalculateView();
-		//RecalculateRayDirections();
 	}
-}
-
-void Camera::OnResize(uint32_t width, uint32_t height)
-{
-	if (width == m_ViewportWidth && height == m_ViewportHeight) return;
-
-	m_ViewportWidth = width;
-	m_ViewportHeight = height;
-
-	RecalculateProjection();
-	//RecalculateRayDirections();
-}
-
-float Camera::GetRotationSpeed()
-{
-	return 0.3f;
 }
 
 void Camera::RecalculateProjection()
@@ -110,22 +122,4 @@ void Camera::RecalculateView()
 {
 	m_View = glm::lookAt(m_Position, m_Position + m_Direction, Vector3(0.0f, 1.0f, 0.0f));
 	m_InverseView = glm::inverse(m_View);
-}
-
-void Camera::RecalculateRayDirections()
-{
-	m_RayDirections.resize((size_t)(m_ViewportWidth * m_ViewportHeight));
-
-	for (uint32_t y = 0; y < m_ViewportHeight; y++)
-	{
-		for (uint32_t x = 0; x < m_ViewportWidth; x++)
-		{
-			Vector2 coord = { (float)x / (float)m_ViewportWidth, (float)y / (float)m_ViewportHeight };
-			coord = coord * 2.0f - 1.0f; // -1, 1
-
-			Vector4 target = m_InverseProjection * Vector4(coord.x, coord.y, 1.0f, 1.0f);
-			Vector3 rayDirection = Vector3(m_InverseView * Vector4(Vector::UnitVector(Vector3(target) / target.w), 0));
-			m_RayDirections[(size_t)(x + y * m_ViewportWidth)] = rayDirection;
-		}
-	}
 }

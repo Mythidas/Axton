@@ -4,6 +4,14 @@
 
 using namespace Axton;
 
+struct CameraTransformData
+{
+	Vector4 Position{ 0.0f };
+	Vector4 Direction{ 0.0f };
+	Matrix4 View{ 0.0f };
+	Matrix4 Projection{ 0.0f };
+};
+
 class Camera
 {
 public:
@@ -20,14 +28,12 @@ public:
 	Vector3 GetPosition() const { return m_Position; }
 	Vector3 GetDirection() const { return m_Direction; }
 
-	const std::vector<Vector3>& GetRayDirections() const { return m_RayDirections; }
-	
 	float GetRotationSpeed();
 
 private:
+	void ProcessMovement();
 	void RecalculateProjection();
 	void RecalculateView();
-	void RecalculateRayDirections();
 
 private:
 	Matrix4 m_Projection{ 1.0f };
@@ -42,7 +48,8 @@ private:
 	Vector3 m_Position{ 0.0f };
 	Vector3 m_Direction{ 0.0f };
 
-	std::vector<Vector3> m_RayDirections;
+	Ref<UniformBuffer> m_CameraTransform;
+	CameraTransformData m_CameraTransformData{};
 
 	Vector2 m_LastMousePosition{ 0.0f };
 

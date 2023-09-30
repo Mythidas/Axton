@@ -10,14 +10,6 @@
 
 using namespace Axton;
 
-struct CameraTransformData
-{
-	Vector4 Position{ 0.0f };
-	Vector4 Direction{ 0.0f };
-	Matrix4 View{ 0.0f };
-	Matrix4 Projection{ 0.0f };
-};
-
 class RayTraceLayer : public Layer
 {
 public:
@@ -29,11 +21,6 @@ public:
 	{
 		m_ViewportWidth = Application::Get().GetWindow().GetWidth();
 		m_ViewportHeight = Application::Get().GetWindow().GetHeight();
-
-		TempImage = Image::Create({ 1280, 720 });
-		TempCompute = ComputeShader::Create("C:\\Programming\\Axton\\Sandbox\\Assets\\Shaders\\ComputeTest.glsl");
-
-		m_CameraTransform = UniformBuffer::Create(sizeof(CameraTransformData), 0);
 
 		Material material{};
 		material.Albedo = Vector3(1.0f, 0.0f, 0.0f);
@@ -50,25 +37,11 @@ public:
 
 		m_Camera.OnUpdate();
 		m_Camera.OnResize(m_ViewportWidth, m_ViewportHeight);
+		m_Renderer.Resize(m_ViewportWidth, m_ViewportHeight);
 
 		m_Renderer.TempLight = TempLight;
 
-		if (!IsTempCompute)
-		{
-			m_Renderer.Resize(m_ViewportWidth, m_ViewportHeight);
-			m_Renderer.Render(m_Camera, m_Scene);
-		}
-		else
-		{
-			m_CameraTransformData.Position = Vector4(m_Camera.GetPosition(), 0);
-			m_CameraTransformData.Direction = Vector4(m_Camera.GetDirection(), 0);
-			m_CameraTransformData.Projection = m_Camera.GetInverseProjection();
-			m_CameraTransformData.View = m_Camera.GetInverseView();
-			m_CameraTransform->SetData(&m_CameraTransformData, sizeof(CameraTransformData));
-			TempImage->Resize(m_ViewportWidth, m_ViewportHeight);
-			TempCompute->Dispatch(m_ViewportWidth, m_ViewportHeight, 1);
-			TempCompute->Barrier();
-		}
+		m_Renderer.Render(m_Camera, m_Scene);
 	}
 
 	virtual void OnRenderUI() override
@@ -79,7 +52,6 @@ public:
 		ImGui::Text("FPS: %f", 1.0f / Time::GetDeltaTime());
 		ImGui::Text("Render Time: %f ms", m_LastRenderTime.ElapsedMill());
 		ImGui::DragFloat3("Light Direction", glm::value_ptr(TempLight), 0.2f, -2.0f, 2.0f);
-		ImGui::Checkbox("Is Computed", &IsTempCompute);
 		ImGui::End();
 
 		ImGui::Begin("Materials");
@@ -101,20 +73,12 @@ public:
 		m_ViewportWidth = (uint32_t)ImGui::GetContentRegionAvail().x;
 		m_ViewportHeight = (uint32_t)ImGui::GetContentRegionAvail().y;
 
-		if (IsTempCompute)
+		if (m_Renderer.GetFinalImage())
 		{
-			ImGui::Image((ImTextureID)TempImage->GetRendererID(), { (float)TempImage->GetWidth(), (float)TempImage->GetHeight() }, ImVec2(0, 1), ImVec2(1, 0));
-			ImGui::End();
+			Ref<Image> image = m_Renderer.GetFinalImage();
+			ImGui::Image((ImTextureID)image->GetRendererID(), { (float)image->GetWidth(), (float)image->GetHeight() }, ImVec2(0, 1), ImVec2(1, 0));
 		}
-		else
-		{
-			if (m_Renderer.GetFinalImage())
-			{
-				Ref<Texture2D> image = m_Renderer.GetFinalImage();
-				ImGui::Image((ImTextureID)image->GetRendererID(), { (float)image->GetWidth(), (float)image->GetHeight() }, ImVec2(0, 1), ImVec2(1, 0));
-			}
-			ImGui::End();
-		}
+		ImGui::End();
 	}
 
 private:
@@ -122,16 +86,9 @@ private:
 	Camera m_Camera;
 	Scene m_Scene;
 	uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
-
 	Timer m_LastRenderTime;
 
-	Ref<UniformBuffer> m_CameraTransform;
-	CameraTransformData m_CameraTransformData{};
-
 	Vector3 TempLight = Vector3(-1.0f);
-	Ref<Image> TempImage;
-	Ref<ComputeShader> TempCompute;
-	bool IsTempCompute = true;
 };
 
 class SandboxApplication : public Axton::Application
