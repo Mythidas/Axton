@@ -34,6 +34,7 @@ void RayRenderer::Resize(uint32_t width, uint32_t height)
 	} 
 }
 
+// Old CPU RayTraced Code
 //Vector4 RayRenderer::PerPixel(uint32_t x, uint32_t y)
 //{
 //	Vector3 lightDir = Vector::UnitVector(TempLight);

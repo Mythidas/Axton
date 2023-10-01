@@ -15,6 +15,7 @@
 #include "Axton/Renderer/ComputeShader.h"
 #include "Axton/Renderer/Image.h"
 #include "Axton/Renderer/UniformBuffer.h"
+#include "Axton/Renderer/StorageBuffer.h"
 
 // Debugging
 #include "Axton/Debug/Log.h"

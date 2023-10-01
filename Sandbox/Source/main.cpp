@@ -23,12 +23,20 @@ public:
 		m_ViewportHeight = Application::Get().GetWindow().GetHeight();
 
 		Material material{};
-		material.Albedo = Vector3(1.0f, 0.0f, 0.0f);
+		material.Albedo = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
 		material.Roughness = 1.0f;
 		m_Scene.AddMaterial(material);
 
-		m_Scene.AddSphere({ Vector3(0.0f, 0.0f, -2.5f), 1.0f, 0 });
-		m_Scene.AddSphere({ Vector3(0.0f, -101.0f, 0.0f), 100.0f, 0 });
+		Material material1{};
+		material1.Albedo = Vector4(0.1f, 0.7f, 0.6f, 1.0f);
+		material1.Roughness = 1.0f;
+		m_Scene.AddMaterial(material1);
+
+		m_Scene.AddSphere({ Vector4(0.0f, -101.0f, 0.0f, 0.0f), 100.0f, 1 });
+		m_Scene.AddSphere({ Vector4(0.0f, 1.0f, -2.5f, 0.0f), 0.5f, 0 });
+		m_Scene.AddSphere({ Vector4(0.0f, 0.0f, -2.5f, 0.0f), 1.0f, 0 });
+
+		m_Scene.SyncBuffers();
 	}
 
 	virtual void OnUpdate() override
@@ -84,7 +92,7 @@ public:
 private:
 	RayRenderer m_Renderer;
 	Camera m_Camera;
-	Scene m_Scene;
+	Scene m_Scene{ 50 };
 	uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 	Timer m_LastRenderTime;
 

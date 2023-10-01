@@ -6,23 +6,29 @@ using namespace Axton;
 
 struct Material
 {
-	Vector3 Albedo;
+	alignas(16) Vector4 Albedo;
 	float Roughness;
 };
 
 struct Sphere
 {
-	Vector3 Position;
+	alignas(16) Vector4 Position;
 	float Radius;
-	uint32_t MatIndex;
+	int MatIndex;
 };
 
 class Scene
 {
 public:
+	Scene(uint32_t maxSpheres);
+
 	void AddSphere(Sphere sphere);
 	void AddMaterial(Material material);
+	void SyncBuffers();
 
 	std::vector<Sphere> Spheres;
 	std::vector<Material> Materials;
+
+	Ref<StorageBuffer> SphereStorage;
+	Ref<StorageBuffer> MaterialStorage;
 };

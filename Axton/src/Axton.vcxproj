@@ -177,6 +177,7 @@
     <ClInclude Include="Axton\Renderer\Shader.h" />
     <ClInclude Include="Axton\Renderer\Sprite.h" />
     <ClInclude Include="Axton\Renderer\SpriteSheet.h" />
+    <ClInclude Include="Axton\Renderer\StorageBuffer.h" />
     <ClInclude Include="Axton\Renderer\Texture2D.h" />
     <ClInclude Include="Axton\Renderer\Texture3D.h" />
     <ClInclude Include="Axton\Renderer\UniformBuffer.h" />
@@ -190,6 +191,7 @@
     <ClInclude Include="Platform\OpenGL\OGLImGUILayer.h" />
     <ClInclude Include="Platform\OpenGL\OGLRendererAPI.h" />
     <ClInclude Include="Platform\OpenGL\OGLShader.h" />
+    <ClInclude Include="Platform\OpenGL\OGLStorageBuffer.h" />
     <ClInclude Include="Platform\OpenGL\OGLTexture2D.h" />
     <ClInclude Include="Platform\OpenGL\OGLTexture3D.h" />
     <ClInclude Include="Platform\OpenGL\OGLUniformBuffer.h" />
@@ -226,6 +228,7 @@
     <ClCompile Include="Axton\Renderer\Shader.cpp" />
     <ClCompile Include="Axton\Renderer\Sprite.cpp" />
     <ClCompile Include="Axton\Renderer\SpriteSheet.cpp" />
+    <ClCompile Include="Axton\Renderer\StorageBuffer.cpp" />
     <ClCompile Include="Axton\Renderer\Texture2D.cpp" />
     <ClCompile Include="Axton\Renderer\Texture3D.cpp" />
     <ClCompile Include="Axton\Renderer\UniformBuffer.cpp" />
@@ -239,6 +242,7 @@
     <ClCompile Include="Platform\OpenGL\OGLImGUILayer.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLRendererAPI.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLShader.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLStorageBuffer.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLTexture2D.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLTexture3D.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLUniformBuffer.cpp" />
