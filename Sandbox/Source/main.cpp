@@ -36,6 +36,11 @@ public:
 		m_Scene.AddSphere({ Vector4(0.0f, 1.0f, -2.5f, 0.0f), 0.5f, 0 });
 		m_Scene.AddSphere({ Vector4(0.0f, 0.0f, -2.5f, 0.0f), 1.0f, 0 });
 
+		m_Scene.AddBox({ Vector3(0), Vector3(.5), 0 });
+		m_Scene.AddBox({ Vector3(0, -10.5, 0), Vector3(10), 1 });
+
+		m_Scene.AddLight({ Vector3(), Vector3(-2, -2, -2), Vector4(.5, .5, .5, 1) });
+
 		m_Scene.SyncBuffers();
 	}
 
@@ -47,8 +52,6 @@ public:
 		m_Camera.OnResize(m_ViewportWidth, m_ViewportHeight);
 		m_Renderer.Resize(m_ViewportWidth, m_ViewportHeight);
 
-		m_Renderer.TempLight = TempLight;
-
 		m_Renderer.Render(m_Camera, m_Scene);
 	}
 
@@ -56,10 +59,11 @@ public:
 	{
 		Vector3 cam = m_Camera.GetPosition();
 		ImGui::Begin("Render Stats");
-		ImGui::DragFloat3("Camera Pos", glm::value_ptr(cam));
+		if (ImGui::Button("Update Scene"))
+			m_Scene.SyncBuffers();
 		ImGui::Text("FPS: %f", 1.0f / Time::GetDeltaTime());
 		ImGui::Text("Render Time: %f ms", m_LastRenderTime.ElapsedMill());
-		ImGui::DragFloat3("Light Direction", glm::value_ptr(TempLight), 0.2f, -2.0f, 2.0f);
+		ImGui::DragFloat3("Camera Pos", glm::value_ptr(cam));
 		ImGui::End();
 
 		ImGui::Begin("Materials");
@@ -68,7 +72,8 @@ public:
 		{
 			ImGui::PushID(i);
 
-			ImGui::DragFloat3("Albedo", glm::value_ptr(m_Scene.Materials[i].Albedo), 0.05f, 0.0f, 1.0f);
+			if (ImGui::DragFloat3("Albedo", glm::value_ptr(m_Scene.Materials[i].Albedo), 0.05f, 0.0f, 1.0f))
+				m_Scene.SyncBuffers();
 			ImGui::DragFloat("Roughness", &m_Scene.Materials[i].Roughness, 0.05f, 0.0f, 1.0f);
 
 			ImGui::Separator();
@@ -95,8 +100,6 @@ private:
 	Scene m_Scene{ 50 };
 	uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 	Timer m_LastRenderTime;
-
-	Vector3 TempLight = Vector3(-1.0f);
 };
 
 class SandboxApplication : public Axton::Application

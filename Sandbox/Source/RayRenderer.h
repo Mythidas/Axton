@@ -17,8 +17,6 @@ public:
 
 	Ref<Image> GetFinalImage() const { return m_FinalImage; }
 
-	Vector3 TempLight;
-
 private:
 	Ref<Image> m_FinalImage{ nullptr };
 	Ref<ComputeShader> m_ComputeShader;
