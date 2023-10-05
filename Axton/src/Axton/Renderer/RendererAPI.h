@@ -28,6 +28,13 @@ namespace Axton
 		REPEAT
 	};
 
+	enum class AccessFormat
+	{
+		READ_WRITE,
+		READ_ONLY,
+		WRITE_ONLY
+	};
+
 	class RendererAPI
 	{
 	public:

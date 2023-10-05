@@ -170,6 +170,7 @@
     <ClInclude Include="Axton\Renderer\Framebuffer.h" />
     <ClInclude Include="Axton\Renderer\GraphicsContext.h" />
     <ClInclude Include="Axton\Renderer\Image.h" />
+    <ClInclude Include="Axton\Renderer\Image3D.h" />
     <ClInclude Include="Axton\Renderer\RenderCommands.h" />
     <ClInclude Include="Axton\Renderer\Renderer.h" />
     <ClInclude Include="Axton\Renderer\Renderer2D.h" />
@@ -188,6 +189,7 @@
     <ClInclude Include="Platform\OpenGL\OGLFramebuffer.h" />
     <ClInclude Include="Platform\OpenGL\OGLGraphicsContext.h" />
     <ClInclude Include="Platform\OpenGL\OGLImage.h" />
+    <ClInclude Include="Platform\OpenGL\OGLImage3D.h" />
     <ClInclude Include="Platform\OpenGL\OGLImGUILayer.h" />
     <ClInclude Include="Platform\OpenGL\OGLRendererAPI.h" />
     <ClInclude Include="Platform\OpenGL\OGLShader.h" />
@@ -195,6 +197,7 @@
     <ClInclude Include="Platform\OpenGL\OGLTexture2D.h" />
     <ClInclude Include="Platform\OpenGL\OGLTexture3D.h" />
     <ClInclude Include="Platform\OpenGL\OGLUniformBuffer.h" />
+    <ClInclude Include="Platform\OpenGL\OGLUtils.h" />
     <ClInclude Include="Platform\OpenGL\OGLVertexArray.h" />
     <ClInclude Include="Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="axpch.h" />
@@ -221,6 +224,7 @@
     <ClCompile Include="Axton\Renderer\Framebuffer.cpp" />
     <ClCompile Include="Axton\Renderer\GraphicsContext.cpp" />
     <ClCompile Include="Axton\Renderer\Image.cpp" />
+    <ClCompile Include="Axton\Renderer\Image3D.cpp" />
     <ClCompile Include="Axton\Renderer\RenderCommands.cpp" />
     <ClCompile Include="Axton\Renderer\Renderer.cpp" />
     <ClCompile Include="Axton\Renderer\Renderer2D.cpp" />
@@ -239,6 +243,7 @@
     <ClCompile Include="Platform\OpenGL\OGLFramebuffer.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLGraphicsContext.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLImage.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLImage3D.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLImGUILayer.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLRendererAPI.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLShader.cpp" />
@@ -246,6 +251,7 @@
     <ClCompile Include="Platform\OpenGL\OGLTexture2D.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLTexture3D.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLUniformBuffer.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLUtils.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLVertexArray.cpp" />
     <ClCompile Include="Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="axpch.cpp" />

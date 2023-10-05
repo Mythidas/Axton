@@ -14,10 +14,6 @@ namespace Axton
 		FilterFormat Filter = FilterFormat::NEAREST;
 		WrapFormat Wrap = WrapFormat::REPEAT;
 		bool GenerateMipmaps = false;
-
-		Texture3DSpecs() {}
-		Texture3DSpecs(int width, int height, int depth)
-			: Width(width), Height(height), Depth(depth) {}
 	};
 
 	class Texture3D

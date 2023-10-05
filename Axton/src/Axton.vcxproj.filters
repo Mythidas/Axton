@@ -194,6 +194,9 @@
     <ClInclude Include="Platform\OpenGL\OGLComputeShader.h" />
     <ClInclude Include="Axton\Renderer\StorageBuffer.h" />
     <ClInclude Include="Platform\OpenGL\OGLStorageBuffer.h" />
+    <ClInclude Include="Axton\Renderer\Image3D.h" />
+    <ClInclude Include="Platform\OpenGL\OGLImage3D.h" />
+    <ClInclude Include="Platform\OpenGL\OGLUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -329,5 +332,8 @@
     <ClCompile Include="Platform\OpenGL\OGLComputeShader.cpp" />
     <ClCompile Include="Axton\Renderer\StorageBuffer.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLStorageBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\Image3D.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLImage3D.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLUtils.cpp" />
   </ItemGroup>
 </Project>

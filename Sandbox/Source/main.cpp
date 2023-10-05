@@ -1,14 +1,52 @@
 #include "Axton.h"
 #include "Axton/Core/EntryPoint.h"
 
-#include "RayRenderer.h"
 #include "Camera.h"
-#include "Scene.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
 
 using namespace Axton;
+
+struct Voxel
+{
+	uint32_t Color;
+
+	void PackColor(const Vector4& color)
+	{
+		Color |= ((uint32_t)(color.a * 255.0f) << 24) | ((uint32_t)(color.b * 255.0f) << 16) | 
+			((uint32_t)(color.g * 255.0f) << 8) | ((uint32_t)(color.r * 255.0f));
+	}
+
+	Vector4 UnpackColor()
+	{
+		return Vector4(1);
+	}
+};
+
+struct Chunk
+{
+	std::vector<Voxel> Voxels;
+	uint32_t Size;
+
+	Chunk(uint32_t size)
+		: Size(size)
+	{
+		Voxel black{};
+		black.PackColor({ 0, 0, 0, 0 });
+		Voxels.resize(size * size * size, black);
+	}
+
+	Voxel GetVoxel(uint32_t x, uint32_t y, uint32_t z)
+	{
+		return Voxels[x + Size * (y + Size * z)];
+	}
+
+	void SetVoxel(uint32_t x, uint32_t y, uint32_t z, Voxel voxel)
+	{
+		Voxels[x + Size * (y + Size * z)] = voxel;
+	}
+};
 
 class RayTraceLayer : public Layer
 {
@@ -17,89 +55,70 @@ public:
 		: m_Camera(45.0f, 0.01f, 50.0f)
 	{}
 
+	Chunk newChunk{ 4 };
+
 	virtual void OnAttach() override
 	{
 		m_ViewportWidth = Application::Get().GetWindow().GetWidth();
 		m_ViewportHeight = Application::Get().GetWindow().GetHeight();
 
-		Material material{};
-		material.Albedo = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
-		material.Roughness = 1.0f;
-		m_Scene.AddMaterial(material);
+		m_Image = Image::Create({ m_ViewportWidth, m_ViewportHeight, 0, AccessFormat::READ_WRITE, ImageFormat::RGBA8 });
+		m_Compute = ComputeShader::Create("C:\\Programming\\Axton\\Axton\\internal\\shaders\\ChunkRaycaster.glsl");
 
-		Material material1{};
-		material1.Albedo = Vector4(0.1f, 0.7f, 0.6f, 1.0f);
-		material1.Roughness = 1.0f;
-		m_Scene.AddMaterial(material1);
+		Voxel white{};
+		white.PackColor({ 1, 1, 1, 1 });
+		newChunk.SetVoxel(0, 0, 0, white);
+		newChunk.SetVoxel(1, 0, 0, white);
+		newChunk.SetVoxel(1, 1, 0, white);
+		newChunk.SetVoxel(1, 2, 0, white);
+		newChunk.SetVoxel(1, 3, 0, white);
 
-		m_Scene.AddSphere({ Vector4(0.0f, -101.0f, 0.0f, 0.0f), 100.0f, 1 });
-		m_Scene.AddSphere({ Vector4(0.0f, 1.0f, -2.5f, 0.0f), 0.5f, 0 });
-		m_Scene.AddSphere({ Vector4(0.0f, 0.0f, -2.5f, 0.0f), 1.0f, 0 });
-
-		m_Scene.AddBox({ Vector3(0), Vector3(.5), 0 });
-		m_Scene.AddBox({ Vector3(0, -10.5, 0), Vector3(10), 1 });
-
-		m_Scene.AddLight({ Vector3(), Vector3(-2, -2, -2), Vector4(.5, .5, .5, 1) });
-
-		m_Scene.SyncBuffers();
+		m_VoxelStorage = StorageBuffer::Create(sizeof(Voxel) * newChunk.Voxels.size(), BufferUsage::DYNAM_COPY, 2);
+		m_VoxelStorage->SetData(newChunk.Voxels.data(), sizeof(Voxel) * newChunk.Voxels.size());
 	}
 
 	virtual void OnUpdate() override
 	{
-		m_LastRenderTime.Reset();
-
 		m_Camera.OnUpdate();
 		m_Camera.OnResize(m_ViewportWidth, m_ViewportHeight);
-		m_Renderer.Resize(m_ViewportWidth, m_ViewportHeight);
 
-		m_Renderer.Render(m_Camera, m_Scene);
+		m_Image->Resize(m_ViewportWidth, m_ViewportHeight);
+
+		m_Compute->Dispatch(m_ViewportWidth, m_ViewportHeight, 1);
+		m_Compute->Barrier();
 	}
 
 	virtual void OnRenderUI() override
 	{
 		Vector3 cam = m_Camera.GetPosition();
 		ImGui::Begin("Render Stats");
-		if (ImGui::Button("Update Scene"))
-			m_Scene.SyncBuffers();
 		ImGui::Text("FPS: %f", 1.0f / Time::GetDeltaTime());
-		ImGui::Text("Render Time: %f ms", m_LastRenderTime.ElapsedMill());
-		ImGui::DragFloat3("Camera Pos", glm::value_ptr(cam));
-		ImGui::End();
-
-		ImGui::Begin("Materials");
-
-		for (int i = 0; i < m_Scene.Materials.size(); i++)
-		{
-			ImGui::PushID(i);
-
-			if (ImGui::DragFloat3("Albedo", glm::value_ptr(m_Scene.Materials[i].Albedo), 0.05f, 0.0f, 1.0f))
-				m_Scene.SyncBuffers();
-			ImGui::DragFloat("Roughness", &m_Scene.Materials[i].Roughness, 0.05f, 0.0f, 1.0f);
-
-			ImGui::Separator();
-			ImGui::PopID();
-		}
-
+		ImGui::Text("Render Time: %f ms", Time::GetDeltaTime());
 		ImGui::End();
 
 		ImGui::Begin("Camera View");
 		m_ViewportWidth = (uint32_t)ImGui::GetContentRegionAvail().x;
 		m_ViewportHeight = (uint32_t)ImGui::GetContentRegionAvail().y;
 
-		if (m_Renderer.GetFinalImage())
+		if (m_Image)
 		{
-			Ref<Image> image = m_Renderer.GetFinalImage();
-			ImGui::Image((ImTextureID)image->GetRendererID(), { (float)image->GetWidth(), (float)image->GetHeight() }, ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::Image((ImTextureID)m_Image->GetRendererID(), { (float)m_Image->GetWidth(), (float)m_Image->GetHeight() }, ImVec2(0, 1), ImVec2(1, 0));
 		}
 		ImGui::End();
 	}
+private:
+	void TraceRays()
+	{
+
+	}
 
 private:
-	RayRenderer m_Renderer;
 	Camera m_Camera;
-	Scene m_Scene{ 50 };
 	uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
-	Timer m_LastRenderTime;
+
+	Ref<Image> m_Image;
+	Ref<ComputeShader> m_Compute;
+	Ref<StorageBuffer> m_VoxelStorage;
 };
 
 class SandboxApplication : public Axton::Application

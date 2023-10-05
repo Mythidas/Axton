@@ -1,5 +1,6 @@
 #include "axpch.h"
 #include "OGLTexture2D.h"
+#include "OGLUtils.h"
 
 #include <glad/glad.h>
 #define STB_IMAGE_IMPLEMENTATION
@@ -9,64 +10,16 @@ namespace Axton::OpenGL
 {
 	namespace Utils
 	{
-		static GLenum TextureFormatToGL(ImageFormat format)
-		{
-			switch (format)
-			{
-				case ImageFormat::RGB8: return GL_RGB;
-				case ImageFormat::RGBA8: return GL_RGBA;
-			}
-
-			AX_ASSERT_CORE(false, "Unknown TextureFormat!");
-			return 0;
-		}
-
-		static GLenum TextureFormatToGLInternal(ImageFormat format)
-		{
-			switch (format)
-			{
-				case ImageFormat::RGB8: return GL_RGB8;
-				case ImageFormat::RGBA8: return GL_RGBA8;
-			}
-
-			AX_ASSERT_CORE(false, "Unknown TextureFormat!");
-			return 0;
-		}
-
-		static GLenum TextureWrapToGL(WrapFormat wrap)
-		{
-			switch (wrap)
-			{
-				case WrapFormat::REPEAT: return GL_REPEAT;
-				case WrapFormat::CLAMP: return GL_CLAMP_TO_EDGE;
-			}
-
-			AX_ASSERT_CORE(false, "Unknown TextureWrap!");
-			return 0;
-		}
-
-		static GLenum TextureFilterToGL(FilterFormat filter)
-		{
-			switch (filter)
-			{
-				case FilterFormat::NEAREST: return GL_NEAREST;
-				case FilterFormat::LINEAR: return GL_LINEAR;
-			}
-
-			AX_ASSERT_CORE(false, "Unknown TextureFilter!");
-			return 0;
-		}
-
 		static void GLCreateTexture(RendererID& m_RendererID, uint32_t width, uint32_t height, const Texture2DSpecs& specs)
 		{
 			glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-			glTextureStorage2D(m_RendererID, 1, Utils::TextureFormatToGLInternal(specs.Format), width, height);
+			glTextureStorage2D(m_RendererID, 1, OGLUtils::ImageFormatToGLInternal(specs.Format), width, height);
 
-			glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, Utils::TextureFilterToGL(specs.Filter));
-			glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, Utils::TextureFilterToGL(specs.Filter));
+			glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, OGLUtils::FilterFormatToGL(specs.Filter));
+			glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, OGLUtils::FilterFormatToGL(specs.Filter));
 
-			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, Utils::TextureWrapToGL(specs.Wrap));
-			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, Utils::TextureWrapToGL(specs.Wrap));
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, OGLUtils::WrapFormatToGL(specs.Wrap));
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, OGLUtils::WrapFormatToGL(specs.Wrap));
 
 			if (specs.GenerateMipmaps)
 			{
@@ -103,7 +56,7 @@ namespace Axton::OpenGL
 	{
 		size_t bpp = m_Specs.Format == ImageFormat::RGBA8 ? 4 : 3;
 		AX_ASSERT_CORE(size == m_Specs.Width * m_Specs.Height * bpp, "Texture2D Data size must fill entire Texture!");
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Specs.Width, m_Specs.Height, Utils::TextureFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Specs.Width, m_Specs.Height, OGLUtils::ImageFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
 	}
 
 	void OGLTexture2D::SetData(const std::string& path)
@@ -118,7 +71,7 @@ namespace Axton::OpenGL
 
 		m_Specs.Width = width; m_Specs.Height = height;
 		Utils::GLCreateTexture(m_RendererID, m_Specs.Width, m_Specs.Height, m_Specs);
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Specs.Width, m_Specs.Height, Utils::TextureFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Specs.Width, m_Specs.Height, OGLUtils::ImageFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);
 	}

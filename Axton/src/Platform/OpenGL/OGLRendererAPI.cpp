@@ -31,7 +31,11 @@ namespace Axton::OpenGL
 	void OGLRendererAPI::SetViewport(int& width, int& height)
 	{
 		glViewport(0, 0, width, height);
-		AX_ASSERT_CORE(glGetError() == GL_NO_ERROR, "OpenGL:: Error!");
+		if (int error = glGetError())
+		{
+			CoreLog::Error("OpenGL Viewport Error: {0}", error);
+			AX_ASSERT_CORE(false, "OpenGL Error");
+		}
 	}
 
 	void OGLRendererAPI::EnableDepthTest(bool enabled)

@@ -14,8 +14,10 @@
 #include "Axton/Renderer/SpriteSheet.h"
 #include "Axton/Renderer/ComputeShader.h"
 #include "Axton/Renderer/Image.h"
+#include "Axton/Renderer/Image3D.h"
 #include "Axton/Renderer/UniformBuffer.h"
 #include "Axton/Renderer/StorageBuffer.h"
+#include "Axton/Renderer/Texture3D.h"
 
 // Debugging
 #include "Axton/Debug/Log.h"
