@@ -3,6 +3,20 @@
 
 namespace Axton::OpenGL
 {
+	int OGLUtils::ImageFormatSize(ImageFormat format)
+	{
+		switch (format)
+		{
+		case ImageFormat::R8: return 1;
+		case ImageFormat::RGB8: return 3;
+		case ImageFormat::RGBA8: return 4;
+		case ImageFormat::RGBA32F: return 4 * 4;
+		}
+
+		AX_ASSERT_CORE(false, "Unknown TextureFormat!");
+		return 0;
+	}
+
 	GLenum OGLUtils::ImageFormatToGL(ImageFormat format)
 	{
 		switch (format)

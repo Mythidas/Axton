@@ -9,6 +9,7 @@ namespace Axton::OpenGL
 	class OGLUtils
 	{
 	public:
+		static int ImageFormatSize(ImageFormat format);
 		static GLenum ImageFormatToGL(ImageFormat format);
 		static GLenum ImageFormatToGLInternal(ImageFormat format);
 		static GLenum WrapFormatToGL(WrapFormat wrap);

@@ -21,8 +21,9 @@ struct Chunk
 {
 	vec3 MinExtent;
 	vec3 MaxExtent;
+	ivec3 VoxelOffset;
 	uint VoxelIndex;
-	uint[256] MaterialLookup;
+	uint[64] MaterialLookup;
 };
 
 layout (std430, binding = 2) readonly buffer chunkStorage
@@ -126,19 +127,19 @@ RayTracePayload traceBoxes(Ray ray)
 		{
 			// Find the Voxel where the ray starts
 			vec3 startPos = getRayPoint(ray, tmin + 0.003);
-			ivec3 currentIndex = ivec3(floor((startPos - u_Chunks[i].MinExtent)));
+			ivec3 currentIndex = ivec3(floor((startPos - u_Chunks[i].MinExtent) / VOXEL_SIZE));
 			ivec3 steps = ivec3(sign(ray.Direction));
 
-			vec3 tDelta = ray.InvDirection;
+			vec3 tDelta = VOXEL_SIZE / ray.Direction;
 			vec3 tMax = vec3(tmax);
 			for (int j = 0; j < 3; j++)
 			{
 				if (ray.Direction[j] > 0)
-					tMax[j] = tmin + (u_Chunks[i].MinExtent[j] + currentIndex[j] + 1 - startPos[j]) / ray.Direction[j];
+					tMax[j] = tmin + (u_Chunks[i].MinExtent[j] + (currentIndex[j] + 1) * VOXEL_SIZE - startPos[j]) / ray.Direction[j];
 				else if (ray.Direction[j] < 0)
 				{
-					tMax[j] = tmin + (u_Chunks[i].MinExtent[j] + currentIndex[j] - startPos[j]) / ray.Direction[j];
-					tDelta[j] = -ray.InvDirection[j];
+					tMax[j] = tmin + (u_Chunks[i].MinExtent[j] + currentIndex[j] * VOXEL_SIZE - startPos[j]) / ray.Direction[j];
+					tDelta[j] = VOXEL_SIZE / -ray.Direction[j];
 				}
 			}
 
@@ -155,10 +156,10 @@ RayTracePayload traceBoxes(Ray ray)
 				int matIndex = getVoxelData(u_Chunks[i].VoxelIndex, currentIndex);
 				if (matIndex != 255)
 				{
-					vec2 tValue = findBoxTminTmax(u_Chunks[i].MinExtent + currentIndex, 
-									u_Chunks[i].MinExtent + currentIndex + VOXEL_SIZE, ray);
+					vec2 tValue = findBoxTminTmax(u_Chunks[i].MinExtent + currentIndex * VOXEL_SIZE, 
+									u_Chunks[i].MinExtent + (currentIndex + 1) * VOXEL_SIZE, ray);
 
-					closestPosition = u_Chunks[i].MinExtent + vec3(currentIndex + VOXEL_SIZE * 0.5);
+					closestPosition = u_Chunks[i].MinExtent + vec3(currentIndex * VOXEL_SIZE + VOXEL_SIZE * 0.5);
 					closestPoint = tValue.x;
 					closestVoxel = i;
 					closestMaterial = matIndex;

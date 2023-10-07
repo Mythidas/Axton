@@ -24,46 +24,53 @@ struct Chunk
 	{
 		alignas(16) Vector3 MinExtent;
 		alignas(16) Vector3 MaxExtent;
+		alignas(16) IVector3 VoxelOffset;
 		uint32_t VoxelIndex;
-		uint32_t MaterialLookup[256];
+		uint32_t MaterialLookup[64];
 	};
 
 	Vector3 Position;
 	UVector3 Extents;
-	std::vector<Voxel> Voxels;
 	Ref<Image3D> VoxelData;
 
 	Chunk(Vector3 position, UVector3 extents)
 		: Position(position), Extents(extents)
 	{
-		Voxels.resize(extents.x * extents.y * extents.z, { 255 });
 		VoxelData = Image3D::Create({ extents.x, extents.y, extents.z, 1, AccessFormat::READ_ONLY, ImageFormat::R8 });
+		std::vector<uint8_t> blank;
+		blank.resize(extents.x * extents.y * extents.z, (uint8_t)1);
+		VoxelData->SetData(blank.data());
 	}
 
 	Chunk::Buffer GetBuffer(uint32_t index) const
 	{
 		Chunk::Buffer buffer{};
-		buffer.MinExtent = Position - Vector3(Extents) * 0.5f;
-		buffer.MaxExtent = Position + Vector3(Extents) * 0.5f;
+		buffer.MinExtent = Position - Vector3(Extents) * 0.5f * 1.0f;
+		buffer.MaxExtent = Position + Vector3(Extents) * 0.5f * 1.0f;
 		buffer.VoxelIndex = index;
 		buffer.MaterialLookup[0] = 0;
 		buffer.MaterialLookup[1] = 1;
 		return buffer;
 	}
+	//(Extents.x * Extents.y * index.z) + (Extents.x * index.y) + index.x
 
-	Voxel GetVoxel(uint32_t x, uint32_t y, uint32_t z)
-	{
-		return Voxels[(Extents.x * Extents.y * z) + (Extents.x * y) + x];
+	void GetVoxel(IVector3 index, uint8_t* outData)
+	{	
+
 	}
 
-	void SetVoxel(uint32_t x, uint32_t y, uint32_t z, Voxel voxel)
+	void SetVoxel(IVector3 index, uint8_t voxel)
 	{
-		Voxels[(Extents.x * Extents.y * z) + (Extents.x * y) + x] = voxel;
+		VoxelData->SetSubData(&voxel, index, { 1, 1, 1 });
 	}
 
-	void SetVoxel(uint32_t index, Voxel voxel)
+	void SetVoxel(uint32_t index, uint8_t voxel)
 	{
-		Voxels[index] = voxel;
+		IVector3 indexParsed{ 0 };
+		indexParsed.x = glm::floor(index % Extents.x);
+		indexParsed.y = glm::floor((index / Extents.x) % Extents.y);
+		indexParsed.z = glm::floor(index / (Extents.x * Extents.y));
+		VoxelData->SetSubData(&voxel, indexParsed, { 1, 1, 1 });
 	}
 };
 
@@ -79,7 +86,7 @@ void parallel_function(int start, int end, Chunk* layer)
 	for (int i = start; i < end; i++)
 	{
 		uint8_t rand = (uint8_t)Mathf::Random::UInt32(0, 10);
-		layer->SetVoxel(i, Voxel{ rand > 1 ? (uint8_t)255 : rand });
+		layer->SetVoxel(i, (uint8_t)(rand > 1 ? (uint8_t)255 : rand));
 	}
 	return;
 }
@@ -93,7 +100,6 @@ public:
 
 	std::vector<Chunk> Chunks;
 	std::vector<Material> Materials;
-	Chunk newChunk{ Vector3(0, 0, -250), UVector3(500, 500, 500) };
 
 	virtual void OnAttach() override
 	{
@@ -104,24 +110,31 @@ public:
 		m_Compute = ComputeShader::Create("C:\\Programming\\Axton\\Axton\\internal\\shaders\\ChunkRaycaster.glsl");
 
 		{
-			Timer timer("Chunk Size Generated: " + std::to_string(500 * 500 * 500));
+			Vector3 size{ 16, 16, 16 };
+			Timer timer("Chunk Size Generated: " + std::to_string(size.x * size.y * size.z));
 
-			Chunk newChunk{ Vector3(0, 0, -250), UVector3(500, 500, 500) };
+			Chunk newChunk{ Vector3(0, 0, -5), UVector3(size.x, size.y, size.z) };
 
-			bool mt = true;
+			bool mt = false;
 
 			if (!mt)
 			{
-				for (int i = 0; i < 500 * 500 * 500; i++)
+				for (int z = 0; z < size.z; z++)
 				{
-					uint8_t rand = (uint8_t)Mathf::Random::UInt32(0, 10);
-					newChunk.SetVoxel(i, Voxel{ rand > 1 ? (uint8_t)255 : rand });
+					for (int y = 0; y < size.y; y++)
+					{
+						for (int x = 0; x < size.x; x++)
+						{
+							uint8_t rand = (uint8_t)Mathf::Random::UInt32(0, 10);
+							newChunk.SetVoxel(IVector3(x, y, z), rand > 1 ? (uint8_t)255 : rand);
+						}
+					}
 				}
 			}
 			else
 			{
 				const int num_threads = 8;
-				const int array_size = 500 * 500 * 500;
+				const int array_size = size.x * size.y * size.z;
 
 				std::vector<std::thread> threads;
 				int chunk_size = array_size / num_threads;
@@ -142,6 +155,7 @@ public:
 
 			Chunks.push_back(newChunk);
 		}
+
 
 		//newChunk.Position = { 0, 0, -5 };
 		//Chunks.push_back(newChunk);
@@ -184,7 +198,6 @@ public:
 		std::vector<RendererID> Ids;
 		for (int i = 0; i < 1; i++)
 		{
-			Chunks[i].VoxelData->SetData(Chunks[i].Voxels.data());
 			Ids.push_back(Chunks[i].VoxelData->GetRendererID());
 		}
 

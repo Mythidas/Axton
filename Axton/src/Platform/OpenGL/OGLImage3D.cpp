@@ -39,10 +39,15 @@ namespace Axton::OpenGL
 		glTextureSubImage3D(m_RendererID, 0, 0, 0, 0, m_Specs.Width, m_Specs.Height, m_Specs.Depth, OGLUtils::ImageFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
 	}
 
-	void OGLImage3D::SetData(void* data, uint32_t width, uint32_t height, uint32_t depth)
+	void OGLImage3D::SetSubData(void* data, IVector3 offset, IVector3 size)
+	{
+		glTextureSubImage3D(m_RendererID, 0, offset.x, offset.y, offset.z, size.x, size.y, size.z, OGLUtils::ImageFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
+	}
+
+	void OGLImage3D::SetSubData(void* data, IVector3 offset, IVector3 size, uint32_t width, uint32_t height, uint32_t depth)
 	{
 		OGLImage3D::Resize(width, height, depth);
-		SetData(data);
+		SetSubData(data, offset, size);
 	}
 
 	void OGLImage3D::Resize(uint32_t width, uint32_t height, uint32_t depth)
