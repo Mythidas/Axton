@@ -18,6 +18,7 @@ namespace Axton
 
 		m_Context->Init(m_Window);
 
+		glfwSwapInterval(0);
 		glfwSetWindowUserPointer(m_Window, this);
 
 		if (specs.FixedAspectRatio)

@@ -67,4 +67,13 @@ namespace Axton::OpenGL
 		AX_ASSERT_CORE(false, "Unknown TextureFilter!");
 		return 0;
 	}
+
+	void OGLUtils::CheckForErrors(const std::string& info)
+	{
+		if (int error = glGetError())
+		{
+			CoreLog::Error("OpenGL {0} Error: {1}", info, error);
+			AX_ASSERT_CORE(false, "OpenGL Error");
+		}
+	}
 }

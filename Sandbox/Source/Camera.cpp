@@ -62,6 +62,10 @@ void Camera::ProcessMovement()
 	Vector3 righDirection = Vector::Cross(m_Direction, upDir);
 
 	float speed = 5.0f;
+	if (Input::IsKeyPressed(KeyCode::LeftShift))
+		speed = 100.0f;
+	else
+		speed = 5.0f;
 
 	if (Input::IsKeyPressed(KeyCode::W))
 	{

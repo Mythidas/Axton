@@ -30,7 +30,7 @@ namespace Axton::OpenGL
 
 	void OGLRendererAPI::SetViewport(int& width, int& height)
 	{
-		glViewport(0, 0, width, height);
+		//glViewport(0, 0, width, height);
 		if (int error = glGetError())
 		{
 			CoreLog::Error("OpenGL Viewport Error: {0}", error);

@@ -1,5 +1,6 @@
 #include "axpch.h"
 #include "OGLStorageBuffer.h"
+#include "OGLUtils.h"
 
 #include <glad/glad.h>
 
@@ -32,6 +33,8 @@ namespace Axton::OpenGL
 		glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, Utils::BufferUsageToOpenGL(usage));
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, m_RendererID);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+		OGLUtils::CheckForErrors("Storage Buffer");
 	}
 
 	OGLStorageBuffer::~OGLStorageBuffer()

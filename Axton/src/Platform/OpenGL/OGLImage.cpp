@@ -21,6 +21,8 @@ namespace Axton::OpenGL
 		glTexImage2D(GL_TEXTURE_2D, 0, OGLUtils::ImageFormatToGLInternal(specs.Format), (GLint)specs.Width, (GLint)specs.Height, 0,
 			OGLUtils::ImageFormatToGL(specs.Format), GL_FLOAT, NULL);
 		glBindImageTexture(specs.Slot, m_RendererID, 0, GL_FALSE, 0, OGLUtils::AccessFormatToGL(specs.Access), OGLUtils::ImageFormatToGLInternal(specs.Format));
+
+		OGLUtils::CheckForErrors("Image");
 	}
 
 	OGLImage::~OGLImage()

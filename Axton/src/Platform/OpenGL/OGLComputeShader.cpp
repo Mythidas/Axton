@@ -1,5 +1,6 @@
 #include "axpch.h"
 #include "OGLComputeShader.h"
+#include "OGLUtils.h"
 #include "Axton/Utils/FileSystem.h"
 
 #include <glad/glad.h>
@@ -54,6 +55,8 @@ namespace Axton::OpenGL
 		glAttachShader(m_RendererID, computeID);
 		glLinkProgram(m_RendererID);
 		Utils::LogShaderProgramErrors(m_RendererID);
+
+		OGLUtils::CheckForErrors("Compute Shader");
 	}
 
 	OGLComputeShader::~OGLComputeShader()

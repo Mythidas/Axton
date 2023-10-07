@@ -8,6 +8,10 @@ namespace Axton
 	typedef glm::vec3 Vector3;
 	typedef glm::vec4 Vector4;
 
+	typedef glm::ivec3 IVector3;
+
+	typedef glm::uvec3 UVector3;
+
 	class Vector
 	{
 	public:

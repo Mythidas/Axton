@@ -56,4 +56,11 @@ namespace Axton::OpenGL
 		glTexImage3D(GL_TEXTURE_3D, 0, OGLUtils::ImageFormatToGLInternal(m_Specs.Format), (GLint)m_Specs.Width, (GLint)m_Specs.Height, (GLint)m_Specs.Depth, 0,
 			OGLUtils::ImageFormatToGL(m_Specs.Format), GL_FLOAT, NULL);
 	}
+
+	void OGLImage3D::BindAll(uint32_t slot, const std::vector<RendererID>& images)
+	{
+		glBindImageTextures(slot, (GLsizei)images.size(), images.data());
+
+		OGLUtils::CheckForErrors("Image3D");
+	}
 }

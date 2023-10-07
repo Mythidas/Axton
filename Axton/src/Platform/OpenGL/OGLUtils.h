@@ -14,5 +14,7 @@ namespace Axton::OpenGL
 		static GLenum WrapFormatToGL(WrapFormat wrap);
 		static GLenum FilterFormatToGL(FilterFormat filter);
 		static GLenum AccessFormatToGL(AccessFormat format);
+
+		static void CheckForErrors(const std::string& info);
 	};
 }

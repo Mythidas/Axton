@@ -19,6 +19,8 @@ namespace Axton::OpenGL
 		virtual uint32_t GetHeight() const override { return m_Specs.Height; }
 		virtual RendererID GetRendererID() const override { return m_RendererID; }
 
+		static void BindAll(uint32_t slot, const std::vector <RendererID>& images);
+
 	private:
 		RendererID m_RendererID;
 		Image3DSpecs m_Specs;
