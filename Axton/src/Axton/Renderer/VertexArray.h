@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Axton/Core/Defines.h"
-#include "Buffer.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 #include <vector>
 

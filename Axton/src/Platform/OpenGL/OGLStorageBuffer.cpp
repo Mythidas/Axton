@@ -1,6 +1,7 @@
 #include "axpch.h"
 #include "OGLStorageBuffer.h"
 #include "OGLUtils.h"
+#include "Axton/Debug/MemTracker.h"
 
 #include <glad/glad.h>
 
@@ -25,29 +26,47 @@ namespace Axton::OpenGL
 		}
 	}
 
-	OGLStorageBuffer::OGLStorageBuffer(uint32_t size, BufferUsage usage, uint32_t binding)
-		: m_RendererID(0)
+	OGLStorageBuffer::OGLStorageBuffer(const StorageBuffer::Specs& specs)
+		: m_RendererID(0), m_DebugName(specs.DebugName)
 	{
 		glGenBuffers(1, &m_RendererID);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, Utils::BufferUsageToOpenGL(usage));
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, m_RendererID);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, specs.Size, nullptr, Utils::BufferUsageToOpenGL(specs.Usage));
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, specs.Binding, m_RendererID);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 		OGLUtils::CheckForErrors("Storage Buffer");
+
+		if (!m_DebugName.empty())
+			MemTracker::SetSlot(m_DebugName, specs.Size);
 	}
 
 	OGLStorageBuffer::~OGLStorageBuffer()
 	{
 		glDeleteBuffers(1, &m_RendererID);
+
+		if (!m_DebugName.empty())
+			MemTracker::DeleteSlot(m_DebugName);
 	}
 
-	void OGLStorageBuffer::SetData(const void* data, uint32_t size, uint32_t offset)
+	void* OGLStorageBuffer::MapBufferPtr() const
+	{
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
+		return glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
+	}
+
+	void OGLStorageBuffer::UnmapBufferPtr() const
+	{
+		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	}
+
+	void OGLStorageBuffer::SetData(const void* data, size_t size, uint32_t offset)
 	{
 		if (offset > 0)
 		{
 			glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
 			glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, size, data);
+			return;
 		}
 
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);

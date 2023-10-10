@@ -4,9 +4,9 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-Camera::Camera(float vFov, float nearClip, float farClip)
-	: m_FOV(vFov), m_NearClip(nearClip), m_FarClip(farClip)
+RayCamera::RayCamera(const Camera::Specs& specs)
 {
+	m_Specs = specs;
 	m_Direction = Vector3(0.0f, 0.0f, -1.0f);
 	m_Position = Vector3(0.0f, 0.0f, 3.0f);
 
@@ -15,7 +15,7 @@ Camera::Camera(float vFov, float nearClip, float farClip)
 	m_CameraTransform = UniformBuffer::Create(sizeof(CameraTransformData), 0);
 }
 
-void Camera::OnUpdate()
+void RayCamera::OnUpdate()
 {
 	ProcessMovement();
 
@@ -27,7 +27,7 @@ void Camera::OnUpdate()
 	m_CameraTransform->SetData(&m_CameraTransformData, sizeof(CameraTransformData));
 }
 
-void Camera::OnResize(uint32_t width, uint32_t height)
+void RayCamera::OnResize(uint32_t width, uint32_t height)
 {
 	if (width == m_ViewportWidth && height == m_ViewportHeight) return;
 
@@ -37,12 +37,12 @@ void Camera::OnResize(uint32_t width, uint32_t height)
 	RecalculateProjection();
 }
 
-float Camera::GetRotationSpeed()
+float RayCamera::GetRotationSpeed()
 {
 	return 0.3f;
 }
 
-void Camera::ProcessMovement()
+void RayCamera::ProcessMovement()
 {
 	Vector2 mousePos = Input::GetMousePosition();
 	Vector2 delta = (mousePos - m_LastMousePosition) * 0.002f;
@@ -116,13 +116,14 @@ void Camera::ProcessMovement()
 	}
 }
 
-void Camera::RecalculateProjection()
+void RayCamera::RecalculateProjection()
 {
-	m_Projection = glm::perspective(Mathf::ToRadians(m_FOV), (float)m_ViewportWidth / (float)m_ViewportHeight, m_NearClip, m_FarClip);
+	m_Projection = glm::perspective(Mathf::ToRadians(m_Specs.VFov), (float)m_ViewportWidth / (float)m_ViewportHeight, 
+		m_Specs.NearClip, m_Specs.FarClip);
 	m_InverseProjection = glm::inverse(m_Projection);
 }
 
-void Camera::RecalculateView()
+void RayCamera::RecalculateView()
 {
 	m_View = glm::lookAt(m_Position, m_Position + m_Direction, Vector3(0.0f, 1.0f, 0.0f));
 	m_InverseView = glm::inverse(m_View);

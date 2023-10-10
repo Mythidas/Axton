@@ -8,12 +8,15 @@ namespace Axton::OpenGL
 	class OGLStorageBuffer : public StorageBuffer
 	{
 	public:
-		OGLStorageBuffer(uint32_t size, BufferUsage usage, uint32_t binding);
+		OGLStorageBuffer(const StorageBuffer::Specs& specs);
 		~OGLStorageBuffer();
 
-		virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) override;
+		virtual void* MapBufferPtr() const override;
+		virtual void UnmapBufferPtr() const override;
+		virtual void SetData(const void* data, size_t size, uint32_t offset = 0) override;
 
 	public:
 		RendererID m_RendererID;
+		std::string m_DebugName;
 	};
 }

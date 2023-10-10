@@ -23,6 +23,7 @@ namespace Axton
 
 		virtual void Bind() const = 0;
 		virtual void SetData(void* data) = 0;
+		virtual void SetData(void* data, uint32_t width, uint32_t height, uint32_t depth) = 0;
 		virtual void SetSubData(void* data, IVector3 offset, IVector3 size) = 0;
 		virtual void SetSubData(void* data, IVector3 offset, IVector3 size, uint32_t width, uint32_t height, uint32_t depth) = 0;
 		virtual void Resize(uint32_t width, uint32_t height, uint32_t depth) = 0;

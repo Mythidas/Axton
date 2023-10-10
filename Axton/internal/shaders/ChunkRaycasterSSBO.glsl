@@ -2,7 +2,6 @@
 
 layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 layout (rgba32f, binding = 0) uniform image2D imgOutput;
-layout (r8, binding = 1) uniform image3D voxelData[7];
 
 layout (std140, binding = 0) uniform camera
 {
@@ -21,9 +20,14 @@ struct Chunk
 {
 	vec3 MinExtent;
 	vec3 MaxExtent;
-	ivec3 VoxelOffset;
-	uint VoxelIndex;
+	ivec3 GridSize;
+	uint VoxelOffset;
 	uint[64] MaterialLookup;
+};
+
+struct Voxel
+{
+	uint MatIndex;
 };
 
 layout (std430, binding = 2) readonly buffer chunkStorage
@@ -36,11 +40,34 @@ layout (std430, binding = 3) readonly buffer matStorage
 	Material[] u_Materials;
 };
 
+layout (std430, binding = 4) readonly buffer voxStorage
+{
+	Voxel[] u_Voxels;
+};
+
 const float VOXEL_SIZE = 1;
 
-int getVoxelData(uint voxel, ivec3 index)
+uint collapseIndex(ivec3 index, Chunk chunk)
 {
-	return int(imageLoad(voxelData[voxel], ivec3(index)).r * 255);
+	return uint(((chunk.GridSize.x * chunk.GridSize.y * index.z) + (chunk.GridSize.x * index.y) + index.x) + chunk.VoxelOffset);	
+}
+
+uint getVoxelMaterial(ivec3 index, Chunk chunk)
+{
+	uint cIndex = collapseIndex(index, chunk);
+	uint sIndex = cIndex / 4;
+	uint bIndex = cIndex % 4;
+
+	vec4 mats = unpackUnorm4x8(u_Voxels[sIndex].MatIndex);
+	switch (bIndex)
+	{
+		case 0: return uint(mats.x * 255);
+		case 1: return uint(mats.y * 255);
+		case 2: return uint(mats.z * 255);
+		case 3: return uint(mats.w * 255);
+	}
+
+	return 0;
 }
 
 struct Ray
@@ -61,7 +88,7 @@ struct RayTracePayload
 	vec3 Normal;
 	float Distance;
 	int ObjIndex;
-	int MaterialIndex;
+	uint MaterialIndex;
 };
 
 RayTracePayload missHit(Ray ray)
@@ -82,7 +109,7 @@ vec3 getVoxelNormal(vec3 center, vec3 hit)
 		return vec3(0, 0, sign(diff.z));
 }
 
-RayTracePayload closestHitBox(Ray ray, vec3 position, float hitDistance, int objIndex, int material)
+RayTracePayload closestHitBox(Ray ray, vec3 position, float hitDistance, int objIndex, uint material)
 {
 	RayTracePayload payload;
 	payload.Distance = hitDistance;
@@ -115,7 +142,7 @@ RayTracePayload traceBoxes(Ray ray)
 	float closestPoint = 100000000;
 	int closestVoxel = -1;
 	vec3 closestPosition = vec3(0);
-	int closestMaterial = -1;
+	uint closestMaterial = -1;
 
 	for (int i = 0; i < u_Chunks.length(); i++)
 	{
@@ -143,18 +170,17 @@ RayTracePayload traceBoxes(Ray ray)
 				}
 			}
 
-			vec3 gridSize = imageSize(voxelData[u_Chunks[i].VoxelIndex]);
-			for (int j = 0; j < 100; j++)
+			for (int j = 0; j < u_Chunks[i].GridSize.x * u_Chunks[i].GridSize.y * u_Chunks[i].GridSize.z; j++)
 			{
-				if (currentIndex.x < 0 || currentIndex.x >= gridSize.x
-					|| currentIndex.y < 0 || currentIndex.y >= gridSize.y
-					|| currentIndex.z < 0 || currentIndex.z >= gridSize.z)
+				if (currentIndex.x < 0 || currentIndex.x >= u_Chunks[i].GridSize.x
+					|| currentIndex.y < 0 || currentIndex.y >= u_Chunks[i].GridSize.y
+					|| currentIndex.z < 0 || currentIndex.z >= u_Chunks[i].GridSize.z)
 				{
 					break;
 				}
 
-				int matIndex = getVoxelData(u_Chunks[i].VoxelIndex, currentIndex);
-				if (matIndex != 255)
+				uint matIndex = getVoxelMaterial(currentIndex, u_Chunks[i]);
+				if (matIndex != 0)
 				{
 					vec2 tValue = findBoxTminTmax(u_Chunks[i].MinExtent + currentIndex * VOXEL_SIZE, 
 									u_Chunks[i].MinExtent + (currentIndex + 1) * VOXEL_SIZE, ray);

@@ -39,6 +39,12 @@ namespace Axton::OpenGL
 		glTextureSubImage3D(m_RendererID, 0, 0, 0, 0, m_Specs.Width, m_Specs.Height, m_Specs.Depth, OGLUtils::ImageFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
 	}
 
+	void OGLImage3D::SetData(void* data, uint32_t width, uint32_t height, uint32_t depth)
+	{
+		OGLImage3D::Resize(width, height, depth);
+		SetData(data);
+	}
+
 	void OGLImage3D::SetSubData(void* data, IVector3 offset, IVector3 size)
 	{
 		glTextureSubImage3D(m_RendererID, 0, offset.x, offset.y, offset.z, size.x, size.y, size.z, OGLUtils::ImageFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
@@ -52,10 +58,11 @@ namespace Axton::OpenGL
 
 	void OGLImage3D::Resize(uint32_t width, uint32_t height, uint32_t depth)
 	{
-		if (width == m_Specs.Width && height == m_Specs.Height) return;
+		if (width == m_Specs.Width && height == m_Specs.Height && depth == m_Specs.Depth) return;
 
 		m_Specs.Width = width;
 		m_Specs.Height = height;
+		m_Specs.Depth = depth;
 
 		glBindTexture(GL_TEXTURE_3D, m_RendererID);
 		glTexImage3D(GL_TEXTURE_3D, 0, OGLUtils::ImageFormatToGLInternal(m_Specs.Format), (GLint)m_Specs.Width, (GLint)m_Specs.Height, (GLint)m_Specs.Depth, 0,

@@ -4,6 +4,8 @@
 #include "Shader.h"
 #include "RenderCommands.h"
 #include "UniformBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexBuffer.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -100,10 +102,10 @@ namespace Axton
 
 		Ref<VertexBuffer> quadVertexBuffer = VertexBuffer::Create(s_Data2D.MAX_VERTICES * sizeof(QuadVertex));
 		quadVertexBuffer->SetLayout({
-			{ VertexAttrib::VAType::Float3, false },
-			{ VertexAttrib::VAType::Float4, false },
-			{ VertexAttrib::VAType::Float2, false },
-			{ VertexAttrib::VAType::Float, false },
+			{ VertexBuffer::Attribute::AttributeFormat::Float3, false },
+			{ VertexBuffer::Attribute::AttributeFormat::Float4, false },
+			{ VertexBuffer::Attribute::AttributeFormat::Float2, false },
+			{ VertexBuffer::Attribute::AttributeFormat::Float, false },
 		});
 
 		s_Data2D.QuadVertexArray->AddBuffers(quadVertexBuffer, indexBuffer);
@@ -115,10 +117,10 @@ namespace Axton
 
 		Ref<VertexBuffer> uiQuadVertexBuffer = VertexBuffer::Create(s_Data2D.MAX_VERTICES * sizeof(UIQuadVertex));
 		uiQuadVertexBuffer->SetLayout({
-			{ VertexAttrib::VAType::Float2, false },
-			{ VertexAttrib::VAType::Float4, false },
-			{ VertexAttrib::VAType::Float2, false },
-			{ VertexAttrib::VAType::Float, false },
+			{ VertexBuffer::Attribute::AttributeFormat::Float2, false },
+			{ VertexBuffer::Attribute::AttributeFormat::Float4, false },
+			{ VertexBuffer::Attribute::AttributeFormat::Float2, false },
+			{ VertexBuffer::Attribute::AttributeFormat::Float, false },
 			});
 
 		s_Data2D.UIQuadVertexArray->AddBuffers(uiQuadVertexBuffer, indexBuffer);

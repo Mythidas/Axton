@@ -5,12 +5,12 @@
 
 namespace Axton
 {
-	Ref<StorageBuffer> StorageBuffer::Create(uint32_t size, BufferUsage usage, uint32_t binding)
+	Ref<StorageBuffer> StorageBuffer::Create(const Specs& specs)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPI::API::None: AX_ASSERT_CORE(false, "RendererAPI::None not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL: return CreateRef<OpenGL::OGLStorageBuffer>(size, usage, binding);
+		case RendererAPI::API::OpenGL: return CreateRef<OpenGL::OGLStorageBuffer>(specs);
 		}
 
 		AX_ASSERT_CORE(false, "RendererAPI not recognized!");

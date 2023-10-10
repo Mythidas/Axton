@@ -1,12 +1,12 @@
 #include "axpch.h"
-#include "OGLImage.h"
+#include "OGLImage2D.h"
 #include "OGLUtils.h"
 
 #include <glad/glad.h>
 
 namespace Axton::OpenGL
 {
-	OGLImage::OGLImage(const ImageSpecs& specs)
+	OGLImage2D::OGLImage2D(const Image2DSpecs& specs)
 		: m_RendererID(0), m_Specs(specs)
 	{
 		glGenTextures(1, &m_RendererID);
@@ -22,26 +22,26 @@ namespace Axton::OpenGL
 			OGLUtils::ImageFormatToGL(specs.Format), GL_FLOAT, NULL);
 		glBindImageTexture(specs.Slot, m_RendererID, 0, GL_FALSE, 0, OGLUtils::AccessFormatToGL(specs.Access), OGLUtils::ImageFormatToGLInternal(specs.Format));
 
-		OGLUtils::CheckForErrors("Image");
+		OGLUtils::CheckForErrors("Image2D");
 	}
 
-	OGLImage::~OGLImage()
+	OGLImage2D::~OGLImage2D()
 	{
 		glDeleteTextures(1, &m_RendererID);
 	}
 
-	void OGLImage::Bind() const
+	void OGLImage2D::Bind() const
 	{
 		glBindImageTexture(m_Specs.Slot, m_RendererID, 0, GL_FALSE, 0, OGLUtils::AccessFormatToGL(m_Specs.Access), OGLUtils::ImageFormatToGLInternal(m_Specs.Format));
 	}
 
-	void OGLImage::SetData(void* data, uint32_t width, uint32_t height)
+	void OGLImage2D::SetData(void* data, uint32_t width, uint32_t height)
 	{
-		OGLImage::Resize(width, height);
+		OGLImage2D::Resize(width, height);
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Specs.Width, m_Specs.Height, OGLUtils::ImageFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
 	}
 
-	void OGLImage::Resize(uint32_t width, uint32_t height)
+	void OGLImage2D::Resize(uint32_t width, uint32_t height)
 	{
 		if (width == m_Specs.Width && height == m_Specs.Height) return;
 

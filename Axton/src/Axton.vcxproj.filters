@@ -106,7 +106,7 @@
     <ClInclude Include="Axton\Math\Vector.h">
       <Filter>Axton\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Axton\Renderer\Buffer.h">
+    <ClInclude Include="Axton\Renderer\IndexBuffer.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Renderer\CameraSpecs.h">
@@ -154,7 +154,7 @@
     <ClInclude Include="Axton\Utils\FileSystem.h">
       <Filter>Axton\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\OpenGL\OGLBuffer.h">
+    <ClInclude Include="Platform\OpenGL\OGLIndexBuffer.h">
       <Filter>Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="Platform\OpenGL\OGLFramebuffer.h">
@@ -189,14 +189,20 @@
     </ClInclude>
     <ClInclude Include="axpch.h" />
     <ClInclude Include="Axton\Renderer\ComputeShader.h" />
-    <ClInclude Include="Axton\Renderer\Image.h" />
-    <ClInclude Include="Platform\OpenGL\OGLImage.h" />
+    <ClInclude Include="Axton\Renderer\Image2D.h" />
+    <ClInclude Include="Platform\OpenGL\OGLImage2D.h" />
     <ClInclude Include="Platform\OpenGL\OGLComputeShader.h" />
     <ClInclude Include="Axton\Renderer\StorageBuffer.h" />
     <ClInclude Include="Platform\OpenGL\OGLStorageBuffer.h" />
     <ClInclude Include="Axton\Renderer\Image3D.h" />
     <ClInclude Include="Platform\OpenGL\OGLImage3D.h" />
     <ClInclude Include="Platform\OpenGL\OGLUtils.h" />
+    <ClInclude Include="Axton\Renderer\VertexBuffer.h" />
+    <ClInclude Include="Platform\OpenGL\OGLVertexBuffer.h" />
+    <ClInclude Include="Axton\Debug\MemTracker.h" />
+    <ClInclude Include="Axton\Renderer\Image1D.h" />
+    <ClInclude Include="Platform\OpenGL\OGLImage1D.h" />
+    <ClInclude Include="Axton\Renderer\Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -244,7 +250,7 @@
     <ClCompile Include="Axton\Math\Vector.cpp">
       <Filter>Axton\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Axton\Renderer\Buffer.cpp">
+    <ClCompile Include="Axton\Renderer\IndexBuffer.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Renderer\CameraSpecs.cpp">
@@ -292,7 +298,7 @@
     <ClCompile Include="Axton\Utils\FileSystem.cpp">
       <Filter>Axton\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\OpenGL\OGLBuffer.cpp">
+    <ClCompile Include="Platform\OpenGL\OGLIndexBuffer.cpp">
       <Filter>Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="Platform\OpenGL\OGLFramebuffer.cpp">
@@ -326,8 +332,8 @@
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="axpch.cpp" />
-    <ClCompile Include="Axton\Renderer\Image.cpp" />
-    <ClCompile Include="Platform\OpenGL\OGLImage.cpp" />
+    <ClCompile Include="Axton\Renderer\Image2D.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLImage2D.cpp" />
     <ClCompile Include="Axton\Renderer\ComputeShader.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLComputeShader.cpp" />
     <ClCompile Include="Axton\Renderer\StorageBuffer.cpp" />
@@ -335,5 +341,10 @@
     <ClCompile Include="Axton\Renderer\Image3D.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLImage3D.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLUtils.cpp" />
+    <ClCompile Include="Axton\Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLVertexBuffer.cpp" />
+    <ClCompile Include="Axton\Debug\MemTracker.cpp" />
+    <ClCompile Include="Axton\Renderer\Image1D.cpp" />
+    <ClCompile Include="Platform\OpenGL\OGLImage1D.cpp" />
   </ItemGroup>
 </Project>
