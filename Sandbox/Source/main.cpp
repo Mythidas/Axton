@@ -1,8 +1,9 @@
 #include "Axton.h"
 #include "Axton/Core/EntryPoint.h"
 
-#include "Camera.h"
+#include "RayCamera.h"
 #include "World.h"
+#include "VoxModelLoader.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui/imgui.h>
@@ -10,11 +11,6 @@
 #include <thread>
 
 using namespace Axton;
-
-struct Material
-{
-	Vector4 Albedo;
-};
 
 void parallel_function(int start, int end, Ref<Chunk> layer)
 {
@@ -38,8 +34,6 @@ public:
 
 	void AddChunk(Vector3 position, Vector3 size)
 	{
-		Timer timer("Chunk Size Generated: " + std::to_string(size.x * size.y * size.z));
-
 		Ref<Chunk> newChunk = world.CreateChunk(position, UVector3(size.x, size.y, size.z));
 
 		bool mt = false;
@@ -53,9 +47,11 @@ public:
 				{
 					for (int x = 0; x < size.x; x++)
 					{
-						uint32_t rand = Mathf::Random::UInt32(1, 2);
-						if (x == size.x - 1)
-							newChunk->SetVoxel({ x, y, z }, { (uint8_t)1 });
+						uint32_t rand = Mathf::Random::UInt32(0, 1);
+						if (y < 24)
+							newChunk->SetVoxel({ x, y, z }, { rand });
+						else
+							newChunk->SetVoxel({ x, y, z }, { 255 });
 					}
 				}
 			}
@@ -90,19 +86,42 @@ public:
 		m_ViewportHeight = Application::Get().GetWindow().GetHeight();
 
 		m_Image = Image2D::Create({ m_ViewportWidth * 2, m_ViewportHeight * 2, 0, AccessFormat::READ_WRITE, ImageFormat::RGBA8 });
-		m_Compute = ComputeShader::Create("C:\\Programming\\Axton\\Axton\\internal\\shaders\\ChunkRaycasterSSBO.glsl");
+		m_VoxelImage = ComputeShader::Create("C:\\Programming\\Axton\\Axton\\internal\\shaders\\VoxelImageGen.glsl");
 
 		{
-			AddChunk({ 0, 0, -75 }, { 110, 50, 110 });
+			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\doom.vox");
+			loader.GenChunk(world, { -300, 0, 50 });
 		}
 
-		Material white{ {.8, .8, .8, 1} };
-		Material black{ {.5, .5, .5, 1} };
-		Materials.push_back(white);
-		Materials.push_back(black);
+		{
+			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\castle.vox");
+			loader.GenChunk(world, { -200, 0, 50 });
+		}
 
-		m_MaterialStorage = StorageBuffer::Create({ sizeof(Material) * Materials.size(), BufferUsage::DYNAM_DRAW, 3 });
-		m_MaterialStorage->SetData(Materials.data(), sizeof(Material) * Materials.size());
+		{
+			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\chr_knight.vox");
+			loader.GenChunk(world, { -100, 0, 50 });
+		}
+
+		{
+			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\monu1.vox");
+			loader.GenChunk(world, { 0, 0, 50 });
+		}
+
+		{
+			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\monu2.vox");
+			loader.GenChunk(world, { 100, 0, 50 });
+		}
+
+		{
+			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\room.vox");
+			loader.GenChunk(world, { 250, 0, 50 });
+		}
+
+		{
+			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\teapot.vox");
+			loader.GenChunk(world, { 400, 0, 50 });
+		}
 
 		world.LoadBuffers();
 	}
@@ -114,8 +133,8 @@ public:
 
 		m_Image->Resize(m_ViewportWidth * 2, m_ViewportHeight * 2);
 
-		m_Compute->Dispatch(m_ViewportWidth / (uint32_t)8, m_ViewportHeight / (uint32_t)8, 1);
-		m_Compute->Barrier();
+		m_VoxelImage->Dispatch(m_ViewportWidth / (uint32_t)8, m_ViewportHeight / (uint32_t)8, 1);
+		m_VoxelImage->Barrier();
 	}
 
 	virtual void OnRenderUI() override
@@ -160,8 +179,7 @@ private:
 	uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
 	Ref<Image2D> m_Image;
-	Ref<ComputeShader> m_Compute;
-	Ref<StorageBuffer> m_MaterialStorage;
+	Ref<ComputeShader> m_VoxelImage;
 };
 
 class SandboxApplication : public Axton::Application

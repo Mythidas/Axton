@@ -134,13 +134,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
+    <ClInclude Include="RayCamera.h" />
     <ClInclude Include="Chunk.h" />
+    <ClInclude Include="VoxModelLoader.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="RayCamera.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="VoxModelLoader.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>

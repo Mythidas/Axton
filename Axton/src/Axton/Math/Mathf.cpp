@@ -16,16 +16,6 @@ namespace Axton
 		return degrees * Pi / 180.0f;
 	}
 
-	float Mathf::Clamp::Float(float value, float min, float max)
-	{
-		return value < min ? min : value > max ? max : value;
-	}
-
-	int Mathf::Clamp::Int(int value, int min, int max)
-	{
-		return value < min ? min : value > max ? max : value;
-	}
-
 	float Mathf::Random::Float()
 	{
 		static std::uniform_real_distribution<float> distribution(0.0f, 1.0f);

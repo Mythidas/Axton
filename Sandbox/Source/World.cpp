@@ -3,7 +3,7 @@
 World::World(uint32_t maxVoxels)
 {
 	StorageBuffer::Builder voxelBuilder;
-	m_VoxelStorage = voxelBuilder.Size(sizeof(Voxel) * (maxVoxels / 4)).Binding(4).DebugName("VoxelStorage").Build();
+	m_VoxelStorage = voxelBuilder.Size(sizeof(Voxel) * maxVoxels).Binding(4).DebugName("VoxelStorage").Build();
 }
 
 World::~World()
@@ -16,10 +16,12 @@ Ref<Chunk> World::CreateChunk(Vector3 position, IVector3 extents)
 	uint32_t offset{ 0 };
 	if (!m_Chunks.empty())
 	{
-		offset = m_Chunks.back()->m_Offset + m_Chunks.back()->GetFlatGridSize();
+		offset += m_Chunks.back()->m_Offset + m_Chunks.back()->GetFlatGridSize();
 	}
 
 	m_Chunks.push_back(CreateRef<Chunk>(position, extents, offset));
+
+	MemTracker::SetSlot("VoxelStorage Used", (offset + m_Chunks.back()->GetFlatGridSize()) * sizeof(Voxel));
 	return m_Chunks.back();
 }
 

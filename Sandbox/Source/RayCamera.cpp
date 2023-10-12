@@ -1,4 +1,4 @@
-#include "Camera.h"
+#include "RayCamera.h"
 
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -7,8 +7,8 @@
 RayCamera::RayCamera(const Camera::Specs& specs)
 {
 	m_Specs = specs;
-	m_Direction = Vector3(0.0f, 0.0f, -1.0f);
-	m_Position = Vector3(0.0f, 0.0f, 3.0f);
+	m_Direction = Vector3(0.0f, 0.0f, 1.0f);
+	m_Position = Vector3(0.0f, 0.0f, -3.0f);
 
 	RecalculateView();
 
@@ -25,6 +25,11 @@ void RayCamera::OnUpdate()
 	m_CameraTransformData.View = m_InverseView;
 
 	m_CameraTransform->SetData(&m_CameraTransformData, sizeof(CameraTransformData));
+}
+
+Ray RayCamera::GetRay() const
+{
+	return Ray(m_Position, m_Direction);
 }
 
 void RayCamera::OnResize(uint32_t width, uint32_t height)

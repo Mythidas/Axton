@@ -203,6 +203,8 @@
     <ClInclude Include="Axton\Renderer\Image1D.h" />
     <ClInclude Include="Platform\OpenGL\OGLImage1D.h" />
     <ClInclude Include="Axton\Renderer\Camera.h" />
+    <ClInclude Include="Axton\Math\Bit.h" />
+    <ClInclude Include="Axton\Utils\Stringf.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -346,5 +348,7 @@
     <ClCompile Include="Axton\Debug\MemTracker.cpp" />
     <ClCompile Include="Axton\Renderer\Image1D.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLImage1D.cpp" />
+    <ClCompile Include="Axton\Utils\Stringf.cpp" />
+    <ClCompile Include="Axton\Math\Bit.cpp" />
   </ItemGroup>
 </Project>

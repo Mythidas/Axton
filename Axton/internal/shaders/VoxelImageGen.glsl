@@ -13,7 +13,7 @@ layout (std140, binding = 0) uniform camera
 
 struct Material
 {
-	vec4 Albedo;
+	uint Albedo;
 };
 
 struct Chunk
@@ -22,7 +22,7 @@ struct Chunk
 	vec3 MaxExtent;
 	ivec3 GridSize;
 	uint VoxelOffset;
-	uint[64] MaterialLookup;
+	Material[255] Materials;
 };
 
 struct Voxel
@@ -33,11 +33,6 @@ struct Voxel
 layout (std430, binding = 2) readonly buffer chunkStorage
 {
 	Chunk[] u_Chunks;
-};
-
-layout (std430, binding = 3) readonly buffer matStorage
-{
-	Material[] u_Materials;
 };
 
 layout (std430, binding = 4) readonly buffer voxStorage
@@ -55,19 +50,7 @@ uint collapseIndex(ivec3 index, Chunk chunk)
 uint getVoxelMaterial(ivec3 index, Chunk chunk)
 {
 	uint cIndex = collapseIndex(index, chunk);
-	uint sIndex = cIndex / 4;
-	uint bIndex = cIndex % 4;
-
-	vec4 mats = unpackUnorm4x8(u_Voxels[sIndex].MatIndex);
-	switch (bIndex)
-	{
-		case 0: return uint(mats.x * 255);
-		case 1: return uint(mats.y * 255);
-		case 2: return uint(mats.z * 255);
-		case 3: return uint(mats.w * 255);
-	}
-
-	return 0;
+	return u_Voxels[cIndex].MatIndex;
 }
 
 struct Ray
@@ -238,7 +221,7 @@ void main()
 
 	if (payload.Distance > 0)
 	{
-		vec4 color = u_Materials[u_Chunks[payload.ObjIndex].MaterialLookup[payload.MaterialIndex]].Albedo;
+		vec4 color = unpackUnorm4x8(u_Chunks[payload.ObjIndex].Materials[payload.MaterialIndex].Albedo);
 		finalColor = color;
 		imageStore(imgOutput, texelCoord, finalColor);
 

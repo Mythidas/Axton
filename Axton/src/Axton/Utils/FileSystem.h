@@ -13,7 +13,8 @@ namespace Axton
 		FileSystem(const char* path);
 		FileSystem(const std::string& path);
 
-		std::string ReadFile();
+		std::string ToString();
+		std::vector<uint8_t> ToBuffer();
 
 	private:
 		FS::path m_InternalPath;

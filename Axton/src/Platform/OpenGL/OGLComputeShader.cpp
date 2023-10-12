@@ -42,7 +42,7 @@ namespace Axton::OpenGL
 		: m_RendererID(0)
 	{
 		FileSystem srcFile(srcPath);
-		std::string srcCode = srcFile.ReadFile();
+		std::string srcCode = srcFile.ToString();
 		const GLchar* srcData[] = { srcCode.c_str() };
 
 		RendererID computeID;

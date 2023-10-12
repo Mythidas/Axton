@@ -6,11 +6,17 @@ using namespace Axton;
 
 struct Voxel
 {
-	uint32_t MaterialIndex;
+	uint32_t MaterialIndex{ 0 };
+};
+
+struct Material
+{
+	uint32_t Albedo{ 0 };
 };
 
 struct Chunk
 {
+	friend class VoxModelLoader;
 	friend class World;
 	const float VOXEL_SIZE = 1.0f;
 
@@ -20,14 +26,16 @@ struct Chunk
 		alignas(16) Vector3 MaxExtent;
 		alignas(16) IVector3 GridSize;
 		uint32_t VoxelOffset;
-		uint32_t MaterialLookup[64];
+		Material Materials[255];
 	};
 
 	Chunk(Vector3 position, IVector3 extents, uint32_t offset)
 		: m_Position(position), m_Extents(extents), m_Offset(offset), m_Voxels(nullptr)
 	{
-		IVector3 buffs = extents % 4;
-		m_Extents += buffs;
+		Material white{ Bit::U32_4x8(130, 130, 130, 255) };
+		Material black{ Bit::U32_4x8(80, 130, 200, 255) };
+		m_Materials[0] = white;
+		m_Materials[1] = black;
 	}
 
 	Chunk::Buffer GetBuffer() const
@@ -37,25 +45,26 @@ struct Chunk
 		buffer.MaxExtent = m_Position + Vector3(m_Extents) * 0.5f * VOXEL_SIZE;
 		buffer.VoxelOffset = m_Offset;
 		buffer.GridSize = m_Extents;
-		buffer.MaterialLookup[1] = 0;
-		buffer.MaterialLookup[2] = 1;
+		memcpy(&buffer.Materials, &m_Materials, sizeof(m_Materials));
 		return buffer;
 	}
 
 	Vector3 GetPosition() { return m_Position; }
 	IVector3 GetGridSize() { return m_Extents; }
-	int GetFlatGridSize() { return (m_Extents.x * m_Extents.y * m_Extents.z) / 4; }
+	int GetFlatGridSize() { return m_Extents.x * m_Extents.y * m_Extents.z; }
 	//Voxel GetVoxel(UVector3 index) { return m_VoxelLocalData[CollapseIndex(index)]; }
 	//Voxel GetVoxel(uint32_t index) { return m_VoxelLocalData[index]; }
 
 	void SetPosition(Vector3 position) { m_Position = position; }
-	void SetVoxel(UVector3 index, Voxel voxel) { PackVoxel(CollapseIndex(index), voxel); }
-	void SetVoxel(uint32_t index, Voxel voxel) { PackVoxel(index, voxel); }
+	void SetVoxel(UVector3 index, Voxel voxel) { m_Voxels[CollapseIndex(index)] = voxel; }
+	void SetVoxel(uint32_t index, Voxel voxel) { m_Voxels[index] = voxel; }
+	void SetMaterial(uint32_t index, Material mat) { m_Materials[index] = mat; }
 
 private:
 	Vector3 m_Position;
 	IVector3 m_Extents;
 	uint32_t m_Offset;
+	Material m_Materials[255];
 	Voxel* m_Voxels;
 
 private:
@@ -73,17 +82,21 @@ private:
 		return (m_Extents.x * m_Extents.y * index.z) + (m_Extents.x * index.y) + index.x;
 	}
 
-	void PackVoxel(uint32_t index, Voxel voxel)
+	void PackVoxel(uint32_t index, uint8_t voxel)
 	{
 		uint32_t buff = index % 4;
 		uint32_t smallIndex = index / 4;
 
 		switch (buff)
 		{
-		case 3: m_Voxels[smallIndex].MaterialIndex |= ((uint32_t)voxel.MaterialIndex << 24); break;
-		case 2: m_Voxels[smallIndex].MaterialIndex |= ((uint32_t)voxel.MaterialIndex << 16); break;
-		case 1: m_Voxels[smallIndex].MaterialIndex |= ((uint32_t)voxel.MaterialIndex << 8); break;
-		case 0: m_Voxels[smallIndex].MaterialIndex |= ((uint32_t)voxel.MaterialIndex); break;
+		case 3: m_Voxels[smallIndex].MaterialIndex = Bit::SetTo(m_Voxels[smallIndex].MaterialIndex, 
+			(uint8_t)voxel, 24); break;
+		case 2: m_Voxels[smallIndex].MaterialIndex = Bit::SetTo(m_Voxels[smallIndex].MaterialIndex, 
+			(uint8_t)voxel, 16); break;
+		case 1: m_Voxels[smallIndex].MaterialIndex = Bit::SetTo(m_Voxels[smallIndex].MaterialIndex, 
+			(uint8_t)voxel, 8); break;
+		case 0: m_Voxels[smallIndex].MaterialIndex = Bit::SetTo(m_Voxels[smallIndex].MaterialIndex, 
+			(uint8_t)voxel, 0); break;
 		}
 	}
 };

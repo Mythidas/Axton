@@ -9,6 +9,7 @@ namespace Axton
 	typedef glm::vec4 Vector4;
 
 	typedef glm::ivec3 IVector3;
+	typedef glm::ivec4 IVector4;
 
 	typedef glm::uvec3 UVector3;
 
@@ -29,6 +30,7 @@ namespace Axton
 		static Vector3 Refract(const Vector3& uv, const Vector3& norm, float etaiOverEtat);
 
 		static Vector3 Cross(const Vector3& v1, const Vector3& v2);
+		static Vector3 Abs(const Vector3& v1);
 
 		static float Dot(const Vector3& v1, const Vector3& v2);
 		static float Length(const Vector3& v1);
@@ -38,5 +40,10 @@ namespace Axton
 
 		//Vector4
 		static Vector4 Clamp(const Vector4& v1, const Vector4& min, const Vector4& max);
+
+		static Vector4 ConvertV4(uint32_t value);
+
+		// IVector4
+		static IVector4 ConvertIV4(uint32_t value);
 	};
 }

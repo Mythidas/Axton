@@ -34,7 +34,7 @@ namespace Axton
 
 	float Interval::Clamp(float value) const
 	{
-		return Mathf::Clamp::Float(value, Min, Max);
+		return Mathf::Clamp(value, Min, Max);
 	}
 
 	float Interval::Size() const

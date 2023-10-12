@@ -1,6 +1,7 @@
 #include "axpch.h"
 #include "Vector.h"
 #include "Mathf.h"
+#include "Bit.h"
 
 namespace Axton
 {
@@ -75,6 +76,11 @@ namespace Axton
 		return Vector3(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
 	}
 
+	Vector3 Vector::Abs(const Vector3& v1)
+	{
+		return Vector3(abs(v1.x), abs(v1.y), abs(v1.z));
+	}
+
 	float Vector::Dot(const Vector3& v1, const Vector3& v2)
 	{
 		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
@@ -100,5 +106,17 @@ namespace Axton
 	{
 		return Vector4(v1.x < min.x ? min.x : v1.x > max.x ? max.x : v1.x, v1.y < min.y ? min.y : v1.y > max.y ? max.y : v1.y,
 			v1.z < min.z ? min.z : v1.z > max.z ? max.z : v1.z, v1.w < min.w ? min.w : v1.w > max.w ? max.w : v1.w);
+	}
+
+	IVector4 Vector::ConvertIV4(uint32_t value)
+	{
+		return IVector4(Bit::Get<uint8_t>(value, 0), Bit::Get<uint8_t>(value, 8),
+			Bit::Get<uint8_t>(value, 16), Bit::Get<uint8_t>(value, 24));
+	}
+
+	Vector4 Vector::ConvertV4(uint32_t value)
+	{
+		return Vector4(Bit::Get<uint8_t>(value, 0), Bit::Get<uint8_t>(value, 8),
+			Bit::Get<uint8_t>(value, 16), Bit::Get<uint8_t>(value, 24));
 	}
 }

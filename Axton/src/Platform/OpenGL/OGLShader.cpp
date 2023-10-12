@@ -74,8 +74,8 @@ namespace Axton::OpenGL
 
 	void OGLShader::LoadShader()
 	{
-		std::string vertFile = FileSystem(m_VertexSource).ReadFile();
-		std::string fragFile = FileSystem(m_FragmentSource).ReadFile();
+		std::string vertFile = FileSystem(m_VertexSource).ToString();
+		std::string fragFile = FileSystem(m_FragmentSource).ToString();
 
 		const char* vertexSource = vertFile.c_str();
 		const char* fragmentSource = fragFile.c_str();

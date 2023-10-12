@@ -6,9 +6,12 @@ namespace Axton
 {
 	enum class BufferUsage
 	{
-		DYNAM_DRAW,
-		DYNAM_READ,
-		DYNAM_COPY,
+		// Dynamic: Contents will be modified repeatedly and used many times
+		DYNAM_DRAW, // Modified by application and used for GL drawing
+		DYNAM_READ, // Contents modified by reading data from GL and queried by application
+		DYNAM_COPY, // Contents modified by reading data from GL and used for GL drawing
+
+		// Static: Contents will be modified once and used many times
 		STATIC_DRAW,
 		STATIC_READ,
 		STATIC_COPY,

@@ -52,7 +52,7 @@ namespace Axton::OpenGL
 	void* OGLStorageBuffer::MapBufferPtr() const
 	{
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
-		return glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
+		return glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
 	}
 
 	void OGLStorageBuffer::UnmapBufferPtr() const
@@ -70,7 +70,7 @@ namespace Axton::OpenGL
 		}
 
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
-		GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
+		GLvoid* p = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
 		memcpy(p, data, size);
 		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	}

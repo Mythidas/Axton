@@ -18,6 +18,7 @@ public:
 	RayCamera(const Camera::Specs& specs);
 
 	void OnUpdate();
+	Ray GetRay() const;
 
 	virtual void OnResize(uint32_t width, uint32_t height) override;
 	virtual void RecalculateProjection() override;

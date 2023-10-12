@@ -17,6 +17,9 @@ public:
 
 	void LoadBuffers();
 
+	std::vector<Ref<Chunk>>::iterator begin() { return m_Chunks.begin(); }
+	std::vector<Ref<Chunk>>::iterator end() { return m_Chunks.end(); }
+
 private:
 	std::vector<Ref<Chunk>> m_Chunks;
 
