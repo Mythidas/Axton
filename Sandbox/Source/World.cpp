@@ -16,12 +16,13 @@ Ref<Chunk> World::CreateChunk(Vector3 position, IVector3 extents)
 	uint32_t offset{ 0 };
 	if (!m_Chunks.empty())
 	{
-		offset += m_Chunks.back()->m_Offset + m_Chunks.back()->GetFlatGridSize();
+		offset = m_Chunks.back()->m_Offset + m_Chunks.back()->GetFlatGridSize() / 4;
+		while (offset % 4 != 0) offset++;
 	}
 
 	m_Chunks.push_back(CreateRef<Chunk>(position, extents, offset));
 
-	MemTracker::SetSlot("VoxelStorage Used", (offset + m_Chunks.back()->GetFlatGridSize()) * sizeof(Voxel));
+	MemTracker::SetSlot("VoxelStorage Used", (offset + m_Chunks.back()->GetFlatGridSize() / 4) * sizeof(Voxel));
 	return m_Chunks.back();
 }
 

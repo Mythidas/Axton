@@ -40,8 +40,7 @@ Ref<Chunk> VoxModelLoader::GenChunk(World& world, Vector3 position)
 	for (int i = 0; i < xyziCount; i++)
 	{
 		IVector4 voxelVal = Vector::ConvertIV4(GetNextValue(buffer, currentIndex));
-		uint32_t voxelValIndex = newChunk->CollapseIndex({voxelVal.x, voxelVal.z, voxelVal.y});
-		newChunk->SetVoxel(voxelValIndex, { (uint32_t)voxelVal.w });
+		newChunk->SetVoxel({ voxelVal.x, voxelVal.z, voxelVal.y }, { (uint32_t)voxelVal.w });
 	}
 
 	uint32_t rgba = Bit::U32_4x8('R', 'G', 'B', 'A');

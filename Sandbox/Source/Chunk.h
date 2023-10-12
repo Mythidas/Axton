@@ -56,7 +56,7 @@ struct Chunk
 	//Voxel GetVoxel(uint32_t index) { return m_VoxelLocalData[index]; }
 
 	void SetPosition(Vector3 position) { m_Position = position; }
-	void SetVoxel(UVector3 index, Voxel voxel) { m_Voxels[CollapseIndex(index)] = voxel; }
+	void SetVoxel(UVector3 index, Voxel voxel) { PackVoxel(CollapseIndex(index) ,voxel.MaterialIndex); }
 	void SetVoxel(uint32_t index, Voxel voxel) { m_Voxels[index] = voxel; }
 	void SetMaterial(uint32_t index, Material mat) { m_Materials[index] = mat; }
 
@@ -85,7 +85,7 @@ private:
 	void PackVoxel(uint32_t index, uint8_t voxel)
 	{
 		uint32_t buff = index % 4;
-		uint32_t smallIndex = index / 4;
+		uint32_t smallIndex = glm::floor(index / uint32_t(4));
 
 		switch (buff)
 		{
@@ -98,5 +98,13 @@ private:
 		case 0: m_Voxels[smallIndex].MaterialIndex = Bit::SetTo(m_Voxels[smallIndex].MaterialIndex, 
 			(uint8_t)voxel, 0); break;
 		}
+	}
+
+	void PackLooseVoxel(uint32_t index, uint8_t voxel)
+	{
+		m_Voxels[index].MaterialIndex = Bit::SetTo(m_Voxels[index].MaterialIndex, voxel, 0);
+		m_Voxels[index].MaterialIndex = Bit::SetTo(m_Voxels[index].MaterialIndex, voxel, 8);
+		m_Voxels[index].MaterialIndex = Bit::SetTo(m_Voxels[index].MaterialIndex, voxel, 16);
+		m_Voxels[index].MaterialIndex = Bit::SetTo(m_Voxels[index].MaterialIndex, voxel, 24);
 	}
 };

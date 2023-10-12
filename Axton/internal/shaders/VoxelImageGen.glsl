@@ -44,13 +44,25 @@ const float VOXEL_SIZE = 1;
 
 uint collapseIndex(ivec3 index, Chunk chunk)
 {
-	return uint(((chunk.GridSize.x * chunk.GridSize.y * index.z) + (chunk.GridSize.x * index.y) + index.x) + chunk.VoxelOffset);	
+	return uint(((chunk.GridSize.x * chunk.GridSize.y * index.z) + (chunk.GridSize.x * index.y) + index.x));	
 }
 
 uint getVoxelMaterial(ivec3 index, Chunk chunk)
 {
 	uint cIndex = collapseIndex(index, chunk);
-	return u_Voxels[cIndex].MatIndex;
+	uint buff = cIndex % 4;
+	uint smallIndex = uint(floor(cIndex / 4)) + chunk.VoxelOffset;
+
+	vec4 unpacked = unpackUnorm4x8(u_Voxels[smallIndex].MatIndex);
+	switch (buff)
+	{
+		case 0: return uint(unpacked.x * 255.0); break;
+		case 1: return uint(unpacked.y * 255.0); break;
+		case 2: return uint(unpacked.z * 255.0); break;
+		case 3: return uint(unpacked.w * 255.0); break;
+	}
+
+	return uint(unpacked.w * 255);
 }
 
 struct Ray
