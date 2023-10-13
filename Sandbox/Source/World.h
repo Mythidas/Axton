@@ -15,7 +15,7 @@ public:
 	void BeginEdit(Ref<Chunk> chunk);
 	void EndEdit(Ref<Chunk> chunk);
 
-	void LoadBuffers();
+	void LoadBuffers(const Camera& camera);
 
 	std::vector<Ref<Chunk>>::iterator begin() { return m_Chunks.begin(); }
 	std::vector<Ref<Chunk>>::iterator end() { return m_Chunks.end(); }

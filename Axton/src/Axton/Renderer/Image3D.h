@@ -32,8 +32,6 @@ namespace Axton
 		virtual uint32_t GetHeight() const = 0;
 		virtual RendererID GetRendererID() const = 0;
 
-		static int MaxSize;
-
 		static void BindAll(uint32_t slot, const std::vector <RendererID>& images);
 		static Ref<Image3D> Create(const Image3DSpecs& specs);
 	};

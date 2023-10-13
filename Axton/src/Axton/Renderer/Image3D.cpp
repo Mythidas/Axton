@@ -4,8 +4,6 @@
 
 namespace Axton
 {
-	int Image3D::MaxSize = 0;
-
 	void Image3D::BindAll(uint32_t slot, const std::vector<RendererID>& images)
 	{
 		switch (RendererAPI::GetAPI())

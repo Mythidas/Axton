@@ -7,23 +7,31 @@
 
 namespace Axton
 {
-	struct WindowSpecs
-	{
-		std::string Title;
-		unsigned int Width;
-		unsigned int Height;
-		bool FixedAspectRatio = true;
-
-		WindowSpecs(const std::string& title = "Axton Engine",
-			unsigned int width = 1280,
-			unsigned int height = 720)
-			: Title(title), Width(width), Height(height)
-		{
-		}
-	};
-
 	class Window
 	{
+	public:
+		struct Specs
+		{
+			std::string Title{ "AxtonEngine" };
+			uint32_t Width{ 1280 };
+			uint32_t Height{ 720 };
+			bool FixedAspectRatio{ true };
+			bool VSync{ false };
+		};
+
+		struct Builder
+		{
+			Builder& Title(const std::string& title) { m_Specs.Title = title; return *this; }
+			Builder& Width(const uint32_t width) { m_Specs.Width = width; return *this; }
+			Builder& Height(const uint32_t height) { m_Specs.Height = height; return *this; }
+			Builder& FixedAspectRatio(const bool aspr) { m_Specs.FixedAspectRatio = aspr; return *this; }
+			Builder& VSync(const bool vsync) { m_Specs.VSync = vsync; return *this; }
+			Scope<Window> Build() const { return Window::Create(m_Specs); }
+
+		private:
+			Specs m_Specs;
+		};
+
 	public:
 		virtual ~Window() = default;
 
@@ -37,6 +45,6 @@ namespace Axton
 		virtual void* GetNativeWindow() const = 0;
 		virtual GraphicsContext& GetContext() const = 0;
 
-		static Scope<Window> Create(const WindowSpecs& props = WindowSpecs());
+		static Scope<Window> Create(const Specs& props);
 	};
 }

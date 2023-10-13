@@ -25,6 +25,7 @@ struct Chunk
 		alignas(16) Vector3 MinExtent;
 		alignas(16) Vector3 MaxExtent;
 		alignas(16) IVector3 GridSize;
+		float CameraDistance;
 		uint32_t VoxelOffset;
 		Material Materials[255];
 	};
@@ -38,11 +39,12 @@ struct Chunk
 		m_Materials[1] = black;
 	}
 
-	Chunk::Buffer GetBuffer() const
+	Chunk::Buffer GetBuffer(float distance) const
 	{
 		Chunk::Buffer buffer{};
 		buffer.MinExtent = m_Position - Vector3(m_Extents) * 0.5f * VOXEL_SIZE;
 		buffer.MaxExtent = m_Position + Vector3(m_Extents) * 0.5f * VOXEL_SIZE;
+		buffer.CameraDistance = distance;
 		buffer.VoxelOffset = m_Offset;
 		buffer.GridSize = m_Extents;
 		memcpy(&buffer.Materials, &m_Materials, sizeof(m_Materials));

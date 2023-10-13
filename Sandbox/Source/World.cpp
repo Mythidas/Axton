@@ -1,5 +1,7 @@
 #include "World.h"
 
+#include <map>
+
 World::World(uint32_t maxVoxels)
 {
 	StorageBuffer::Builder voxelBuilder;
@@ -38,15 +40,20 @@ void World::EndEdit(Ref<Chunk> chunk)
 	m_VoxelStorage->UnmapBufferPtr();
 }
 
-void World::LoadBuffers()
+void World::LoadBuffers(const Camera& camera)
 {
-	std::vector<Chunk::Buffer> chunks;
+	std::map<float, Chunk::Buffer> chunks;
 	for (size_t i = 0; i < m_Chunks.size(); i++)
 	{
-		chunks.push_back(m_Chunks[i]->GetBuffer());
+		float dist = glm::distance(camera.GetPosition(), m_Chunks[i]->GetPosition());
+		chunks.emplace(dist, m_Chunks[i]->GetBuffer(dist));
 	}
+
+	std::vector<Chunk::Buffer> chunkBuffers;
+	for (auto& cMap : chunks)
+		chunkBuffers.push_back(cMap.second);
 	
 	StorageBuffer::Builder chunkBuilder;
-	m_ChunkStorage = chunkBuilder.Size(sizeof(Chunk::Buffer) * chunks.size()).Binding(2).DebugName("ChunkStorage").Build();
-	m_ChunkStorage->SetData(chunks.data(), chunks.size() * sizeof(Chunk::Buffer));
+	m_ChunkStorage = chunkBuilder.Size(sizeof(Chunk::Buffer) * chunkBuffers.size()).Usage(BufferUsage::STATIC_DRAW).Binding(2).DebugName("ChunkStorage").Build();
+	m_ChunkStorage->SetData(chunkBuffers.data(), chunkBuffers.size() * sizeof(Chunk::Buffer));
 }

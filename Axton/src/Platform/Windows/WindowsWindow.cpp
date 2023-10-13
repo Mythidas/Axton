@@ -5,7 +5,7 @@
 
 namespace Axton
 {
-	WindowsWindow::WindowsWindow(const WindowSpecs& specs)
+	WindowsWindow::WindowsWindow(const Window::Specs& specs)
 	{
 		m_Specs = specs;
 
@@ -18,7 +18,7 @@ namespace Axton
 
 		m_Context->Init(m_Window);
 
-		glfwSwapInterval(0);
+		glfwSwapInterval((int)specs.VSync);
 		glfwSetWindowUserPointer(m_Window, this);
 
 		if (specs.FixedAspectRatio)
@@ -38,7 +38,7 @@ namespace Axton
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 		{
-			WindowSpecs& specs = ((WindowsWindow*)glfwGetWindowUserPointer(window))->m_Specs;
+			Window::Specs& specs = ((WindowsWindow*)glfwGetWindowUserPointer(window))->m_Specs;
 			specs.Width = width;
 			specs.Height = height;
 

@@ -140,7 +140,6 @@ bool findClosestVoxel(Ray ray, Chunk chunk, float tmin, float tmax, inout float 
 	vec3 startPos = getRayPoint(ray, tmin + 0.003);
 	ivec3 currentIndex = ivec3(floor((startPos - chunk.MinExtent) / VOXEL_SIZE));
 	ivec3 steps = ivec3(sign(ray.Direction));
-	int stepMultiplier = int(max(1, floor(chunk.CamDistance / 200)));;
 
 	vec3 tDelta = VOXEL_SIZE / ray.Direction;
 	vec3 tMax = vec3(tmax);
@@ -178,18 +177,18 @@ bool findClosestVoxel(Ray ray, Chunk chunk, float tmin, float tmax, inout float 
 
 		if (tMax.x < tMax.y && tMax.x < tMax.z)
 		{
-			tMax.x += tDelta.x * stepMultiplier;
-			currentIndex.x += steps.x * stepMultiplier;
+			tMax.x += tDelta.x;
+			currentIndex.x += steps.x;
 		}
 		else if (tMax.y < tMax.z)
 		{
-			tMax.y += tDelta.y * stepMultiplier;
-			currentIndex.y += steps.y * stepMultiplier;
+			tMax.y += tDelta.y;
+			currentIndex.y += steps.y;
 		}
 		else
 		{
-			tMax.z += tDelta.z * stepMultiplier;
-			currentIndex.z += steps.z * stepMultiplier;
+			tMax.z += tDelta.z;
+			currentIndex.z += steps.z;
 		}
 	}
 	

@@ -16,14 +16,18 @@ namespace Axton
 		static void Construct();
 		static void OnUpdate();
 
-		static const float GetDeltaTime() { return m_DeltaTime; }
-		static const float GetFixedDeltaTime() { return m_FixedDeltaTime; }
+		static const float GetFPS() { return s_AverageFPS; }
+		static const float GetMSPerFrame() { return 1.0f / s_AverageFPS * 1000.0f; }
+		static const float GetDeltaTime() { return s_DeltaTime; }
+		static const float GetFixedDeltaTime() { return s_FixedDeltaTime; }
 
 	private:
-		static TimePoint m_LastFrame;
-		static TimePoint m_LastFixedFrame;
+		static TimePoint s_LastFrame;
+		static TimePoint s_LastFixedFrame;
+		static std::vector<float> s_FrameTimes;
 
-		static float m_DeltaTime;
-		static float m_FixedDeltaTime;
+		static float s_AverageFPS;
+		static float s_DeltaTime;
+		static float s_FixedDeltaTime;
 	};
 }

@@ -13,7 +13,7 @@ namespace Axton
 {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application()
+	Application::Application(const Window::Builder& builder)
 	{
 		AX_ASSERT_CORE(!s_Instance, "Application already exists!");
 		s_Instance = this;
@@ -23,7 +23,7 @@ namespace Axton
 		Time::Construct();
 		Input::Construct();
 
-		m_Window = Window::Create();
+		m_Window = builder.Build();
 		Renderer::Construct();
 
 		m_ImGUILayer = ImGUILayer::Create();

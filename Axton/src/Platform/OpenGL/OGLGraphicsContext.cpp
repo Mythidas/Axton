@@ -24,6 +24,7 @@ namespace Axton::OpenGL
 		int glad = gladLoadGL();
 		AX_ASSERT_CORE(glad, "Failed to load GLAD GL!");
 
+		// TODO: Add requirements for GPU like Vulkan
 		GLint maxImageUnits;
 		glGetIntegerv(GL_MAX_IMAGE_UNITS, &maxImageUnits);
 		CoreLog::Info("OpenGL: Max Image Units: {0}", maxImageUnits);
@@ -35,7 +36,6 @@ namespace Axton::OpenGL
 		GLint maxTexture3DSize;
 		glGetIntegerv(GL_MAX_3D_TEXTURE_SIZE, &maxTexture3DSize);
 		CoreLog::Info("OpenGL: Max Texture3D Size: {0}", maxTexture3DSize);
-		Image3D::MaxSize = maxTexture3DSize;
 	}
 
 	void OGLGraphicsContext::SwapBuffers()

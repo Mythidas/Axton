@@ -2,6 +2,7 @@
 
 layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 layout (rgba32f, binding = 0) writeonly uniform image2D imgOutput;
+layout (rgba8, binding = 1) readonly uniform image1D u_Voxels;
 
 layout (std140, binding = 0) uniform camera
 {
@@ -37,11 +38,6 @@ layout (std430, binding = 2) readonly buffer chunkStorage
 	Chunk[] u_Chunks;
 };
 
-layout (std430, binding = 4) readonly buffer voxStorage
-{
-	Voxel[] u_Voxels;
-};
-
 const float VOXEL_SIZE = 1;
 
 uint collapseIndex(ivec3 index, Chunk chunk)
@@ -52,10 +48,10 @@ uint collapseIndex(ivec3 index, Chunk chunk)
 uint getVoxelMaterial(ivec3 index, Chunk chunk)
 {
 	uint cIndex = collapseIndex(index, chunk);
-	uint buff = cIndex % 4;
-	uint smallIndex = uint(floor(cIndex / 4)) + chunk.VoxelOffset;
+	int buff = int(cIndex % 4);
+	int smallIndex = int(floor(cIndex / 4) + chunk.VoxelOffset);
 
-	vec4 unpacked = unpackUnorm4x8(u_Voxels[smallIndex].MatIndex);
+	vec4 unpacked = imageLoad(u_Voxels, smallIndex);
 	switch (buff)
 	{
 		case 0: return uint(unpacked.x * 255.0); break;

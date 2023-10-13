@@ -5,7 +5,7 @@
 
 namespace Axton
 {
-	Scope<Window> Window::Create(const WindowSpecs& props)
+	Scope<Window> Window::Create(const Specs& props)
 	{
 		// TODO: Detect platform and return the correct window
 		return CreateScope<WindowsWindow>(props);

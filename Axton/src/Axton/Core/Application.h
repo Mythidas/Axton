@@ -11,7 +11,7 @@ namespace Axton
 	class Application
 	{
 	public:
-		Application();
+		Application(const Window::Builder& builder);
 		virtual ~Application() {}
 
 		void Run();

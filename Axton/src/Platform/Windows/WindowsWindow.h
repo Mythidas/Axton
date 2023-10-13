@@ -10,7 +10,7 @@ namespace Axton
 	class WindowsWindow : public Window
 	{
 	public:
-		WindowsWindow(const WindowSpecs& specs);
+		WindowsWindow(const Window::Specs& specs);
 		virtual ~WindowsWindow() override;
 
 		virtual void OnUpdate() override;
@@ -25,7 +25,7 @@ namespace Axton
 
 	private:
 		GLFWwindow* m_Window;
-		WindowSpecs m_Specs;
+		Window::Specs m_Specs;
 		Scope<GraphicsContext> m_Context;
 	};
 }

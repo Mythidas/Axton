@@ -12,19 +12,21 @@ RayCamera::RayCamera(const Camera::Specs& specs)
 
 	RecalculateView();
 
-	m_CameraTransform = UniformBuffer::Create(sizeof(CameraTransformData), 0);
+	m_CameraTransform = UniformBuffer::Create(sizeof(RayCamera::Buffer), 0);
 }
 
 void RayCamera::OnUpdate()
 {
 	ProcessMovement();
 
-	m_CameraTransformData.Position = Vector4(m_Position, 0);
-	m_CameraTransformData.Direction = Vector4(m_Direction, 0);
-	m_CameraTransformData.Projection = m_InverseProjection;
-	m_CameraTransformData.View = m_InverseView;
+	RayCamera::Buffer buffer{};
+	buffer.Position = Vector4(m_Position, 0);
+	buffer.Direction = Vector4(m_Direction, 0);
+	buffer.Projection = m_InverseProjection;
+	buffer.View = m_InverseView;
+	buffer.RenderPass = uint32_t(m_RenderPass);
 
-	m_CameraTransform->SetData(&m_CameraTransformData, sizeof(CameraTransformData));
+	m_CameraTransform->SetData(&buffer, sizeof(RayCamera::Buffer));
 }
 
 Ray RayCamera::GetRay() const
