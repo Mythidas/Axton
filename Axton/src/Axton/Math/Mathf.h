@@ -15,7 +15,6 @@ namespace Axton
 		static T Min(T t1, T t2);
 		template <typename T>
 		static T Max(T t1, T t2);
-
 		template <typename T>
 		static T Clamp(T value, T min, T max);
 

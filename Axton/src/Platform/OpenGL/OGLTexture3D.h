@@ -13,7 +13,7 @@ namespace Axton::OpenGL
 		virtual void Bind(uint32_t slot) const;
 		virtual void Unbind() const;
 
-		virtual void SetData(void* data, int size);
+		virtual void SetData(void* data, IVector3 offset);
 
 		virtual int GetWidth() const { return m_Specs.Width; }
 		virtual int GetHeight() const { return m_Specs.Height; }

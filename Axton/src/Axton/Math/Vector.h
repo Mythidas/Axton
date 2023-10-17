@@ -35,6 +35,7 @@ namespace Axton
 		static float Dot(const Vector3& v1, const Vector3& v2);
 		static float Length(const Vector3& v1);
 		static float Length(const Vector3& v1, const Vector3& v2);
+		static float Magnitude(const Vector3& v1);
 
 		static bool NearZero(const Vector3& v1);
 

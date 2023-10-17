@@ -27,6 +27,8 @@ namespace Axton::OpenGL
 			glGenerateMipmap(GL_TEXTURE_3D);
 			glBindTexture(GL_TEXTURE_3D, 0);
 		}
+
+		OGLUtils::CheckForErrors("Texture3D");
 	}
 
 	OGLTexture3D::~OGLTexture3D()
@@ -37,11 +39,6 @@ namespace Axton::OpenGL
 	void OGLTexture3D::Bind(uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);
-		if (int error = glGetError())
-		{
-			CoreLog::Error("OpenGL Error: {0}", error);
-			AX_ASSERT_CORE(false, "OpenGL Error Post Texture3D Bind!");
-		}
 	}
 
 	void OGLTexture3D::Unbind() const
@@ -49,11 +46,8 @@ namespace Axton::OpenGL
 		glBindTexture(GL_TEXTURE_3D, 0);
 	}
 
-	void OGLTexture3D::SetData(void* data, int size)
+	void OGLTexture3D::SetData(void* data, IVector3 offset)
 	{
-		//uint32_t bpp = m_Specs.Format == ImageFormat::RGBA8 ? 4 : 3;
-		//AX_ASSERT_CORE(size == m_Specs.Width * m_Specs.Height * m_Specs.Depth * bpp, "Data must be entire texture!");
-
-		glTextureSubImage3D(m_RendererID, 0, 0, 0, 0, m_Specs.Width, m_Specs.Height, m_Specs.Depth, OGLUtils::ImageFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
+		glTextureSubImage3D(m_RendererID, 0, offset.x, offset.y, offset.z, m_Specs.Width, m_Specs.Height, m_Specs.Depth, OGLUtils::ImageFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
 	}
 }

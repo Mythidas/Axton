@@ -96,6 +96,11 @@ namespace Axton
 		return sqrt(Dot(v1, v2));
 	}
 
+	float Vector::Magnitude(const Vector3& v1)
+	{
+		return v1.x * v1.y * v1.z;
+	}
+
 	bool Vector::NearZero(const Vector3& v1)
 	{
 		auto zero = 1e-8;

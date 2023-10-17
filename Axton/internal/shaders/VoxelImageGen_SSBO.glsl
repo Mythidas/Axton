@@ -9,6 +9,8 @@ layout (std140, binding = 0) uniform camera
 	vec4 u_CamDirection;
 	mat4 u_View;
 	mat4 u_Projection;
+	float u_RandomSeed;
+	uint u_PixelSamples;
 	uint u_RenderPass;
 };
 
@@ -22,6 +24,7 @@ struct Chunk
 	vec3 MinExtent;
 	vec3 MaxExtent;
 	ivec3 GridSize;
+	float VoxelSize;
 	float CamDistance;
 	uint VoxelOffset;
 	Material[255] Materials;
@@ -42,7 +45,35 @@ layout (std430, binding = 4) readonly buffer voxStorage
 	Voxel[] u_Voxels;
 };
 
-const float VOXEL_SIZE = 1;
+const float PHI = 1.61803398874989484820459; // Golden Ratio 
+
+float gold_noise(in vec2 xy, in float seed)
+{
+	return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);
+}
+
+float hash(vec2 a)
+{
+	return fract(sin(a.x * 3433.8 + a.y * 3843.98) * 45933.8);
+}
+
+float normal_noise(in vec2 xy, in float seed)
+{
+	vec2 id = floor(xy);
+	xy = fract(xy);
+	xy *= xy * (3.0 -2.0 * xy);
+
+	vec2 A = vec2(hash(id), hash(id + vec2(0, 1))) * seed;
+	vec2 B = vec2(hash(id + vec2(1, 0)), hash(id + vec2(1, 1))) * seed;
+	vec2 C = mix(A, B, xy.y);
+
+	return 0 + (1 - 0) * mix(C.x, C.y, xy.y);
+}
+
+float noise(float seed)
+{
+	return normal_noise(gl_GlobalInvocationID.xy, seed);
+}
 
 uint collapseIndex(ivec3 index, Chunk chunk)
 {
@@ -138,19 +169,19 @@ bool findClosestVoxel(Ray ray, Chunk chunk, float tmin, float tmax, inout float 
 {
 	// Find the Voxel where the ray starts
 	vec3 startPos = getRayPoint(ray, tmin + 0.003);
-	ivec3 currentIndex = ivec3(floor((startPos - chunk.MinExtent) / VOXEL_SIZE));
+	ivec3 currentIndex = ivec3(floor((startPos - chunk.MinExtent) / chunk.VoxelSize));
 	ivec3 steps = ivec3(sign(ray.Direction));
 
-	vec3 tDelta = VOXEL_SIZE / ray.Direction;
+	vec3 tDelta = chunk.VoxelSize / ray.Direction;
 	vec3 tMax = vec3(tmax);
 	for (int j = 0; j < 3; j++)
 	{
 		if (ray.Direction[j] > 0)
-			tMax[j] = tmin + (chunk.MinExtent[j] + (currentIndex[j] + 1) * VOXEL_SIZE - startPos[j]) / ray.Direction[j];
+			tMax[j] = tmin + (chunk.MinExtent[j] + (currentIndex[j] + 1) * chunk.VoxelSize - startPos[j]) / ray.Direction[j];
 		else if (ray.Direction[j] < 0)
 		{
-			tMax[j] = tmin + (chunk.MinExtent[j] + currentIndex[j] * VOXEL_SIZE - startPos[j]) / ray.Direction[j];
-			tDelta[j] = VOXEL_SIZE / -ray.Direction[j];
+			tMax[j] = tmin + (chunk.MinExtent[j] + currentIndex[j] * chunk.VoxelSize - startPos[j]) / ray.Direction[j];
+			tDelta[j] = chunk.VoxelSize / -ray.Direction[j];
 		}
 	}
 
@@ -166,10 +197,10 @@ bool findClosestVoxel(Ray ray, Chunk chunk, float tmin, float tmax, inout float 
 		uint matIndex = getVoxelMaterial(currentIndex, chunk);
 		if (matIndex != 0)
 		{
-			vec2 tValue = findBoxTminTmax(chunk.MinExtent + currentIndex * VOXEL_SIZE, 
-							chunk.MinExtent + (currentIndex + 1) * VOXEL_SIZE, ray);
+			vec2 tValue = findBoxTminTmax(chunk.MinExtent + currentIndex * chunk.VoxelSize, 
+							chunk.MinExtent + (currentIndex + 1) * chunk.VoxelSize, ray);
 
-			closestPosition = chunk.MinExtent + vec3(currentIndex * VOXEL_SIZE + VOXEL_SIZE * 0.5);
+			closestPosition = chunk.MinExtent + vec3(currentIndex * chunk.VoxelSize + chunk.VoxelSize * 0.5);
 			closestPoint = tValue.x;
 			closestMaterial = matIndex;
 			return true;
@@ -215,6 +246,12 @@ RayTracePayload traceBoxes(Ray ray)
 				closestChunk = i;
 				break;
 			}
+
+			if (u_RenderPass == 1)
+			{
+				closestChunk = i;
+				break;
+			}
 		}
 	}
 
@@ -223,15 +260,16 @@ RayTracePayload traceBoxes(Ray ray)
 	return closestHitBox(ray, closestPosition, closestPoint, closestChunk, closestMaterial);
 }
 
-void main()
+Ray getRay(ivec2 texelCoord)
 {
-	vec4 finalColor = vec4(0, 0, 0, 1);
 	ivec2 screenSize = imageSize(imgOutput);
-	ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+	vec2 sampleCoord = -0.5 + vec2(normal_noise(texelCoord, u_RandomSeed), normal_noise(texelCoord, u_RandomSeed + PHI * u_RandomSeed));
 
 	float horizonCoefficient = (float(texelCoord.x) * 2 - screenSize.x) / screenSize.x;
 	float verticalCoefficient = (float(texelCoord.y) * 2 - screenSize.y) / screenSize.y;
-	vec4 pixelSample = vec4(horizonCoefficient, verticalCoefficient, 1.0, 1.0);
+	float horitzontalSample = (float(texelCoord.x + sampleCoord.x) * 2 - screenSize.x) / screenSize.x;
+	float verticalSample = (float(texelCoord.y + sampleCoord.y) * 2 - screenSize.y) / screenSize.y;
+	vec4 pixelSample = vec4(horizonCoefficient, verticalCoefficient, 1.0, 1.0) + vec4(horitzontalSample, verticalSample, 1.0, 1.0);
 
 	Ray ray;
 	ray.Origin = u_CamPosition.xyz;
@@ -240,37 +278,64 @@ void main()
 	ray.Direction = normalize(vec3(u_View * vec4(normalize(vec3(target) / target.w), 0)));
 	ray.InvDirection = 1 / ray.Direction;
 
-	RayTracePayload payload = traceBoxes(ray);
+	return ray;
+}
 
-	if (payload.Distance > 0)
+void main()
+{
+	vec3 finalColor = vec3(0, 0, 0);
+	ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+
+	switch (u_RenderPass)
 	{
-		switch (u_RenderPass)
+	case 0: // Full Render Pass
 		{
-		case 0: // Full Render Pass
+			float totalSaples = 0;
+			for (int i = 0; i < u_PixelSamples; i++)
+			{
+				Ray ray = getRay(texelCoord);
+				RayTracePayload payload = traceBoxes(ray);
+
+				totalSaples++;
+				if (payload.Distance > 0)
+				{
+					vec4 color = unpackUnorm4x8(u_Chunks[payload.ObjIndex].Materials[payload.MaterialIndex].Albedo);
+					finalColor += vec3(color);
+				}
+				else
+				{
+					float a = 0.5 * (ray.Direction.y + 1.0);
+					finalColor += vec3(1 - a) * vec3(1.0) + a * vec3(0.5, 0.7, 1.0);
+					break;
+				}
+			}
+
+			finalColor = finalColor / totalSaples;
+			break;
+		}
+	case 1: // Render Normals
+		{
+			RayTracePayload payload = traceBoxes(getRay(texelCoord));
+
+			if (payload.Distance > 0)
+			{
+				vec3 color = vec3(payload.Normal);
+				finalColor = color;
+			}
+			break;
+		}
+	case 2: // Render Albedos
+		{
+			RayTracePayload payload = traceBoxes(getRay(texelCoord));
+			
+			if (payload.Distance > 0)
 			{
 				vec4 color = unpackUnorm4x8(u_Chunks[payload.ObjIndex].Materials[payload.MaterialIndex].Albedo);
-				finalColor = color;
-				imageStore(imgOutput, texelCoord, finalColor);
-				break;
+				finalColor += vec3(color);
 			}
-		case 1: // Render Normals
-			{
-				vec4 color = vec4(payload.Normal, 1);
-				finalColor = color;
-				imageStore(imgOutput, texelCoord, finalColor);
-				break;
-			}
-		case 2: // Render Albedos
-			{
-				vec4 color = unpackUnorm4x8(u_Chunks[payload.ObjIndex].Materials[payload.MaterialIndex].Albedo);
-				finalColor = color;
-				imageStore(imgOutput, texelCoord, finalColor);
-				break;
-			}
+			break;
 		}
 	}
-	else
-	{
-		imageStore(imgOutput, texelCoord, finalColor);
-	}
+
+	imageStore(imgOutput, texelCoord, vec4(finalColor, 1.0));
 }

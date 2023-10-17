@@ -24,13 +24,12 @@ namespace Axton
 		virtual void Bind(uint32_t slot = 0) const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual void SetData(void* data, int size) = 0;
+		virtual void SetData(void* data, IVector3 offset) = 0;
 
 		virtual int GetWidth() const = 0;
 		virtual int GetHeight() const = 0;
 		virtual RendererID GetRendererID() const = 0;
 
 		static Ref<Texture3D> Create(const Texture3DSpecs& specs);
-		static Ref<Texture3D> Create(const Texture3DSpecs& specs, void* data, int size);
 	};
 }

@@ -4,6 +4,7 @@
 
 namespace Axton
 {
+	// TODO: Replace this with something better
 	class MemTracker
 	{
 	public:
