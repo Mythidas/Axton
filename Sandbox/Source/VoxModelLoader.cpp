@@ -39,10 +39,14 @@ Ref<OctreeChunk> VoxModelLoader::GenChunk(World& world, Vector3 position)
 	for (int i = 0; i < xyziCount; i++)
 	{
 		IVector4 voxelVal = Vector::ConvertIV4(GetNextValue(buffer, currentIndex));
-		newChunk->VoxelOctree.SetVoxel({ voxelVal.x, voxelVal.z, voxelVal.y }, voxelVal.w);
+		newChunk->Octree.SetVoxel({ voxelVal.x, voxelVal.z, voxelVal.y }, voxelVal.w);
 	}
-	newChunk->VoxelOctree.Rebuild();
 
+	{
+		Timer timer("Refresh Chunk Nodes");
+		newChunk->Octree.Root->Refresh();
+	}
+	
 	uint32_t rgba = Bit::U32_4x8('R', 'G', 'B', 'A');
 	FindValueIndex(buffer, rgba, currentIndex);
 	uint32_t rgba0 = GetNextValue(buffer, currentIndex);

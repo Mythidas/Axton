@@ -16,14 +16,14 @@ struct OctreeChunk
 		uint32_t Materials[255];
 	};
 
-	Octree VoxelOctree;
+	VoxelOctree Octree;
 	Vector3 Position;
 	uint32_t Offset;
 	uint32_t Materials[255]{ 0xFFFFFFFF };
 	int LastLOD = -1;
 
 	OctreeChunk(Vector3 position, IVector3 extents, uint32_t offset)
-		: VoxelOctree(Octree(extents)), Position(position), Offset(offset)
+		: Octree(VoxelOctree(extents)), Position(position), Offset(offset)
 	{
 	}
 
@@ -33,7 +33,7 @@ struct OctreeChunk
 		float voxelSize = lod == 0 ? 1.0f : lod * 2.0f;
 
 		OctreeChunk::Buffer buffer{};
-		IVector3 extents = IVector3(VoxelOctree.GetExtentSize(lod));
+		IVector3 extents = IVector3(Octree.GetHalfSize(lod));
 		buffer.MinExtent = Position - Vector3(extents) * 0.5f * voxelSize;
 		buffer.MaxExtent = Position + Vector3(extents) * 0.5f * voxelSize;
 		buffer.GridSize = extents;

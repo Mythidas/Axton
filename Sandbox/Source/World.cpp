@@ -5,7 +5,7 @@
 World::World(uint32_t maxVoxels)
 {
 	StorageBuffer::Builder voxelBuilder;
-	m_VoxelStorage = voxelBuilder.Size(sizeof(uint32_t) * maxVoxels).Binding(4).DebugName("VoxelStorage").Build();
+	m_VoxelStorage = voxelBuilder.Size(sizeof(uint32_t) * maxVoxels).Binding(3).DebugName("VoxelStorage").Build();
 }
 
 Ref<OctreeChunk> World::CreateChunk(Vector3 position, IVector3 extents)
@@ -13,7 +13,7 @@ Ref<OctreeChunk> World::CreateChunk(Vector3 position, IVector3 extents)
 	uint32_t offset{ 0 };
 	if (!m_Chunks.empty())
 	{
-		offset = m_Chunks.back()->Offset + Vector::Magnitude(m_Chunks.back()->VoxelOctree.Extents) / 4;
+		offset = m_Chunks.back()->Offset + Vector::Magnitude(m_Chunks.back()->Octree.Extents) / 4;
 		while (offset % 4 != 0) offset++;
 	}
 
@@ -38,32 +38,40 @@ void World::LoadBuffers(const Camera& camera)
 	std::map<float, OctreeChunk::Buffer> chunks;
 	uint32_t offset = 0;
 
-	uint32_t* voxelBuffer = static_cast<uint32_t*>(m_VoxelStorage->MapBufferPtr());
-	for (size_t i = 0; i < m_Chunks.size(); i++)
+	static bool done = false;
+
+	if (!done)
 	{
-		float dist = glm::distance(camera.GetPosition(), m_Chunks[i]->Position);
+		Timer timer("Voxels to GPU");
 
-		int lod = Mathf::Min(int(floor(dist / 800.0f)), m_Chunks[i]->VoxelOctree.Levels - 3);
-		int divisor = lod == 0 ? 1 : 8 * lod;
-
-		if (m_Chunks[i]->LastLOD != lod)
+		uint32_t* voxelBuffer = static_cast<uint32_t*>(m_VoxelStorage->MapBufferPtr());
+		for (size_t i = 0; i < m_Chunks.size(); i++)
 		{
-			m_Chunks[i]->Offset = offset;
-			for (int j = 0; j < Vector::Magnitude(m_Chunks[i]->VoxelOctree.Extents) / divisor; j += 4)
-			{
-				uint8_t v1 = m_Chunks[i]->VoxelOctree.GetVoxelRaw(j, lod);
-				uint8_t v2 = m_Chunks[i]->VoxelOctree.GetVoxelRaw(j + 1, lod);
-				uint8_t v3 = m_Chunks[i]->VoxelOctree.GetVoxelRaw(j + 2, lod);
-				uint8_t v4 = m_Chunks[i]->VoxelOctree.GetVoxelRaw(j + 3, lod);
-				int test = j / (4) + m_Chunks[i]->Offset;
-				voxelBuffer[j / (4) + m_Chunks[i]->Offset] = Bit::U32_4x8(v1, v2, v3, v4);
-			}
-		}
+			float dist = glm::distance(camera.GetPosition(), m_Chunks[i]->Position);
 
-		offset += Vector::Magnitude(m_Chunks[i]->VoxelOctree.Extents) / 4;
-		chunks.emplace(dist, m_Chunks[i]->CreateBuffer(dist, lod));
+			if (!done)
+			{
+				m_Chunks[i]->Offset = offset;
+				uint32_t chunkOffset = 0;
+				m_Chunks[i]->Octree.Root->SubmitToBuffer(voxelBuffer + offset, chunkOffset);
+				offset += chunkOffset;
+				MemTracker::SetSlot("VoxelStorage Used", offset * sizeof(uint32_t));
+			}
+
+			chunks.emplace(dist, m_Chunks[i]->CreateBuffer(dist, 0));
+		}
+		m_VoxelStorage->UnmapBufferPtr();
+		done = true;
 	}
-	m_VoxelStorage->UnmapBufferPtr();
+	else
+	{
+		for (size_t i = 0; i < m_Chunks.size(); i++)
+		{
+			float dist = glm::distance(camera.GetPosition(), m_Chunks[i]->Position);
+			chunks.emplace(dist, m_Chunks[i]->CreateBuffer(dist, 0));
+		}
+	}
+
 
 	std::vector<OctreeChunk::Buffer> chunkBuffers;
 	for (auto& cMap : chunks)

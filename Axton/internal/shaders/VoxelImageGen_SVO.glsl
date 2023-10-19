@@ -24,6 +24,7 @@ struct Chunk
 	vec3 MinExtent;
 	vec3 MaxExtent;
 	ivec3 GridSize;
+	float VoxelSize;
 	float CamDistance;
 	uint VoxelOffset;
 	Material[255] Materials;
@@ -43,18 +44,6 @@ layout (std430, binding = 3) readonly buffer voxStorage
 {
 	Voxel[] u_Voxels;
 };
-
-layout (std430, binding = 4) readonly buffer voxStorageMip1
-{
-	Voxel[] u_VoxelsMip1;
-};
-
-layout (std430, binding = 5) readonly buffer voxStorageMip2
-{
-	Voxel[] u_VoxelsMip2;
-};
-
-const float VOXEL_SIZE = 1;
 
 const float PHI = 1.61803398874989484820459; // Golden Ratio 
 
@@ -92,6 +81,46 @@ uint collapseIndex(ivec3 index, Chunk chunk)
 }
 
 uint getVoxelMaterial(ivec3 index, Chunk chunk)
+{
+	int currentOffset = int(chunk.VoxelOffset);
+
+	int levels = int(log2(chunk.GridSize.x));
+	for (int i = 0; i < levels; i++)
+	{
+		int childIndex = 0;
+		int halfSize = 1 << (levels - i - 1);
+		
+		if (index.x >= halfSize)
+		{
+			childIndex |= 1;
+			index.x -= halfSize;
+		}
+		if (index.y >= halfSize)
+		{
+			childIndex |= 2;
+			index.y -= halfSize;
+		}
+		if (index.z >= halfSize)
+		{
+			childIndex |= 4;
+			index.z -= halfSize;
+		}
+
+		ivec4 info = ivec4(unpackUnorm4x8(u_Voxels[currentOffset + childIndex].MatIndex) * 255);
+		if (info.w == 1)
+		{
+			return uint(info.x);
+		}
+		else
+		{
+			currentOffset += int(info.x + (info.y * 255) + (info.z * 255 * 255));
+		}
+	}
+	
+	return 0;
+}
+
+uint getVoxelMaterialOLD(ivec3 index, Chunk chunk)
 {
 	uint cIndex = collapseIndex(index, chunk);
 	uint buff = cIndex % 4;
@@ -180,19 +209,19 @@ bool findClosestVoxel(Ray ray, Chunk chunk, float tmin, float tmax, inout float 
 {
 	// Find the Voxel where the ray starts
 	vec3 startPos = getRayPoint(ray, tmin + 0.003);
-	ivec3 currentIndex = ivec3(floor((startPos - chunk.MinExtent) / VOXEL_SIZE));
+	ivec3 currentIndex = ivec3(floor((startPos - chunk.MinExtent) / chunk.VoxelSize));
 	ivec3 steps = ivec3(sign(ray.Direction));
 
-	vec3 tDelta = VOXEL_SIZE / ray.Direction;
+	vec3 tDelta = chunk.VoxelSize / ray.Direction;
 	vec3 tMax = vec3(tmax);
 	for (int j = 0; j < 3; j++)
 	{
 		if (ray.Direction[j] > 0)
-			tMax[j] = tmin + (chunk.MinExtent[j] + (currentIndex[j] + 1) * VOXEL_SIZE - startPos[j]) / ray.Direction[j];
+			tMax[j] = tmin + (chunk.MinExtent[j] + (currentIndex[j] + 1) * chunk.VoxelSize - startPos[j]) / ray.Direction[j];
 		else if (ray.Direction[j] < 0)
 		{
-			tMax[j] = tmin + (chunk.MinExtent[j] + currentIndex[j] * VOXEL_SIZE - startPos[j]) / ray.Direction[j];
-			tDelta[j] = VOXEL_SIZE / -ray.Direction[j];
+			tMax[j] = tmin + (chunk.MinExtent[j] + currentIndex[j] * chunk.VoxelSize - startPos[j]) / ray.Direction[j];
+			tDelta[j] = chunk.VoxelSize / -ray.Direction[j];
 		}
 	}
 
@@ -208,10 +237,10 @@ bool findClosestVoxel(Ray ray, Chunk chunk, float tmin, float tmax, inout float 
 		uint matIndex = getVoxelMaterial(currentIndex, chunk);
 		if (matIndex != 0)
 		{
-			vec2 tValue = findBoxTminTmax(chunk.MinExtent + currentIndex * VOXEL_SIZE, 
-							chunk.MinExtent + (currentIndex + 1) * VOXEL_SIZE, ray);
+			vec2 tValue = findBoxTminTmax(chunk.MinExtent + currentIndex * chunk.VoxelSize, 
+							chunk.MinExtent + (currentIndex + 1) * chunk.VoxelSize, ray);
 
-			closestPosition = chunk.MinExtent + vec3(currentIndex * VOXEL_SIZE + VOXEL_SIZE * 0.5);
+			closestPosition = chunk.MinExtent + vec3(currentIndex * chunk.VoxelSize + chunk.VoxelSize * 0.5);
 			closestPoint = tValue.x;
 			closestMaterial = matIndex;
 			return true;

@@ -26,7 +26,9 @@ public:
 		m_ViewportHeight = Application::Get().GetWindow().GetHeight();
 
 		m_Image = Image2D::Create({ m_ViewportWidth, m_ViewportHeight, 0, AccessFormat::READ_WRITE, ImageFormat::RGBA8 });
-		m_VoxelImage = ComputeShader::Create("C:\\Programming\\Axton\\Axton\\internal\\shaders\\VoxelImageGen_SSBO.glsl");
+		m_VoxelImage = ComputeShader::Create("C:\\Programming\\Axton\\Axton\\internal\\shaders\\VoxelImageGen_SVO.glsl");
+
+		Timer timer("Gen All Chunks");
 
 		{
 			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\doom.vox");
