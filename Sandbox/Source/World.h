@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Axton.h"
-#include "Chunk.h"
+#include "Material.h"
 #include "OctreeChunk.h"
 
 using namespace Axton;
@@ -12,17 +12,17 @@ public:
 	World(uint32_t maxVoxels);
 
 	Ref<OctreeChunk> CreateChunk(Vector3 position, IVector3 extents);
-	void BeginEdit(Ref<Chunk> chunk);
-	void EndEdit(Ref<Chunk> chunk);
+	size_t AddMaterial(Ref<Material> material);
 
 	void LoadBuffers(const Camera& camera);
 
-	std::vector<Ref<OctreeChunk>>::iterator begin() { return m_Chunks.begin(); }
-	std::vector<Ref<OctreeChunk>>::iterator end() { return m_Chunks.end(); }
+	std::vector<Ref<Material>> Materials() { return m_Materials; }
 
 private:
 	std::vector<Ref<OctreeChunk>> m_Chunks;
+	std::vector<Ref<Material>> m_Materials;
 
 	Ref<StorageBuffer> m_VoxelStorage;
 	Ref<StorageBuffer> m_ChunkStorage;
+	Ref<StorageBuffer> m_MaterialStorage;
 };

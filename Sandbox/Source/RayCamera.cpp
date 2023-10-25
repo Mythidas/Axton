@@ -18,15 +18,16 @@ RayCamera::RayCamera(const Camera::Specs& specs)
 void RayCamera::OnUpdate()
 {
 	ProcessMovement();
+	static float lastSeed = 0.0f;
 
 	RayCamera::Buffer buffer{};
 	buffer.Position = Vector4(m_Position, 0);
-	buffer.Direction = Vector4(m_Direction, 0);
+	buffer.BackgroundColor = Vector4(m_BackgroundColor, 1);
 	buffer.Projection = m_InverseProjection;
-	buffer.RandomSeed = Mathf::Random::Float();
-	buffer.PixelSamples = 3;
+	buffer.RandomSeed = Mathf::Random::Float(lastSeed - 1, lastSeed + 1);
+	lastSeed = buffer.RandomSeed;
 	buffer.View = m_InverseView;
-	buffer.RenderPass = uint32_t(m_RenderPass);
+	buffer.RenderPass = uint32_t(m_RenderMode);
 
 	m_CameraTransform->SetData(&buffer, sizeof(RayCamera::Buffer));
 }
@@ -44,11 +45,6 @@ void RayCamera::OnResize(uint32_t width, uint32_t height)
 	m_ViewportHeight = height;
 
 	RecalculateProjection();
-}
-
-float RayCamera::GetRotationSpeed()
-{
-	return 0.3f;
 }
 
 void RayCamera::ProcessMovement()
@@ -109,8 +105,8 @@ void RayCamera::ProcessMovement()
 
 	if (delta.x != 0.0f || delta.y != 0.0f)
 	{
-		float pitchDelta = delta.y * GetRotationSpeed();
-		float yawDelta = delta.x * GetRotationSpeed();
+		float pitchDelta = delta.y * m_RotationSpeed;
+		float yawDelta = delta.x * m_RotationSpeed;
 
 		Quaterion q = glm::normalize(glm::cross(glm::angleAxis(-pitchDelta, righDirection),
 			glm::angleAxis(-yawDelta, upDir)));

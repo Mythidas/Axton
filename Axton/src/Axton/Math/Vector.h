@@ -39,6 +39,9 @@ namespace Axton
 
 		static bool NearZero(const Vector3& v1);
 
+		// IVector3
+		static IVector3 Clamp(const IVector3& v1, const IVector3& min, const IVector3& max);
+
 		//Vector4
 		static Vector4 Clamp(const Vector4& v1, const Vector4& min, const Vector4& max);
 

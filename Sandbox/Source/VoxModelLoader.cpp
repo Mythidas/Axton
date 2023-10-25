@@ -39,7 +39,7 @@ Ref<OctreeChunk> VoxModelLoader::GenChunk(World& world, Vector3 position)
 	for (int i = 0; i < xyziCount; i++)
 	{
 		IVector4 voxelVal = Vector::ConvertIV4(GetNextValue(buffer, currentIndex));
-		newChunk->Octree.SetVoxel({ voxelVal.x, voxelVal.z, voxelVal.y }, voxelVal.w);
+		newChunk->Octree.SetVoxelOriginal({ voxelVal.x, voxelVal.z, voxelVal.y }, voxelVal.w);
 	}
 
 	{
@@ -53,7 +53,7 @@ Ref<OctreeChunk> VoxModelLoader::GenChunk(World& world, Vector3 position)
 
 	for (int i = 0; i < 255; i++)
 	{
-		newChunk->Materials[i] = GetNextValue(buffer, currentIndex);
+		newChunk->Albedos[i] = GetNextValue(buffer, currentIndex);
 	}
 
 	return newChunk;

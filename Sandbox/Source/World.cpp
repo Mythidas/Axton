@@ -10,27 +10,14 @@ World::World(uint32_t maxVoxels)
 
 Ref<OctreeChunk> World::CreateChunk(Vector3 position, IVector3 extents)
 {
-	uint32_t offset{ 0 };
-	if (!m_Chunks.empty())
-	{
-		offset = m_Chunks.back()->Offset + Vector::Magnitude(m_Chunks.back()->Octree.Extents) / 4;
-		while (offset % 4 != 0) offset++;
-	}
-
-	m_Chunks.push_back(CreateRef<OctreeChunk>(position, extents, offset));
+	m_Chunks.push_back(CreateRef<OctreeChunk>(position, extents));
 	return m_Chunks.back();
 }
 
-void World::BeginEdit(Ref<Chunk> chunk)
+size_t World::AddMaterial(Ref<Material> material)
 {
-	uint32_t* voxelBuffer = static_cast<uint32_t*>(m_VoxelStorage->MapBufferPtr());
-	//chunk->m_Voxels = voxelBuffer + chunk->m_Offset;
-}
-
-void World::EndEdit(Ref<Chunk> chunk)
-{
-	chunk->m_Voxels = nullptr;
-	m_VoxelStorage->UnmapBufferPtr();
+	m_Materials.push_back(material);
+	return m_Materials.size() - 1;
 }
 
 void World::LoadBuffers(const Camera& camera)
@@ -80,4 +67,12 @@ void World::LoadBuffers(const Camera& camera)
 	StorageBuffer::Builder chunkBuilder;
 	m_ChunkStorage = chunkBuilder.Size(sizeof(OctreeChunk::Buffer) * chunkBuffers.size()).Usage(BufferUsage::STATIC_DRAW).Binding(2).DebugName("ChunkStorage").Build();
 	m_ChunkStorage->SetData(chunkBuffers.data(), chunkBuffers.size() * sizeof(OctreeChunk::Buffer));
+
+	std::vector<Material> materialBuffers;
+	for (auto& mat : m_Materials)
+		materialBuffers.push_back(*mat.get());
+
+	StorageBuffer::Builder materialBuilder;
+	m_MaterialStorage = materialBuilder.Size(sizeof(Material) * materialBuffers.size()).Usage(BufferUsage::STATIC_DRAW).Binding(4).Build();
+	m_MaterialStorage->SetData(materialBuffers.data(), m_Materials.size() * sizeof(Material));
 }

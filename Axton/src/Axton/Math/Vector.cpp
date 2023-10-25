@@ -107,6 +107,12 @@ namespace Axton
 		return fabs(v1.x) < zero && fabs(v1.y) < zero && fabs(v1.z) < zero;
 	}
 
+	IVector3 Vector::Clamp(const IVector3& v1, const IVector3& min, const IVector3& max)
+	{
+		return IVector3(v1.x < min.x ? min.x : v1.x > max.x ? max.x : v1.x, v1.y < min.y ? min.y : v1.y > max.y ? max.y : v1.y,
+			v1.z < min.z ? min.z : v1.z > max.z ? max.z : v1.z);
+	}
+
 	Vector4 Vector::Clamp(const Vector4& v1, const Vector4& min, const Vector4& max)
 	{
 		return Vector4(v1.x < min.x ? min.x : v1.x > max.x ? max.x : v1.x, v1.y < min.y ? min.y : v1.y > max.y ? max.y : v1.y,

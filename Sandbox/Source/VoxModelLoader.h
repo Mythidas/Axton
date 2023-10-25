@@ -2,7 +2,6 @@
 
 #include "Axton.h"
 #include "World.h"
-#include "Chunk.h"
 #include "OctreeChunk.h"
 
 using namespace Axton;

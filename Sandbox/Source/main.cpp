@@ -25,59 +25,40 @@ public:
 		m_ViewportWidth = Application::Get().GetWindow().GetWidth();
 		m_ViewportHeight = Application::Get().GetWindow().GetHeight();
 
-		m_Image = Image2D::Create({ m_ViewportWidth, m_ViewportHeight, 0, AccessFormat::READ_WRITE, ImageFormat::RGBA8 });
-		m_VoxelImage = ComputeShader::Create("C:\\Programming\\Axton\\Axton\\internal\\shaders\\VoxelImageGen_SVO.glsl");
+		m_FinalImage = Image2D::Create({ m_ViewportWidth, m_ViewportHeight, 0, AccessFormat::WRITE_ONLY, ImageFormat::RGBA8 });
+		m_VoxelImage = ComputeShader::Create("C:\\Programming\\Axton\\Axton\\internal\\shaders\\VoxelImageGen.glsl");
 
 		Timer timer("Gen All Chunks");
 
 		{
-			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\doom.vox");
-			loader.GenChunk(world, { -300, 0, 50 });
-		}
-
-		{
-			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\castle.vox");
-			loader.GenChunk(world, { -200, 0, 50 });
-		}
-
-		{
 			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\chr_knight.vox");
-			loader.GenChunk(world, { -100, 0, 50 });
+			Ref<OctreeChunk> chunk = loader.GenChunk(world, { 0, 0, 50 });
+			Material mat{ 0.5, 0.1, 1.5, 0.0 };
+			chunk->MaterialIndex = world.AddMaterial(CreateRef<Material>(mat));
+		}
+
+		{
+			VoxModelLoader loader("C:\\Programming\\Axton\\Sandbox\\Assets\\Models\\green_cube.vox");
+			Ref<OctreeChunk> chunk = loader.GenChunk(world, { 0, -18, 50 });
+			Material mat{ 0.5, 1.0, 0.01, 0.0 };
+			chunk->MaterialIndex = world.AddMaterial(CreateRef<Material>(mat));
+		}
+
+		{
+			VoxModelLoader loader("C:\\Programming\\Axton\\Sandbox\\Assets\\Models\\green_cube.vox");
+			Ref<OctreeChunk> chunk = loader.GenChunk(world, { 16, 0, 50 });
+			Material mat{ 0.5, 1.0, 0.01, 3.0, { 0.1, 0.2, 0.6 } };
+			chunk->MaterialIndex = world.AddMaterial(CreateRef<Material>(mat));
 		}
 
 		{
 			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\monu1.vox");
-			loader.GenChunk(world, { 0, 0, 50 });
-		}
-
-		{
-			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\monu2.vox");
-			loader.GenChunk(world, { 100, 0, 50 });
+			loader.GenChunk(world, { 200, 0, 50 });
 		}
 
 		{
 			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\room.vox");
-			loader.GenChunk(world, { 250, 0, 50 });
-		}
-
-		{
-			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\teapot.vox");
-			loader.GenChunk(world, { 400, 0, 50 });
-		}
-
-		{
-			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\monu2.vox");
-			loader.GenChunk(world, { 500, 0, 50 });
-		}
-
-		{
-			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\room.vox");
-			loader.GenChunk(world, { 650, 0, 50 });
-		}
-
-		{
-			VoxModelLoader loader("C:\\Users\\Mythidas\\Downloads\\MagicaVoxel-0.99.6.4-win64\\MagicaVoxel-0.99.6.4-win64\\vox\\teapot.vox");
-			loader.GenChunk(world, { 800, 0, 50 });
+			loader.GenChunk(world, { -200, 0, 50 });
 		}
 	}
 
@@ -87,7 +68,7 @@ public:
 		m_Camera.OnResize(m_ViewportWidth, m_ViewportHeight);
 		world.LoadBuffers(m_Camera);
 
-		m_Image->Resize(m_ViewportWidth, m_ViewportHeight);
+		m_FinalImage->Resize(m_ViewportWidth, m_ViewportHeight);
 
 		m_VoxelImage->Dispatch(m_ViewportWidth / (uint32_t)8, m_ViewportHeight / (uint32_t)8, 1);
 	}
@@ -98,19 +79,38 @@ public:
 		ImGui::Begin("Render Stats");
 		ImGui::Text("FPS: %f", Time::GetFPS());
 		ImGui::Text("Render Time: %f ms", Time::GetMSPerFrame());
-		static int renderMode = 0;
-		if (ImGui::RadioButton("Render: Full", &renderMode, 0)) m_Camera.SetRenderPass(RayCamera::RenderPass::Full);
-		if (ImGui::RadioButton("Render: Normals", &renderMode, 1)) m_Camera.SetRenderPass(RayCamera::RenderPass::Normals);
-		if (ImGui::RadioButton("Render: Albedo", &renderMode, 2)) m_Camera.SetRenderPass(RayCamera::RenderPass::Albedo);
 		ImGui::End();
 
-		ImGui::Begin("Buffer Stats");
+		ImGui::Begin("Camera Settings");
+		static Vector3 backgroundColor = Vector3(0);
+		if (ImGui::ColorEdit3("Background Color", glm::value_ptr(backgroundColor)))
+			m_Camera.BackgroundColor(backgroundColor);
 
-		MemTracker instance;
-		for (auto& slot : instance)
+		static int renderMode = 0;
+		if (ImGui::RadioButton("Render: Full", &renderMode, 0)) 
+			m_Camera.RenderMode(RayCamera::RenderModes::Full);
+		if (ImGui::RadioButton("Render: Normals", &renderMode, 1)) 
+			m_Camera.RenderMode(RayCamera::RenderModes::Normals);
+		if (ImGui::RadioButton("Render: Albedo", &renderMode, 2)) 
+			m_Camera.RenderMode(RayCamera::RenderModes::Albedo);
+		if (ImGui::RadioButton("Render: Difficulty", &renderMode, 3)) 
+			m_Camera.RenderMode(RayCamera::RenderModes::Difficulty);
+		ImGui::End();
+
+		ImGui::Begin("Materials");
+
+		for (int i = 0; i < world.Materials().size(); i++)
 		{
-			ImGui::Text("Slot: %s", slot.first.c_str()); ImGui::SameLine();
-			ImGui::Text("| Size: %i mb", slot.second / 1000000);
+			ImGui::PushID(i);
+
+			Ref<Material> mat = world.Materials()[i];
+			ImGui::DragFloat("Specular", &mat->Specular, 0.1f);
+			ImGui::DragFloat("Metallic", &mat->Metallic, 0.1f);
+			ImGui::DragFloat("Roughness", &mat->Roughness, 0.1f);
+			ImGui::DragFloat("Emissive", &mat->Emissive, 0.1f);
+			ImGui::ColorEdit3("Emissive Hue", glm::value_ptr(mat->EmissiveHue));
+
+			ImGui::PopID();
 		}
 
 		ImGui::End();
@@ -120,9 +120,9 @@ public:
 		m_ViewportHeight = (uint32_t)ImGui::GetContentRegionAvail().y;
 
 		m_VoxelImage->Barrier();
-		if (m_Image)
+		if (m_FinalImage)
 		{
-			ImGui::Image2D((ImTextureID)m_Image->GetRendererID(), { (float)m_Image->GetWidth(), (float)m_Image->GetHeight() }, ImVec2(0, 1.0f), ImVec2(1.0f, 0));
+			ImGui::Image2D((ImTextureID)m_FinalImage->GetRendererID(), { (float)m_FinalImage->GetWidth(), (float)m_FinalImage->GetHeight() }, ImVec2(0, 1.0f), ImVec2(1.0f, 0));
 		}
 		ImGui::End();
 	}
@@ -131,7 +131,7 @@ private:
 	RayCamera m_Camera;
 	uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
-	Ref<Image2D> m_Image;
+	Ref<Image2D> m_FinalImage;
 	Ref<ComputeShader> m_VoxelImage;
 };
 

@@ -69,9 +69,9 @@ struct Node
 		Material = mats[0];
 	}
 
-	void SubmitToBuffer(uint32_t* buffer, uint32_t& offset)
+	void SubmitToBuffer(uint32_t* buffer, uint32_t& offset, bool isRoot = true)
 	{
-		if (IsLeaf())
+		if (!isRoot && IsLeaf())
 			return;
 
 		uint32_t currentOffset = offset;
@@ -94,12 +94,15 @@ struct Node
 					uint8_t offsetZ = offsetDiff / (255 * 255);
 
 					buffer[currentOffset + i] = Bit::U32_4x8(offsetX, offsetY, offsetZ, 0);
-					Children[i]->SubmitToBuffer(buffer, offset);
+					Children[i]->SubmitToBuffer(buffer, offset, false);
 				}
 			}
 			else
 			{
-				buffer[currentOffset + i] = Bit::U32_4x8(0, 0, 0, 1);
+				if (isRoot)
+					buffer[currentOffset + i] = Bit::U32_4x8(Material, 0, 0, 1);
+				else
+					buffer[currentOffset + i] = Bit::U32_4x8(0, 0, 0, 1);
 			}
 		}
 	}
@@ -150,6 +153,16 @@ public:
 	void SetVoxel(IVector3 index, uint8_t voxel)
 	{
 		Node* node = SetNode(index);
+		node->Material = voxel;
+	}
+
+	void SetVoxelOriginal(IVector3 index, uint8_t voxel)
+	{
+		IVector3 offset = Vector::Clamp((Extents - OriginalExtents), IVector3(0), OriginalExtents);
+		offset.x = offset.x >> 1;
+		offset.z = offset.z >> 1;
+		offset.y = offset.y >> 1;
+		Node* node = SetNode(index + offset);
 		node->Material = voxel;
 	}
 

@@ -13,23 +13,23 @@ struct OctreeChunk
 		float VoxelSize;
 		float CameraDistance;
 		uint32_t VoxelOffset;
-		uint32_t Materials[255];
+		uint32_t MaterialIndex;
+		uint32_t Albedos[255];
 	};
 
 	VoxelOctree Octree;
 	Vector3 Position;
-	uint32_t Offset;
-	uint32_t Materials[255]{ 0xFFFFFFFF };
-	int LastLOD = -1;
+	uint32_t Offset{ 0 };
+	uint32_t MaterialIndex{ 0 };
+	uint32_t Albedos[255]{ 0xFFFFFFFF };
 
-	OctreeChunk(Vector3 position, IVector3 extents, uint32_t offset)
-		: Octree(VoxelOctree(extents)), Position(position), Offset(offset)
+	OctreeChunk(Vector3 position, IVector3 extents)
+		: Octree(VoxelOctree(extents)), Position(position)
 	{
 	}
 
 	Buffer CreateBuffer(float distance, int lod)
 	{
-		LastLOD = lod;
 		float voxelSize = lod == 0 ? 1.0f : lod * 2.0f;
 
 		OctreeChunk::Buffer buffer{};
@@ -40,7 +40,8 @@ struct OctreeChunk
 		buffer.VoxelSize = voxelSize;
 		buffer.CameraDistance = distance;
 		buffer.VoxelOffset = Offset;
-		memcpy(&buffer.Materials, &Materials, sizeof(Materials));
+		buffer.MaterialIndex = MaterialIndex;
+		memcpy(&buffer.Albedos, &Albedos, sizeof(Albedos));
 		return buffer;
 	}
 };
