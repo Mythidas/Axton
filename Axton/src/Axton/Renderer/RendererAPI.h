@@ -7,41 +7,14 @@ namespace Axton
 {
 	typedef unsigned int RendererID;
 
-	enum class ImageFormat
-	{
-		None = 0,
-		R8,
-		RGB8,
-		RGBA8,
-		RGBA32F
-	};
-
-	enum class FilterFormat
-	{
-		NEAREST,
-		LINEAR
-	};
-
-	enum class WrapFormat
-	{
-		CLAMP,
-		REPEAT
-	};
-
-	enum class AccessFormat
-	{
-		READ_WRITE,
-		READ_ONLY,
-		WRITE_ONLY
-	};
-
 	class RendererAPI
 	{
 	public:
 		enum class API
 		{
 			None = 0,
-			OpenGL = 1,
+			OpenGL,
+			Vulkan
 		};
 
 	public:
@@ -57,5 +30,37 @@ namespace Axton
 		static Scope<RendererAPI> Create();
 	private:
 		static API s_API;
+	};
+
+	class ImageFormat
+	{
+	public:
+		enum class Data
+		{
+			None = 0,
+			R8,
+			RGB8,
+			RGBA8,
+			RGBA32F
+		};
+
+		enum class Filter
+		{
+			NEAREST,
+			LINEAR
+		};
+
+		enum class Wrap
+		{
+			CLAMP,
+			REPEAT
+		};
+
+		enum class Access
+		{
+			READ_WRITE,
+			READ_ONLY,
+			WRITE_ONLY
+		};
 	};
 }

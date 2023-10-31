@@ -13,9 +13,9 @@ class RayCamera : public Camera
 		Matrix4 View{ 0.0f };
 		Matrix4 Projection{ 0.0f };
 		float RandomSeed;
-		uint32_t PixelSamples{ 3 };
-		uint32_t SampleDepth{ 6 };
+		uint32_t SampleSettings;
 		uint32_t RenderPass;
+		uint32_t Algorithm;
 	};
 
 public:
@@ -43,6 +43,9 @@ public:
 	Vector3 BackgroundColor() { return m_BackgroundColor; }
 	void BackgroundColor(Vector3 color) { m_BackgroundColor = color; }
 
+	uint32_t Algorithm() { return m_Algorithm; }
+	void Algorithm(uint32_t algorithm) { m_Algorithm = algorithm; }
+
 private:
 	void ProcessMovement();
 
@@ -50,10 +53,11 @@ private:
 	Vector2 m_LastMousePosition{ 0.0f };
 	uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
-	Vector3 m_BackgroundColor{ 0.0f };
+	Vector3 m_BackgroundColor{ 1.0f };
 	RenderModes m_RenderMode{ RenderModes::Full };
+	uint32_t m_Algorithm{ 0 };
 
 	float m_RotationSpeed = 0.3f;
 
-	Ref<UniformBuffer> m_CameraTransform;
+	Ref<UniformBuffer> m_CameraBuffer;
 };

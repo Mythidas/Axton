@@ -3,79 +3,79 @@
 
 namespace Axton::OpenGL
 {
-	int OGLUtils::ImageFormatSize(ImageFormat format)
+	int OGLUtils::ImageFormatSize(ImageFormat::Data format)
 	{
 		switch (format)
 		{
-		case ImageFormat::R8: return 1;
-		case ImageFormat::RGB8: return 3;
-		case ImageFormat::RGBA8: return 4;
-		case ImageFormat::RGBA32F: return 4 * 4;
+		case ImageFormat::Data::R8: return 1;
+		case ImageFormat::Data::RGB8: return 3;
+		case ImageFormat::Data::RGBA8: return 4;
+		case ImageFormat::Data::RGBA32F: return 4 * 4;
 		}
 
 		AX_ASSERT_CORE(false, "Unknown TextureFormat!");
 		return 0;
 	}
 
-	GLenum OGLUtils::ImageFormatToGL(ImageFormat format)
+	GLenum OGLUtils::ImageFormatToGL(ImageFormat::Data format)
 	{
 		switch (format)
 		{
-		case ImageFormat::R8: return GL_RED;
-		case ImageFormat::RGB8: return GL_RGB;
-		case ImageFormat::RGBA8: return GL_RGBA;
-		case ImageFormat::RGBA32F: return GL_RGBA;
+		case ImageFormat::Data::R8: return GL_RED;
+		case ImageFormat::Data::RGB8: return GL_RGB;
+		case ImageFormat::Data::RGBA8: return GL_RGBA;
+		case ImageFormat::Data::RGBA32F: return GL_RGBA;
 		}
 
 		AX_ASSERT_CORE(false, "Unknown TextureFormat!");
 		return 0;
 	}
 
-	GLenum OGLUtils::ImageFormatToGLInternal(ImageFormat format)
+	GLenum OGLUtils::ImageFormatToGLInternal(ImageFormat::Data format)
 	{
 		switch (format)
 		{
-		case ImageFormat::R8: return GL_R8;
-		case ImageFormat::RGB8: return GL_RGB8;
-		case ImageFormat::RGBA8: return GL_RGBA8;
-		case ImageFormat::RGBA32F: return GL_RGBA32F;
+		case ImageFormat::Data::R8: return GL_R8;
+		case ImageFormat::Data::RGB8: return GL_RGB8;
+		case ImageFormat::Data::RGBA8: return GL_RGBA8;
+		case ImageFormat::Data::RGBA32F: return GL_RGBA32F;
 		}
 
 		AX_ASSERT_CORE(false, "Unknown TextureFormat!");
 		return 0;
 	}
 
-	GLenum OGLUtils::WrapFormatToGL(WrapFormat wrap)
+	GLenum OGLUtils::WrapFormatToGL(ImageFormat::Wrap wrap)
 	{
 		switch (wrap)
 		{
-		case WrapFormat::REPEAT: return GL_REPEAT;
-		case WrapFormat::CLAMP: return GL_CLAMP_TO_EDGE;
+		case ImageFormat::Wrap::REPEAT: return GL_REPEAT;
+		case ImageFormat::Wrap::CLAMP: return GL_CLAMP_TO_EDGE;
 		}
 
 		AX_ASSERT_CORE(false, "Unknown TextureWrap!");
 		return 0;
 	}
 
-	GLenum OGLUtils::FilterFormatToGL(FilterFormat filter)
+	GLenum OGLUtils::FilterFormatToGL(ImageFormat::Filter filter)
 	{
 		switch (filter)
 		{
-		case FilterFormat::NEAREST: return GL_NEAREST;
-		case FilterFormat::LINEAR: return GL_LINEAR;
+		case ImageFormat::Filter::NEAREST: return GL_NEAREST;
+		case ImageFormat::Filter::LINEAR: return GL_LINEAR;
 		}
 
 		AX_ASSERT_CORE(false, "Unknown TextureFilter!");
 		return 0;
 	}
 
-	GLenum OGLUtils::AccessFormatToGL(AccessFormat format)
+	GLenum OGLUtils::AccessFormatToGL(ImageFormat::Access format)
 	{
 		switch (format)
 		{
-		case AccessFormat::READ_WRITE: return GL_READ_WRITE;
-		case AccessFormat::READ_ONLY: return GL_READ_ONLY;
-		case AccessFormat::WRITE_ONLY: return GL_WRITE_ONLY;
+		case ImageFormat::Access::READ_WRITE: return GL_READ_WRITE;
+		case ImageFormat::Access::READ_ONLY: return GL_READ_ONLY;
+		case ImageFormat::Access::WRITE_ONLY: return GL_WRITE_ONLY;
 		}
 
 		AX_ASSERT_CORE(false, "Unknown TextureFilter!");

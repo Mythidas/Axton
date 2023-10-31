@@ -7,11 +7,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Octree.h" />
-    <ClInclude Include="OctreeChunk.h" />
+    <ClInclude Include="Chunk.h" />
     <ClInclude Include="RayCamera.h" />
     <ClInclude Include="VoxModelLoader.h" />
     <ClInclude Include="World.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="RayTraceLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RayCamera.cpp" />

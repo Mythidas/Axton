@@ -88,7 +88,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -112,7 +112,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -136,7 +136,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -176,7 +176,6 @@
     <ClInclude Include="Axton\Renderer\Image3D.h" />
     <ClInclude Include="Axton\Renderer\IndexBuffer.h" />
     <ClInclude Include="Axton\Renderer\RenderCommands.h" />
-    <ClInclude Include="Axton\Renderer\Renderer.h" />
     <ClInclude Include="Axton\Renderer\Renderer2D.h" />
     <ClInclude Include="Axton\Renderer\RendererAPI.h" />
     <ClInclude Include="Axton\Renderer\Shader.h" />
@@ -207,6 +206,8 @@
     <ClInclude Include="Platform\OpenGL\OGLUtils.h" />
     <ClInclude Include="Platform\OpenGL\OGLVertexArray.h" />
     <ClInclude Include="Platform\OpenGL\OGLVertexBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\VKGraphicsContext.h" />
+    <ClInclude Include="Platform\Vulkan\VKRendererAPI.h" />
     <ClInclude Include="Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="axpch.h" />
   </ItemGroup>
@@ -237,7 +238,6 @@
     <ClCompile Include="Axton\Renderer\Image3D.cpp" />
     <ClCompile Include="Axton\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Axton\Renderer\RenderCommands.cpp" />
-    <ClCompile Include="Axton\Renderer\Renderer.cpp" />
     <ClCompile Include="Axton\Renderer\Renderer2D.cpp" />
     <ClCompile Include="Axton\Renderer\RendererAPI.cpp" />
     <ClCompile Include="Axton\Renderer\Shader.cpp" />
@@ -268,6 +268,8 @@
     <ClCompile Include="Platform\OpenGL\OGLUtils.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLVertexArray.cpp" />
     <ClCompile Include="Platform\OpenGL\OGLVertexBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKGraphicsContext.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKRendererAPI.cpp" />
     <ClCompile Include="Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="axpch.cpp" />
   </ItemGroup>

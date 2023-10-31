@@ -10,9 +10,9 @@ layout (std140, binding = 0) uniform camera
 	mat4 u_View;
 	mat4 u_Projection;
 	float u_RandomSeed;
-	uint u_PixelSamples;
-	uint u_SampleDepth;
+	uint u_SampleSettings;
 	uint u_RenderPass;
+	uint u_Algorithm;
 };
 
 struct Chunk
@@ -20,6 +20,7 @@ struct Chunk
 	vec3 MinExtent;
 	vec3 MaxExtent;
 	ivec3 GridSize;
+	bool Sparse;
 	float VoxelSize;
 	float CamDistance;
 	uint VoxelOffset;
@@ -29,7 +30,7 @@ struct Chunk
 
 struct Voxel
 {
-	uint MatIndex;
+	uint Material;
 };
 
 struct Material
@@ -38,7 +39,6 @@ struct Material
 	float Metallic;
 	float Roughness;
 	float Emissive;
-	vec3 EmissiveHue;
 };
 
 layout (std430, binding = 2) readonly buffer chunkStorage
@@ -56,13 +56,11 @@ layout (std430, binding = 4) readonly buffer materialStorage
 	Material[] u_Materials;
 };
 
-float lerp(float a, float b, float value)
-{
-	return a * (1.0 - value) + (b * value);
-}
+int MARCHES = 0;
 
 const float PI = 3.14159265359;
 const float PHI = 1.61803398874989484820459; // Golden Ratio 
+float EPSILON = 0.0000001;
 
 float gold_noise(in vec2 xy, in float seed)
 {
@@ -79,6 +77,11 @@ float simple_noise(vec2 xy)
   return fract(52.9829189 * fract(xy.x * 0.06711056 + xy.y * 0.00583715));
 }
 
+float lerp(float a, float b, float value)
+{
+	return a * (1.0 - value) + (b * value);
+}
+
 float noise(float seed)
 {
 	return lerp(0, 1, custom_noise(gl_GlobalInvocationID.xy + seed));
@@ -86,74 +89,12 @@ float noise(float seed)
 
 float noise(float seed, float low, float high)
 {
-	return lerp(low, high, custom_noise(gl_GlobalInvocationID.xy + seed));
-}
-
-vec3 randomSpherePoint(vec3 rand) {
-	float ang1 = (rand.x + 1.0) * PI; // [-1..1) -> [0..2*PI)
-	float u = rand.y; // [-1..1), cos and acos(2v-1) cancel each other out, so we arrive at [-1..1)
-	float u2 = u * u;
-	float sqrt1MinusU2 = sqrt(1.0 - u2);
-	float x = sqrt1MinusU2 * cos(ang1);
-	float y = sqrt1MinusU2 * sin(ang1);
-	float z = u;
-	return vec3(x, y, z);
-}
-
-vec3 randomHemispherePoint(vec3 rand, vec3 n) {
-	/**
-	* Generate random sphere point and swap vector along the normal, if it
-	* points to the wrong of the two hemispheres.
-	* This method provides a uniform distribution over the hemisphere, 
-	* provided that the sphere distribution is also uniform.
-	*/
-	vec3 v = randomSpherePoint(rand);
-	return normalize(v * sign(dot(v, n)));
+	return lerp(low, high, gold_noise(gl_GlobalInvocationID.xy, seed));
 }
 
 uint collapseIndex(ivec3 index, Chunk chunk)
 {
 	return uint(((chunk.GridSize.x * chunk.GridSize.y * index.z) + (chunk.GridSize.x * index.y) + index.x));	
-}
-
-uint getVoxelInfo(ivec3 index, Chunk chunk, int lod)
-{
-	int currentOffset = int(chunk.VoxelOffset);
-
-	int levels = int(log2(chunk.GridSize.x));
-	for (int i = 0; i < levels - lod; i++)
-	{
-		int childIndex = 0;
-		int halfSize = 1 << (levels - i - 1);
-
-		if (index.x >= halfSize)
-		{
-			childIndex |= 1;
-			index.x -= halfSize;
-		}
-		if (index.y >= halfSize)
-		{
-			childIndex |= 2;
-			index.y -= halfSize;
-		}
-		if (index.z >= halfSize)
-		{
-			childIndex |= 4;
-			index.z -= halfSize;
-		}
-
-		ivec4 info = ivec4(unpackUnorm4x8(u_Voxels[currentOffset + childIndex].MatIndex) * 255);
-		if (info.w == 1)
-		{
-			return uint(info.x);
-		}
-		else
-		{
-			currentOffset += int(info.x + (info.y * 255) + (info.z * 255 * 255));
-		}
-	}
-	
-	return ivec4(unpackUnorm4x8(u_Voxels[currentOffset].MatIndex) * 255).w;
 }
 
 struct Ray
@@ -176,38 +117,34 @@ struct RayTracePayload
 	float Distance;
 	int ObjIndex;
 	uint AlbedoIndex;
-	int Marches;
 };
 
-RayTracePayload missHit(Ray ray, int marches)
+RayTracePayload missHit(Ray ray)
 {
 	RayTracePayload payload;
 	payload.Distance = -1;
-	payload.Marches = marches;
 	return payload;
 }
 
 vec3 getVoxelNormal(vec3 center, vec3 hit)
 {
 	vec3 diff = abs(hit - center);
-	vec3 diff1 = hit - center;
 	if (diff.x > diff.y && diff.x > diff.z)
-		return vec3(sign(-diff1.x), 0, 0);
+		return vec3(sign(hit.x - center.x), 0, 0);
 	else if (diff.y > diff.z)
-		return vec3 (0, sign(diff1.y), 0);
+		return vec3 (0, sign(hit.y - center.y), 0);
 	else
-		return vec3(0, 0, sign(-diff1.z));
+		return vec3(0, 0, sign(hit.z - center.z));
 }
 
-RayTracePayload closestHitBox(Ray ray, vec3 position, float hitDistance, int objIndex, uint albedo, int marches)
+RayTracePayload closestHitBox(Ray ray, vec3 position, float hitDistance, int objIndex, uint albedo)
 {
 	RayTracePayload payload;
 	payload.Distance = hitDistance;
 	payload.ObjIndex = objIndex;
 	payload.AlbedoIndex = albedo;
-	payload.Point = getRayPoint(ray, hitDistance);
+	payload.Point = getRayPoint(ray, hitDistance - EPSILON);
 	payload.Normal = getVoxelNormal(position, payload.Point);
-	payload.Marches = marches;
 	return payload;
 }
 
@@ -223,7 +160,7 @@ TValue findBoxTminTmax(vec3 minExtent, vec3 maxExtent, Ray ray)
 {
 	TValue value;
 	value.TMin = 0;
-	value.TMax = 100000000;
+	value.TMax = 10000000;
 
 	vec3 t0s = (minExtent - ray.Origin) * ray.InvDirection;
 	vec3 t1s = (maxExtent - ray.Origin) * ray.InvDirection;
@@ -237,12 +174,72 @@ TValue findBoxTminTmax(vec3 minExtent, vec3 maxExtent, Ray ray)
 	return value;
 }
 
+uint getVoxelInfoSparse(ivec3 index, Chunk chunk)
+{
+	int currentOffset = int(chunk.VoxelOffset);
+	bvec3 mask;
+	int levels = int(log2(chunk.GridSize.x));
+	int childIndex = 0;
+	int halfSize = 1 << (levels);
+
+	for (int i = 0; i < levels; i++)
+	{
+		childIndex = 0;
+		halfSize = halfSize >> 1;
+
+		if (index.x >= halfSize)
+		{
+			childIndex |= 4;
+			index.x -= halfSize;
+		}
+		if (index.y >= halfSize)
+		{
+			childIndex |= 2;
+			index.y -= halfSize;
+		}
+		if (index.z >= halfSize)
+		{
+			childIndex |= 1;
+			index.z -= halfSize;
+		}
+
+		ivec4 info = ivec4(unpackUnorm4x8(u_Voxels[currentOffset + childIndex].Material) * 255);
+		if (info.w == 1)
+		{
+			return uint(info.x);
+		}
+		else
+		{
+			currentOffset += int(info.x + (info.y * 255) + (info.z * 255 * 255));
+		}
+	}
+	
+	return ivec4(unpackUnorm4x8(u_Voxels[currentOffset].Material) * 255).w;
+}
+
+uint getVoxelInfoDense(ivec3 index, Chunk chunk)
+{
+	uint pIndex = collapseIndex(index, chunk);
+	uint bit = pIndex % 4;
+	uint smallIndex = uint(floor(pIndex / 4)) + chunk.VoxelOffset;
+
+	return uint(bitfieldExtract(u_Voxels[smallIndex].Material, int(bit * 8), 8));
+}
+
+uint getVoxelInfo(ivec3 index, Chunk chunk)
+{
+	if (chunk.Sparse)
+		return getVoxelInfoSparse(index, chunk);
+	else
+		return getVoxelInfoDense(index, chunk);
+}
+
 // Amanatides & Woo 3DDA Traversal
-bool awDDATraversal(Ray ray, Chunk chunk, TValue minMax, inout int marches, inout float closestPoint, inout vec3 closestPosition, inout uint closestMaterial)
+bool awDDATraversal(Ray ray, Chunk chunk, TValue minMax, inout float closestPoint, inout vec3 closestPosition, inout uint closestMaterial)
 {
 	/// INITIALIZATION ///
 	// Find the Voxel where the ray starts
-	vec3 startPos = getRayPoint(ray, minMax.TMin + 0.0003);
+	vec3 startPos = getRayPoint(ray, minMax.TMin + EPSILON * chunk.CamDistance * 0.05);
 	ivec3 currentIndex = ivec3(floor((startPos - chunk.MinExtent) / chunk.VoxelSize));
 
 	// Calculate XYZ step directions and distances
@@ -262,18 +259,17 @@ bool awDDATraversal(Ray ray, Chunk chunk, TValue minMax, inout int marches, inou
 	}
 
 	/// TRAVERSAL ///
-	for (int j = 0; j < chunk.GridSize.x * chunk.GridSize.y * chunk.GridSize.z; j++)
+	float epsAdjust = EPSILON * chunk.CamDistance * 0.06; // Adjusting the point to offset initial start position
+
+	for (int j = 0; j < 300; j++)
 	{
-		if (currentIndex.x < 0 || currentIndex.x >= chunk.GridSize.x
-			|| currentIndex.y < 0 || currentIndex.y >= chunk.GridSize.y
-			|| currentIndex.z < 0 || currentIndex.z >= chunk.GridSize.z)
-		{
-			break;
-		}
-		marches++;
+		if (vTMin >= (minMax.TMax - epsAdjust) || vTMin > closestPoint) 
+			return false;
+
+		MARCHES++;
 
 		// Break condition if Voxel Info > 0, Solid voxel is found (Works on both Sparse and Dense grids)
-		uint matIndex = getVoxelInfo(currentIndex, chunk, 0);
+		uint matIndex = getVoxelInfo(currentIndex, chunk);
 		if (matIndex != 0)
 		{
 			closestPosition = chunk.MinExtent + vec3(currentIndex * chunk.VoxelSize + chunk.VoxelSize * 0.5);
@@ -282,23 +278,22 @@ bool awDDATraversal(Ray ray, Chunk chunk, TValue minMax, inout int marches, inou
 			return true;
 		}
 
-		vTMin = min(min(tMax.x, tMax.y), tMax.z);
-		if (vTMin > closestPoint)
-			return false;
-
 		// Step through grid by 1 voxel on X,Y,or Z
 		if (tMax.x < tMax.y && tMax.x < tMax.z)
 		{
+			vTMin = tMax.x;
 			tMax.x += tDelta.x;
 			currentIndex.x += steps.x;
 		}
 		else if (tMax.y < tMax.z)
 		{
+			vTMin = tMax.y;
 			tMax.y += tDelta.y;
 			currentIndex.y += steps.y;
 		}
 		else
 		{
+			vTMin = tMax.z;
 			tMax.z += tDelta.z;
 			currentIndex.z += steps.z;
 		}
@@ -307,19 +302,187 @@ bool awDDATraversal(Ray ray, Chunk chunk, TValue minMax, inout int marches, inou
 	return false;
 }
 
-// Modified from Amantides & Woo for use in Octrees
-bool octDDATraversal(Ray ray, Chunk chunk, TValue minMax, inout int marches, inout float closestPoint, inout vec3 closestPosition, inout uint closestMaterial)
+struct ST
 {
+	uint Offset;
+	vec3 T0;
+	vec3 T1;
+	uint Info;
+	int Child;
+
+} Stack[10];
+int StackIndex = 0;
+
+int firstIndex(vec3 t0, vec3 tM)
+{
+	bvec3 mask = greaterThan(vec3(max(max(t0.x, t0.y), t0.z)), tM);
+	return (int(mask.z) << 0) | (int(mask.y) << 1) | (int(mask.x) << 2);
+}
+
+int nextIndex(int current, vec3 tM)
+{
+	int index = current;
+
+	if (tM.x < tM.y && tM.x < tM.z)
+		index |= 4;
+	else if (tM.y < tM.z)
+		index |= 2;
+	else
+		index |= 1;
+
+	if (index == current) return 8;
+	return index;
+}
+
+void childTs(int index, ST node, vec3 tM, inout ST child)
+{
+	switch (index)
+	{
+		case 0:
+		{
+			child.T0 = node.T0;
+			child.T1 = tM;
+			break;
+		}
+		case 1:
+		{
+			child.T0 = vec3(node.T0.xy, tM.z);
+			child.T1 = vec3(tM.xy, node.T1.z);
+			break;
+		}
+		case 2:
+		{
+			child.T0 = vec3(node.T0.x, tM.y, node.T0.z);
+			child.T1 = vec3(tM.x, node.T1.y, tM.z);
+			break;
+		}
+		case 3:
+		{
+			child.T0 = vec3(node.T0.x, tM.yz);
+			child.T1 = vec3(tM.x, node.T1.yz);
+			break;
+		}
+		case 4:
+		{
+			child.T0 = vec3(tM.x, node.T0.yz);
+			child.T1 = vec3(node.T1.x, tM.yz);
+			break;
+		}
+		case 5:
+		{
+			child.T0 = vec3(tM.x, node.T0.y, tM.z);
+			child.T1 = vec3(node.T1.x, tM.y, node.T1.z);
+			break;
+		}
+		case 6:
+		{
+			child.T0 = vec3(tM.xy, node.T0.z);
+			child.T1 = vec3(node.T1.xy, tM.z);
+			break;
+		}
+		case 7:
+		{
+			child.T0 = tM;
+			child.T1 = node.T1;
+			break;
+		}
+	}
+}
+
+// Stack based octree traversal inspired by Revelles
+bool octDFSTraversal(Ray ray, Chunk chunk, TValue minMax, inout float closestPoint, inout vec3 closestPosition, inout uint closestMaterial)
+{
+	int mask = 0;
+	if (ray.Direction.x < 0)
+	{
+		mask |= 4;
+	}
+	if (ray.Direction.y < 0)
+	{
+		mask |= 2;
+	}
+	if (ray.Direction.z < 0)
+	{
+		mask |= 1;
+	}
+
+	ST root;
+	root.Offset = chunk.VoxelOffset;
+	root.T0 = minMax.T0;
+	root.T1 = minMax.T1;
+	root.Info = 0;
+	root.Child = -1;
+	StackIndex = 0;
+
+	vec3 tM = (root.T0 + root.T1) * 0.5;
+	root.Child = firstIndex(root.T0, tM);
+	Stack[StackIndex] = root;
+
+	for (int i = 0; i < 250; i++)
+	{
+		MARCHES++;
+		ST node = Stack[StackIndex];
+
+		if (node.T1.x < 0. || node.T1.y < 0. || node.T1.z < 0.)
+		{
+			MARCHES = i;
+			break;
+		}
+
+		ivec4 info = ivec4(unpackUnorm4x8(node.Info) * 255);
+		if (info.w == 1)
+		{
+			if (info.x == 0)
+			{
+				StackIndex--;
+				if (StackIndex < 0) break;
+				continue;
+			}
+
+			closestPoint = max(max(node.T0.x, node.T0.y), node.T0.z);
+			vec3 startPos = getRayPoint(ray, closestPoint + EPSILON * chunk.CamDistance * 0.001);
+			ivec3 currentIndex = ivec3(floor((startPos - chunk.MinExtent) / chunk.VoxelSize));
+			closestPosition = chunk.MinExtent + vec3(currentIndex * chunk.VoxelSize + chunk.VoxelSize * 0.5);
+			closestMaterial = uint(info.x);
+			return true;
+		}
+
+		tM = (node.T0 + node.T1) * 0.5;
+		ST child;
+
+		if (node.Child == 8)
+		{
+			StackIndex--;
+			if (StackIndex < 0) break;
+			continue;
+		}
+
+		child.Info = u_Voxels[node.Offset + (node.Child ^ mask)].Material;
+		childTs(node.Child, node, tM, child);
+		node.Child = nextIndex(node.Child, child.T1);
+
+		tM = (child.T0 + child.T1) * 0.5;
+		child.Child = firstIndex(child.T0, tM);
+		info = ivec4(unpackUnorm4x8(child.Info) * 255);
+		child.Offset = node.Offset + int(info.x + (info.y * 255) + (info.z * 255 * 255));
+		Stack[StackIndex] = node;
+		StackIndex++;
+		Stack[StackIndex] = child;
+	}
+	
 	return false;
 }
 
-bool findClosestVoxel(Ray ray, Chunk chunk, TValue minMax, inout int marches, inout float closestPoint, inout vec3 closestPosition, inout uint closestMaterial)
+bool findClosestVoxel(Ray ray, Chunk chunk, TValue minMax, inout float closestPoint, inout vec3 closestPosition, inout uint closestMaterial)
 {
-	int method = 0;
-	if (method == 0)
-		return awDDATraversal(ray, chunk, minMax, marches, closestPoint, closestPosition, closestMaterial);
-	else if (method == 1)
-		return octDDATraversal(ray, chunk, minMax, marches, closestPoint, closestPosition, closestMaterial);
+	switch (u_Algorithm)
+	{
+		case 0: return awDDATraversal(ray, chunk, minMax, closestPoint, closestPosition, closestMaterial); break;
+		// About 1.5x Faster for VERY Sparse data with lots of empty space
+		// case 1: return octDFSTraversal(ray, chunk, minMax, closestPoint, closestPosition, closestMaterial); break;
+	}
+
+	return false;
 }
 
 RayTracePayload traceBoxes(Ray ray)
@@ -328,7 +491,6 @@ RayTracePayload traceBoxes(Ray ray)
 	int closestChunk = -1;
 	vec3 closestPosition = vec3(0);
 	uint closestMaterial = -1;
-	int marches = 0;
 
 	for (int i = 0; i < u_Chunks.length(); i++)
 	{
@@ -336,16 +498,16 @@ RayTracePayload traceBoxes(Ray ray)
 
 		if (minMax.TMin <= minMax.TMax && minMax.TMin < closestPoint)
 		{
-			if (findClosestVoxel(ray, u_Chunks[i], minMax, marches, closestPoint, closestPosition, closestMaterial))
+			if (findClosestVoxel(ray, u_Chunks[i], minMax, closestPoint, closestPosition, closestMaterial))
 			{
 				closestChunk = i;
 			}
 		}
 	}
 
-	if (closestChunk < 0) return missHit(ray, marches);
+	if (closestChunk < 0) return missHit(ray);
 
-	return closestHitBox(ray, closestPosition, closestPoint, closestChunk, closestMaterial, marches);
+	return closestHitBox(ray, closestPosition, closestPoint, closestChunk, closestMaterial);
 }
 
 Ray getRay(ivec2 texelCoord)
@@ -358,21 +520,28 @@ Ray getRay(ivec2 texelCoord)
 	float horitzontalSample = (float(texelCoord.x + sampleCoord.x) * 2 - screenSize.x) / screenSize.x;
 	float verticalSample = (float(texelCoord.y + sampleCoord.y) * 2 - screenSize.y) / screenSize.y;
 	vec4 pixelSample = vec4(horizonCoefficient, verticalCoefficient, 1.0, 1.0) + vec4(horitzontalSample, verticalSample, 1.0, 1.0);
-	//vec4 pixelSample = vec4(horizonCoefficient, verticalCoefficient, 1.0, 1.0);
 
 	Ray ray;
 	ray.Origin = u_CamPosition.xyz;
 
 	vec4 target = u_Projection * pixelSample;
 	ray.Direction = normalize(vec3(u_View * vec4(normalize(vec3(target) / target.w), 0)));
+	if (ray.Direction.x == 0.)
+		ray.Direction.x = 0.00001;
+	if (ray.Direction.y == 0.)
+		ray.Direction.y = 0.00001;
+	if (ray.Direction.z == 0.)
+		ray.Direction.z = 0.00001;
+
 	ray.InvDirection = 1 / ray.Direction;
 
 	return ray;
 }
 
+// What is monte carlo, and how to make better random noise
 vec3 randV3(float low, float high)
 {
-	return vec3(noise(u_RandomSeed), noise(u_RandomSeed + 1), noise(u_RandomSeed + 2));
+	return vec3(noise(u_RandomSeed, low, high), noise(u_RandomSeed - 1, low, high), noise(u_RandomSeed - 2, low, high));
 }
 
 vec3 randInUnitSphere()
@@ -380,47 +549,68 @@ vec3 randInUnitSphere()
 	return normalize(randV3(-1, 1));
 }
 
+vec3 shadowRay(Ray ray, vec3 throughput)
+{
+	RayTracePayload payload = traceBoxes(ray);
+
+	if (payload.Distance < 0)
+	{
+		return u_BackgroundColor.xyz * throughput;
+	}
+
+	return vec3(0);
+}
+
 void main()
 {
-	vec3 light = vec3(0);
 	ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+	EPSILON = float(1.0 / imageSize(imgOutput).y);
 
+	vec3 light = vec3(0);
+	vec3 sunDir = normalize(vec3(-1, -0.5, -1));
+
+	ivec4 sampleSettings = ivec4(unpackUnorm4x8(u_SampleSettings) * 255);
 	switch (u_RenderPass)
 	{
 		case 0: // Full Render Pass
 			{
-				float samples = 1;
-				for (int i = 0; i < u_PixelSamples; i++)
+				for (int i = 0; i < sampleSettings.x; i++)
 				{
 					Ray ray = getRay(texelCoord);
 					vec3 throughput = vec3(1);
 
-					samples++;
-					for (int j = 0; j < u_SampleDepth; j++)
+					for (int j = 0; j < sampleSettings.y; j++)
 					{
 						RayTracePayload payload = traceBoxes(ray);
 						Material mat = u_Materials[u_Chunks[payload.ObjIndex].MaterialIndex];
 
-						if (payload.Distance > 0)
+						if (payload.Distance >= 0)
 						{
 							vec3 albedo = unpackUnorm4x8(u_Chunks[payload.ObjIndex].Albedos[payload.AlbedoIndex]).xyz;
 							throughput *= albedo;
 							light += mat.Emissive * albedo;
 
-							ray.Origin = payload.Point + payload.Normal * 0.0001;
-							ray.Direction = normalize(randInUnitSphere() + payload.Normal + 0.00001);
+							// Ray to test for sun shadows
+							Ray sRay;
+							sRay.Origin = payload.Point + payload.Normal * 0.00001;
+							sRay.Direction = -sunDir;
+							sRay.InvDirection = 1 / sRay.Direction;
+							light += shadowRay(sRay, throughput);
+
+							// Diffuse lighting bounce
+							ray.Origin = payload.Point + payload.Normal * 0.00001;
+							ray.Direction = normalize(randInUnitSphere() + payload.Normal);
 							ray.InvDirection = 1 / ray.Direction;
 						}
 						else
 						{
 							light += u_BackgroundColor.xyz * throughput;
-							samples += j - 1;
 							break;
 						}
 					}
 				}
 
-				light /= samples;
+				light /= sampleSettings.x;
 
 				break;
 			}
@@ -452,11 +642,11 @@ void main()
 
 				if (payload.Distance > 0)
 				{
-					light = vec3(min(1.0, payload.Marches / 300.0), 0, 0);
+					light = vec3(min(1.0, MARCHES / 200.0), 0, 0);
 				}
 				else
 				{
-					light = vec3(0, 0, min(1.0, payload.Marches / 200.0));
+					light = vec3(0, 0, min(1.0, MARCHES / 200.0));
 				}
 				break;
 			}

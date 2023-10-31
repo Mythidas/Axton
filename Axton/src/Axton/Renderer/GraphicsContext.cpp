@@ -3,6 +3,7 @@
 #include "Axton/Core/Assert.h"
 #include "RendererAPI.h"
 #include "Platform/OpenGL/OGLGraphicsContext.h"
+#include "Platform/Vulkan/VKGraphicsContext.h"
 
 namespace Axton
 {
@@ -12,6 +13,7 @@ namespace Axton
 		{
 			case RendererAPI::API::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); return nullptr;
 			case RendererAPI::API::OpenGL:  return CreateScope<OpenGL::OGLGraphicsContext>();
+			case RendererAPI::API::Vulkan:  return CreateScope<Vulkan::VKGraphicsContext>();
 		}
 
 		AX_ASSERT_CORE(false, "Unknown RendererAPI!");

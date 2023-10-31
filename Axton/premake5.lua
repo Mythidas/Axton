@@ -42,7 +42,6 @@ project "Axton"
         "GLFW",
         "Glad",
         "ImGui",
-        "opengl32.lib",
         "%{Library.VULKAN}"
     }
 

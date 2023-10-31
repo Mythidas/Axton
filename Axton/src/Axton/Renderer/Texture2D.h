@@ -9,9 +9,9 @@ namespace Axton
 	{
 		uint32_t Width = 1;
 		uint32_t Height = 1;
-		ImageFormat Format = ImageFormat::RGBA8;
-		FilterFormat Filter = FilterFormat::NEAREST;
-		WrapFormat Wrap = WrapFormat::REPEAT;
+		ImageFormat::Data Format = ImageFormat::Data::RGBA8;
+		ImageFormat::Filter Filter = ImageFormat::Filter::LINEAR;
+		ImageFormat::Wrap Wrap = ImageFormat::Wrap::REPEAT;
 		bool GenerateMipmaps = true;
 
 		Texture2DSpecs() {}

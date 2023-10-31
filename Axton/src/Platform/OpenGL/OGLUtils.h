@@ -9,12 +9,12 @@ namespace Axton::OpenGL
 	class OGLUtils
 	{
 	public:
-		static int ImageFormatSize(ImageFormat format);
-		static GLenum ImageFormatToGL(ImageFormat format);
-		static GLenum ImageFormatToGLInternal(ImageFormat format);
-		static GLenum WrapFormatToGL(WrapFormat wrap);
-		static GLenum FilterFormatToGL(FilterFormat filter);
-		static GLenum AccessFormatToGL(AccessFormat format);
+		static int ImageFormatSize(ImageFormat::Data format);
+		static GLenum ImageFormatToGL(ImageFormat::Data format);
+		static GLenum ImageFormatToGLInternal(ImageFormat::Data format);
+		static GLenum WrapFormatToGL(ImageFormat::Wrap wrap);
+		static GLenum FilterFormatToGL(ImageFormat::Filter filter);
+		static GLenum AccessFormatToGL(ImageFormat::Access format);
 
 		static void CheckForErrors(const std::string& info);
 	};

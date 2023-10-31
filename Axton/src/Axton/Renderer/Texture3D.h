@@ -10,9 +10,9 @@ namespace Axton
 		int Width = 1;
 		int Height = 1;
 		int Depth = 1;
-		ImageFormat Format = ImageFormat::RGBA8;
-		FilterFormat Filter = FilterFormat::NEAREST;
-		WrapFormat Wrap = WrapFormat::REPEAT;
+		ImageFormat::Data Format = ImageFormat::Data::RGBA32F;
+		ImageFormat::Filter Filter = ImageFormat::Filter::LINEAR;
+		ImageFormat::Wrap Wrap = ImageFormat::Wrap::REPEAT;
 		bool GenerateMipmaps = false;
 	};
 

@@ -1,7 +1,9 @@
 #include "axpch.h"
 #include "WindowsWindow.h"
+
 #include "Axton/Core/Assert.h"
 #include "Axton/Event/Events.h"
+#include "Axton/Renderer/RendererAPI.h"
 
 namespace Axton
 {
@@ -11,6 +13,10 @@ namespace Axton
 
 		int glfw = glfwInit();
 		AX_ASSERT_CORE(glfw, "Failed to Init GLFW");
+
+
+		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 		m_Context = GraphicsContext::Create();
 		m_Window = glfwCreateWindow((int)specs.Width, (int)specs.Height, specs.Title.c_str(), nullptr, nullptr);

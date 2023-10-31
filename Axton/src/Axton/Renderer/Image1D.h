@@ -8,10 +8,10 @@ namespace Axton
 	{
 		uint32_t Width = 1;
 		uint32_t Slot = 0;
-		AccessFormat Access = AccessFormat::READ_WRITE;
-		ImageFormat Format = ImageFormat::RGBA32F;
-		FilterFormat Filter = FilterFormat::LINEAR;
-		WrapFormat Wrap = WrapFormat::REPEAT;
+		ImageFormat::Data Format = ImageFormat::Data::RGBA32F;
+		ImageFormat::Access Access = ImageFormat::Access::READ_WRITE;
+		ImageFormat::Filter Filter = ImageFormat::Filter::LINEAR;
+		ImageFormat::Wrap Wrap = ImageFormat::Wrap::REPEAT;
 	};
 
 	class Image1D

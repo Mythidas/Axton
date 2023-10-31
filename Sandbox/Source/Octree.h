@@ -194,7 +194,7 @@ private:
 
 			if (tIndex.x >= halfSize)
 			{
-				childIndex |= 1;
+				childIndex |= 4;
 				tIndex.x -= halfSize;
 			}
 
@@ -206,7 +206,7 @@ private:
 
 			if (tIndex.z >= halfSize)
 			{
-				childIndex |= 4;
+				childIndex |= 1;
 				tIndex.z -= halfSize;
 			}
 
@@ -230,7 +230,7 @@ private:
 
 			if (index.x >= halfSize)
 			{
-				childIndex |= 1;
+				childIndex |= 4;
 				index.x -= halfSize;
 			}
 
@@ -242,7 +242,7 @@ private:
 
 			if (index.z >= halfSize)
 			{
-				childIndex |= 4;
+				childIndex |= 1;
 				index.z -= halfSize;
 			}
 

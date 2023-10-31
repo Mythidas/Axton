@@ -5,10 +5,10 @@
 #include "Axton/Core/Layer.h"
 #include "Axton/Core/Input.h"
 #include "Axton/Core/Time.h"
+#include "Axton/Core/Assert.h"
 #include "Axton/ImGUI/ImGUILayer.h"
 
 // Renderer
-#include "Axton/Renderer/Renderer.h"
 #include "Axton/Renderer/Renderer2D.h"
 #include "Axton/Renderer/Camera.h"
 #include "Axton/Renderer/Sprite.h"

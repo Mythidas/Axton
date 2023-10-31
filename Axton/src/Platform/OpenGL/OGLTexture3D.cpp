@@ -9,8 +9,6 @@ namespace Axton::OpenGL
 	OGLTexture3D::OGLTexture3D(const Texture3DSpecs& specs)
 		: m_Specs(specs)
 	{
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
 		glCreateTextures(GL_TEXTURE_3D, 1, &m_RendererID);
 		glTextureStorage3D(m_RendererID, 1, OGLUtils::ImageFormatToGLInternal(specs.Format), specs.Width, specs.Height, specs.Depth);
 

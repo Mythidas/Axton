@@ -5,7 +5,7 @@ VoxModelLoader::VoxModelLoader(const std::string& path)
 {
 }
 
-Ref<OctreeChunk> VoxModelLoader::GenChunk(World& world, Vector3 position)
+Ref<Chunk> VoxModelLoader::GenChunk(World& world, Vector3 position)
 {
 	FileSystem file(m_Path);
 	std::vector<uint8_t> buffer = file.ToBuffer();
@@ -34,17 +34,13 @@ Ref<OctreeChunk> VoxModelLoader::GenChunk(World& world, Vector3 position)
 	uint32_t xyziChildSize = GetNextValue(buffer, currentIndex);
 	uint32_t xyziCount = GetNextValue(buffer, currentIndex);
 
-	Ref<OctreeChunk> newChunk = world.CreateChunk(position, { extents.x, extents.z, extents.y });
+	Ref<Chunk> newChunk = world.CreateChunk(position, { extents.y, extents.z, extents.x }, false);
+	world.BeginEdit(newChunk);
 
 	for (int i = 0; i < xyziCount; i++)
 	{
 		IVector4 voxelVal = Vector::ConvertIV4(GetNextValue(buffer, currentIndex));
-		newChunk->Octree.SetVoxelOriginal({ voxelVal.x, voxelVal.z, voxelVal.y }, voxelVal.w);
-	}
-
-	{
-		Timer timer("Refresh Chunk Nodes");
-		newChunk->Octree.Root->Refresh();
+		newChunk->SetVoxel({ voxelVal.y, voxelVal.z, voxelVal.x }, voxelVal.w);
 	}
 	
 	uint32_t rgba = Bit::U32_4x8('R', 'G', 'B', 'A');
@@ -54,6 +50,11 @@ Ref<OctreeChunk> VoxModelLoader::GenChunk(World& world, Vector3 position)
 	for (int i = 0; i < 255; i++)
 	{
 		newChunk->Albedos[i] = GetNextValue(buffer, currentIndex);
+	}
+
+	{
+		Timer timer("Refresh Chunk Nodes");
+		world.EndEdit(newChunk);
 	}
 
 	return newChunk;

@@ -142,9 +142,6 @@
     <ClInclude Include="Axton\Renderer\RenderCommands.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Axton\Renderer\Renderer.h">
-      <Filter>Axton\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Axton\Renderer\Renderer2D.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
@@ -239,6 +236,8 @@
       <Filter>Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="axpch.h" />
+    <ClInclude Include="Platform\Vulkan\VKGraphicsContext.h" />
+    <ClInclude Include="Platform\Vulkan\VKRendererAPI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -317,9 +316,6 @@
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Renderer\RenderCommands.cpp">
-      <Filter>Axton\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Axton\Renderer\Renderer.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Renderer\Renderer2D.cpp">
@@ -416,5 +412,7 @@
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="axpch.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKGraphicsContext.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKRendererAPI.cpp" />
   </ItemGroup>
 </Project>

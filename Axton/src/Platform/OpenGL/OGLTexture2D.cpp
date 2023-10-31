@@ -54,7 +54,7 @@ namespace Axton::OpenGL
 
 	void OGLTexture2D::SetData(void* data, uint32_t size)
 	{
-		size_t bpp = m_Specs.Format == ImageFormat::RGBA8 ? 4 : 3;
+		size_t bpp = OGLUtils::ImageFormatSize(m_Specs.Format);
 		AX_ASSERT_CORE(size == m_Specs.Width * m_Specs.Height * bpp, "Texture2D Data size must fill entire Texture!");
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Specs.Width, m_Specs.Height, OGLUtils::ImageFormatToGL(m_Specs.Format), GL_UNSIGNED_BYTE, data);
 	}

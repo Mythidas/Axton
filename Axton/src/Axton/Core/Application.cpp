@@ -5,7 +5,7 @@
 #include "Input.h"
 #include "Axton/Debug/Log.h"
 #include "Axton/Event/Events.h"
-#include "Axton/Renderer/Renderer.h"
+#include "Axton/Renderer/Renderer2D.h"
 #include "Axton/Renderer/RenderCommands.h"
 #include "Axton/ImGUI/ImGUILayer.h"
 
@@ -24,7 +24,7 @@ namespace Axton
 		Input::Construct();
 
 		m_Window = builder.Build();
-		Renderer::Construct();
+		Renderer2D::Construct();
 
 		m_ImGUILayer = ImGUILayer::Create();
 		PushOverlay(m_ImGUILayer);

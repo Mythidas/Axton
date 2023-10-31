@@ -12,24 +12,25 @@ RayCamera::RayCamera(const Camera::Specs& specs)
 
 	RecalculateView();
 
-	m_CameraTransform = UniformBuffer::Create(sizeof(RayCamera::Buffer), 0);
+	m_CameraBuffer = UniformBuffer::Create(sizeof(RayCamera::Buffer), 0);
 }
 
 void RayCamera::OnUpdate()
 {
 	ProcessMovement();
-	static float lastSeed = 0.0f;
+	static float frameCount = 0;
 
 	RayCamera::Buffer buffer{};
 	buffer.Position = Vector4(m_Position, 0);
 	buffer.BackgroundColor = Vector4(m_BackgroundColor, 1);
 	buffer.Projection = m_InverseProjection;
-	buffer.RandomSeed = Mathf::Random::Float(lastSeed - 1, lastSeed + 1);
-	lastSeed = buffer.RandomSeed;
+	buffer.RandomSeed = Mathf::Random::Float();
 	buffer.View = m_InverseView;
+	buffer.SampleSettings = Bit::U32_4x8(1, 3, 0, 0);
 	buffer.RenderPass = uint32_t(m_RenderMode);
+	buffer.Algorithm = m_Algorithm;
 
-	m_CameraTransform->SetData(&buffer, sizeof(RayCamera::Buffer));
+	m_CameraBuffer->SetData(&buffer, sizeof(RayCamera::Buffer));
 }
 
 Ray RayCamera::GetRay() const
