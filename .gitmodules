@@ -13,6 +13,3 @@
 [submodule "Axton/vendor/imgui"]
 	path = Axton/vendor/imgui
 	url = git@github.com:Mythidas/imgui.git
-[submodule "Axton/vendor/denoise"]
-	path = Axton/vendor/denoise
-	url = https://github.com/BrutPitt/glslSmartDeNoise.git

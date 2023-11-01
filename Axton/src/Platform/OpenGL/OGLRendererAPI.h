@@ -7,12 +7,12 @@ namespace Axton::OpenGL
 	class OGLRendererAPI : public Axton::RendererAPI
 	{
 	public:
-		virtual void ClearScreen() override;
-		virtual void SetClearColor(const Vector4& clearColor) override;
-		virtual void SetBlendMode(bool enabled) override;
-		virtual void SetViewport(int& width, int& height) override;
-		virtual void EnableDepthTest(bool enabled) override;
-
-		virtual void DrawIndexed(uint32_t count) override;
+		virtual void clearScreen() override;
+		virtual void setClearColor(const Vector4& clearColor) override;
+		virtual void setBlendMode(bool enabled) override;
+		virtual void setViewport(int& width, int& height) override;
+		virtual void enableDepthTest(bool enabled) override;
+					 
+		virtual void drawIndexed(uint32_t count) override;
 	};
 }

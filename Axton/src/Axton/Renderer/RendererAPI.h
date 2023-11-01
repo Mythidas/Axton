@@ -18,18 +18,29 @@ namespace Axton
 		};
 
 	public:
-		virtual void ClearScreen() = 0;
-		virtual void SetClearColor(const Vector4& clearColor) = 0;
-		virtual void SetBlendMode(bool enabled) = 0;
-		virtual void SetViewport(int& width, int& height) = 0;
-		virtual void EnableDepthTest(bool enabled) = 0;
-
-		virtual void DrawIndexed(uint32_t count) = 0;
+		static void Construct();
 
 		static API GetAPI() { return s_API; }
-		static Scope<RendererAPI> Create();
+
+		static void ClearScreen();
+		static void SetClearColor(const Vector4& clearColor);
+		static void SetBlendMode(bool enabled);
+		static void SetViewport(int& width, int& height);
+		static void EnableDepthTest(bool enabled);
+		static void DrawIndexed(uint32_t count);
+
+	protected:
+		virtual void clearScreen() = 0;
+		virtual void setClearColor(const Vector4& clearColor) = 0;
+		virtual void setBlendMode(bool enabled) = 0;
+		virtual void setViewport(int& width, int& height) = 0;
+		virtual void enableDepthTest(bool enabled) = 0;
+
+		virtual void drawIndexed(uint32_t count) = 0;
+
 	private:
 		static API s_API;
+		static Scope<RendererAPI> s_Instance;
 	};
 
 	class ImageFormat

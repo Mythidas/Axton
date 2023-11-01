@@ -3,27 +3,27 @@
 
 namespace Axton::Vulkan
 {
-	void VKRendererAPI::ClearScreen()
+	void VKRendererAPI::clearScreen()
 	{
 	}
 
-	void VKRendererAPI::SetClearColor(const Vector4& clearColor)
+	void VKRendererAPI::setClearColor(const Vector4& clearColor)
 	{
 	}
 
-	void VKRendererAPI::SetBlendMode(bool enabled)
+	void VKRendererAPI::setBlendMode(bool enabled)
 	{
 	}
 
-	void VKRendererAPI::SetViewport(int& width, int& height)
+	void VKRendererAPI::setViewport(int& width, int& height)
 	{
 	}
 
-	void VKRendererAPI::EnableDepthTest(bool enabled)
+	void VKRendererAPI::enableDepthTest(bool enabled)
 	{
 	}
 
-	void VKRendererAPI::DrawIndexed(uint32_t count)
+	void VKRendererAPI::drawIndexed(uint32_t count)
 	{
 	}
 }

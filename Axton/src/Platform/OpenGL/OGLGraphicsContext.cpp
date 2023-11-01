@@ -1,7 +1,6 @@
 #include "axpch.h"
 #include "OGLGraphicsContext.h"
 #include "Axton/Core/Assert.h"
-#include "Axton/Renderer/RenderCommands.h"
 #include "Axton/Renderer/Image3D.h"
 
 #include <glad/glad.h>
@@ -41,7 +40,7 @@ namespace Axton::OpenGL
 	void OGLGraphicsContext::SwapBuffers()
 	{
 		glfwSwapBuffers(m_WindowHandle);
-		RenderCommands::SetClearColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-		RenderCommands::ClearScreen();
+		RendererAPI::SetClearColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+		RendererAPI::ClearScreen();
 	}
 }

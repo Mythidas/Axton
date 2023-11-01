@@ -175,7 +175,6 @@
     <ClInclude Include="Axton\Renderer\Image2D.h" />
     <ClInclude Include="Axton\Renderer\Image3D.h" />
     <ClInclude Include="Axton\Renderer\IndexBuffer.h" />
-    <ClInclude Include="Axton\Renderer\RenderCommands.h" />
     <ClInclude Include="Axton\Renderer\Renderer2D.h" />
     <ClInclude Include="Axton\Renderer\RendererAPI.h" />
     <ClInclude Include="Axton\Renderer\Shader.h" />
@@ -237,7 +236,6 @@
     <ClCompile Include="Axton\Renderer\Image2D.cpp" />
     <ClCompile Include="Axton\Renderer\Image3D.cpp" />
     <ClCompile Include="Axton\Renderer\IndexBuffer.cpp" />
-    <ClCompile Include="Axton\Renderer\RenderCommands.cpp" />
     <ClCompile Include="Axton\Renderer\Renderer2D.cpp" />
     <ClCompile Include="Axton\Renderer\RendererAPI.cpp" />
     <ClCompile Include="Axton\Renderer\Shader.cpp" />

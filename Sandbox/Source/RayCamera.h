@@ -46,6 +46,9 @@ public:
 	uint32_t Algorithm() { return m_Algorithm; }
 	void Algorithm(uint32_t algorithm) { m_Algorithm = algorithm; }
 
+	uint32_t SampleSettings() { return m_SampleSettings; }
+	void SampleSettings(uint32_t settings) { m_SampleSettings = settings; }
+
 private:
 	void ProcessMovement();
 
@@ -55,6 +58,7 @@ private:
 
 	Vector3 m_BackgroundColor{ 1.0f };
 	RenderModes m_RenderMode{ RenderModes::Full };
+	uint32_t m_SampleSettings = Bit::U32_4x8(1, 2, 0, 0);
 	uint32_t m_Algorithm{ 0 };
 
 	float m_RotationSpeed = 0.3f;

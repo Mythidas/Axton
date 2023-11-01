@@ -5,17 +5,17 @@
 
 namespace Axton::OpenGL
 {
-	void OGLRendererAPI::ClearScreen()
+	void OGLRendererAPI::clearScreen()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OGLRendererAPI::SetClearColor(const Vector4& color)
+	void OGLRendererAPI::setClearColor(const Vector4& color)
 	{
 		glClearColor(color.x, color.y, color.z, color.w);
 	}
 
-	void OGLRendererAPI::SetBlendMode(bool enabled)
+	void OGLRendererAPI::setBlendMode(bool enabled)
 	{
 		if (enabled)
 		{
@@ -28,7 +28,7 @@ namespace Axton::OpenGL
 		}
 	}
 
-	void OGLRendererAPI::SetViewport(int& width, int& height)
+	void OGLRendererAPI::setViewport(int& width, int& height)
 	{
 		//glViewport(0, 0, width, height);
 		if (int error = glGetError())
@@ -38,7 +38,7 @@ namespace Axton::OpenGL
 		}
 	}
 
-	void OGLRendererAPI::EnableDepthTest(bool enabled)
+	void OGLRendererAPI::enableDepthTest(bool enabled)
 	{
 		if (enabled)
 			glEnable(GL_DEPTH_TEST);
@@ -46,7 +46,7 @@ namespace Axton::OpenGL
 			glDisable(GL_DEPTH_TEST);
 	}
 
-	void OGLRendererAPI::DrawIndexed(uint32_t count)
+	void OGLRendererAPI::drawIndexed(uint32_t count)
 	{
 		if (int error = glGetError())
 		{

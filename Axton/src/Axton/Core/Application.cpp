@@ -6,7 +6,7 @@
 #include "Axton/Debug/Log.h"
 #include "Axton/Event/Events.h"
 #include "Axton/Renderer/Renderer2D.h"
-#include "Axton/Renderer/RenderCommands.h"
+#include "Axton/Renderer/RendererAPI.h"
 #include "Axton/ImGUI/ImGUILayer.h"
 
 namespace Axton
@@ -24,6 +24,8 @@ namespace Axton
 		Input::Construct();
 
 		m_Window = builder.Build();
+
+		RendererAPI::Construct();
 		Renderer2D::Construct();
 
 		m_ImGUILayer = ImGUILayer::Create();
@@ -76,6 +78,6 @@ namespace Axton
 
 	void Application::OnWindowResize(int width, int height)
 	{
-		RenderCommands::SetViewport(width, height);
+		RendererAPI::SetViewport(width, height);
 	}
 }

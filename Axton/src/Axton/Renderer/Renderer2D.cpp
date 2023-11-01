@@ -2,7 +2,6 @@
 #include "Renderer2D.h"
 #include "VertexArray.h"
 #include "Shader.h"
-#include "RenderCommands.h"
 #include "UniformBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
@@ -153,7 +152,7 @@ namespace Axton
 
 		s_Data2D.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraBuffer), 0);
 
-		RenderCommands::SetBlendMode(true);
+		RendererAPI::SetBlendMode(true);
 	}
 
 	void Renderer2D::Destruct()
@@ -203,7 +202,7 @@ namespace Axton
 
 			s_Data2D.QuadShader->Bind();
 			s_Data2D.QuadVertexArray->Bind();
-			RenderCommands::DrawIndexed(s_Data2D.QuadIndexCount);
+			RendererAPI::DrawIndexed(s_Data2D.QuadIndexCount);
 		}
 
 		if (s_Data2D.UIQuadIndexCount)
@@ -218,7 +217,7 @@ namespace Axton
 
 			s_Data2D.UIQuadVertexArray->Bind();
 			s_Data2D.UIQuadShader->Bind();
-			RenderCommands::DrawIndexed(s_Data2D.UIQuadIndexCount);
+			RendererAPI::DrawIndexed(s_Data2D.UIQuadIndexCount);
 		}
 	}
 

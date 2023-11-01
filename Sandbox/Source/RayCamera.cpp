@@ -18,7 +18,6 @@ RayCamera::RayCamera(const Camera::Specs& specs)
 void RayCamera::OnUpdate()
 {
 	ProcessMovement();
-	static float frameCount = 0;
 
 	RayCamera::Buffer buffer{};
 	buffer.Position = Vector4(m_Position, 0);
@@ -26,7 +25,7 @@ void RayCamera::OnUpdate()
 	buffer.Projection = m_InverseProjection;
 	buffer.RandomSeed = Mathf::Random::Float();
 	buffer.View = m_InverseView;
-	buffer.SampleSettings = Bit::U32_4x8(1, 3, 0, 0);
+	buffer.SampleSettings = m_SampleSettings;
 	buffer.RenderPass = uint32_t(m_RenderMode);
 	buffer.Algorithm = m_Algorithm;
 

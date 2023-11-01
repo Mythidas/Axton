@@ -60,21 +60,18 @@ int MARCHES = 0;
 
 const float PI = 3.14159265359;
 const float PHI = 1.61803398874989484820459; // Golden Ratio 
-float EPSILON = 0.0000001;
+float EPSILON = 0.0000001; // Can be used for rounding errors
 
+// Slow noise but very random
 float gold_noise(in vec2 xy, in float seed)
 {
 	return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);
 }
 
-float custom_noise(vec2 st)
+// Faster but slightly less random, still preferred method
+float custom_noise(vec2 st, float seed)
 {
-	return fract(sin(dot(st, vec2(12.9898, 78.233))) * 43758.5453123);
-}
-
-float simple_noise(vec2 xy)
-{
-  return fract(52.9829189 * fract(xy.x * 0.06711056 + xy.y * 0.00583715));
+	return fract(sin(dot(st*PHI, vec2(12.9898, 78.233)) * seed) * 43758.5453123);
 }
 
 float lerp(float a, float b, float value)
@@ -84,12 +81,24 @@ float lerp(float a, float b, float value)
 
 float noise(float seed)
 {
-	return lerp(0, 1, custom_noise(gl_GlobalInvocationID.xy + seed));
+	return lerp(0, 1, custom_noise(gl_GlobalInvocationID.xy, seed));
 }
 
 float noise(float seed, float low, float high)
 {
-	return lerp(low, high, gold_noise(gl_GlobalInvocationID.xy, seed));
+	return lerp(low, high, custom_noise(gl_GlobalInvocationID.xy, seed));
+}
+
+vec3 randV3S(float low, float high)
+{
+	return vec3(noise(sin(u_RandomSeed + PHI), low, high), 
+				noise(cos(u_RandomSeed), low, high), 
+				noise(sin(u_RandomSeed * PHI), low, high));
+}
+
+vec3 randInUnitSphere()
+{
+	return normalize(randV3S(-1, 1));
 }
 
 uint collapseIndex(ivec3 index, Chunk chunk)
@@ -513,7 +522,7 @@ RayTracePayload traceBoxes(Ray ray)
 Ray getRay(ivec2 texelCoord)
 {
 	ivec2 screenSize = imageSize(imgOutput);
-	vec2 sampleCoord = vec2(noise(u_RandomSeed, -0.5, 0.5), noise(u_RandomSeed + 1, -0.5, 0.5));
+	vec2 sampleCoord = vec2(noise(sin(u_RandomSeed), -0.5, 0.5), noise(cos(u_RandomSeed), -0.5, 0.5));
 
 	float horizonCoefficient = (float(texelCoord.x) * 2 - screenSize.x) / screenSize.x;
 	float verticalCoefficient = (float(texelCoord.y) * 2 - screenSize.y) / screenSize.y;
@@ -526,27 +535,9 @@ Ray getRay(ivec2 texelCoord)
 
 	vec4 target = u_Projection * pixelSample;
 	ray.Direction = normalize(vec3(u_View * vec4(normalize(vec3(target) / target.w), 0)));
-	if (ray.Direction.x == 0.)
-		ray.Direction.x = 0.00001;
-	if (ray.Direction.y == 0.)
-		ray.Direction.y = 0.00001;
-	if (ray.Direction.z == 0.)
-		ray.Direction.z = 0.00001;
-
 	ray.InvDirection = 1 / ray.Direction;
 
 	return ray;
-}
-
-// What is monte carlo, and how to make better random noise
-vec3 randV3(float low, float high)
-{
-	return vec3(noise(u_RandomSeed, low, high), noise(u_RandomSeed - 1, low, high), noise(u_RandomSeed - 2, low, high));
-}
-
-vec3 randInUnitSphere()
-{
-	return normalize(randV3(-1, 1));
 }
 
 vec3 shadowRay(Ray ray, vec3 throughput)
@@ -589,6 +580,11 @@ void main()
 							vec3 albedo = unpackUnorm4x8(u_Chunks[payload.ObjIndex].Albedos[payload.AlbedoIndex]).xyz;
 							throughput *= albedo;
 							light += mat.Emissive * albedo;
+
+							if (mat.Emissive > 0)
+							{
+								break;
+							}
 
 							// Ray to test for sun shadows
 							Ray sRay;

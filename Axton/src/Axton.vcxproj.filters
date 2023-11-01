@@ -139,9 +139,6 @@
     <ClInclude Include="Axton\Renderer\IndexBuffer.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Axton\Renderer\RenderCommands.h">
-      <Filter>Axton\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Axton\Renderer\Renderer2D.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
@@ -313,9 +310,6 @@
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Renderer\IndexBuffer.cpp">
-      <Filter>Axton\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Axton\Renderer\RenderCommands.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Renderer\Renderer2D.cpp">

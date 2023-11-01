@@ -78,20 +78,32 @@ public:
 			m_Camera.BackgroundColor(backgroundColor);
 
 		static int renderMode = 0;
-		if (ImGui::RadioButton("Render: Full", &renderMode, 0))
+		ImGui::Text("Render Mode");
+		if (ImGui::RadioButton("Full", &renderMode, 0))
 			m_Camera.RenderMode(RayCamera::RenderModes::Full);
-		if (ImGui::RadioButton("Render: Normals", &renderMode, 1))
+		if (ImGui::RadioButton("Normals", &renderMode, 1))
 			m_Camera.RenderMode(RayCamera::RenderModes::Normals);
-		if (ImGui::RadioButton("Render: Albedo", &renderMode, 2))
+		if (ImGui::RadioButton("Albedo", &renderMode, 2))
 			m_Camera.RenderMode(RayCamera::RenderModes::Albedo);
-		if (ImGui::RadioButton("Render: Difficulty", &renderMode, 3))
+		if (ImGui::RadioButton("Difficulty", &renderMode, 3))
 			m_Camera.RenderMode(RayCamera::RenderModes::Difficulty);
 
-		static int algorithm = 0;
-		if (ImGui::RadioButton("Algo: DDA", &algorithm, 0))
-			m_Camera.Algorithm(0);
-		if (ImGui::RadioButton("Algo: Oct DFS", &algorithm, 1))
-			m_Camera.Algorithm(1);
+		ImGui::Text("Sample Settings");
+		static int samples = 1;
+		if (ImGui::SliderInt("Samples", &samples, 1, 30))
+		{
+			uint32_t settings = m_Camera.SampleSettings();
+			settings = Bit::U32_4x8(uint8_t(samples), Bit::Get<uint8_t>(settings, 8), 0, 0);
+			m_Camera.SampleSettings(settings);
+		}
+		static int bounces = 2;
+		if (ImGui::SliderInt("Bounces", &bounces, 2, 30))
+		{
+			uint32_t settings = m_Camera.SampleSettings();
+			settings = Bit::U32_4x8(Bit::Get<uint8_t>(settings, 0), bounces, 0, 0);
+			m_Camera.SampleSettings(settings);
+		}
+
 		ImGui::End();
 
 		ImGui::Begin("Materials");
