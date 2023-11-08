@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Defines.h"
-#include "Axton/Renderer/GraphicsContext.h"
 
 #include <string>
 
@@ -12,6 +11,13 @@ namespace Axton
 	public:
 		struct Specs
 		{
+			Specs& setTitle(const std::string& title) { Title = title; return *this; }
+			Specs& setWidth(const uint32_t width) { Width = width; return *this; }
+			Specs& setHeight(const uint32_t height) { Height = height; return *this; }
+			Specs& setFixedAspectRatio(const bool aspr) { FixedAspectRatio = aspr; return *this; }
+			Specs& setVSync(const bool vsync) { VSync = vsync; return *this; }
+			Scope<Window> Build() const { return Window::Create(*this); }
+
 			std::string Title{ "AxtonEngine" };
 			uint32_t Width{ 1280 };
 			uint32_t Height{ 720 };
@@ -19,20 +25,6 @@ namespace Axton
 			bool VSync{ false };
 		};
 
-		struct Builder
-		{
-			Builder& Title(const std::string& title) { m_Specs.Title = title; return *this; }
-			Builder& Width(const uint32_t width) { m_Specs.Width = width; return *this; }
-			Builder& Height(const uint32_t height) { m_Specs.Height = height; return *this; }
-			Builder& FixedAspectRatio(const bool aspr) { m_Specs.FixedAspectRatio = aspr; return *this; }
-			Builder& VSync(const bool vsync) { m_Specs.VSync = vsync; return *this; }
-			Scope<Window> Build() const { return Window::Create(m_Specs); }
-
-		private:
-			Specs m_Specs;
-		};
-
-	public:
 		virtual ~Window() = default;
 
 		virtual void OnUpdate() = 0;
@@ -42,8 +34,7 @@ namespace Axton
 
 		virtual void SetCursorMode(bool locked) = 0;
 
-		virtual void* GetNativeWindow() const = 0;
-		virtual GraphicsContext& GetContext() const = 0;
+		virtual void* GetNativeWindow() = 0;
 
 		static Scope<Window> Create(const Specs& props);
 	};

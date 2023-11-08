@@ -1,6 +1,6 @@
 #include "axpch.h"
 #include "Interval.h"
-#include "Math.h"
+#include "Mathf.h"
 
 namespace Axton
 {

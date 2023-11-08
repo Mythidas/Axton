@@ -1,9 +1,5 @@
 #pragma once
 
-#include "Axton.h"
-
-using namespace Axton;
-
 struct Material
 {
 	float Specular{ 0.5f };

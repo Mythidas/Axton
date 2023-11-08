@@ -2,7 +2,7 @@
 
 #include "Defines.h"
 #include "KeyCodes.h"
-#include "Axton/Math/Math.h"
+#include "Axton/Math/Vector.h"
 
 namespace Axton
 {

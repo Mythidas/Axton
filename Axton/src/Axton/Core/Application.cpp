@@ -5,7 +5,6 @@
 #include "Input.h"
 #include "Axton/Debug/Log.h"
 #include "Axton/Event/Events.h"
-#include "Axton/Renderer/Renderer2D.h"
 #include "Axton/Renderer/RendererAPI.h"
 #include "Axton/ImGUI/ImGUILayer.h"
 
@@ -13,7 +12,7 @@ namespace Axton
 {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(const Window::Builder& builder)
+	Application::Application(const Window::Specs& specs)
 	{
 		AX_ASSERT_CORE(!s_Instance, "Application already exists!");
 		s_Instance = this;
@@ -23,10 +22,8 @@ namespace Axton
 		Time::Construct();
 		Input::Construct();
 
-		m_Window = builder.Build();
-
-		RendererAPI::Construct();
-		Renderer2D::Construct();
+		m_Window = specs.Build();
+		m_RendererAPI = RendererAPI::Create(m_Window->GetNativeWindow());
 
 		m_ImGUILayer = ImGUILayer::Create();
 		PushOverlay(m_ImGUILayer);
@@ -43,6 +40,8 @@ namespace Axton
 		{
 			Time::OnUpdate();
 			m_Window->OnUpdate();
+
+			m_RendererAPI->BeginFrame();
 
 			for (Layer* layer : m_LayerStack)
 			{
@@ -66,6 +65,10 @@ namespace Axton
 				}
 				m_ImGUILayer->EndUI();
 			}
+
+			m_RendererAPI->OnUpdate();
+
+			m_RendererAPI->EndFrame();
 		}
 	}
 
@@ -78,6 +81,6 @@ namespace Axton
 
 	void Application::OnWindowResize(int width, int height)
 	{
-		RendererAPI::SetViewport(width, height);
+		// RendererAPI::SetViewport(width, height);
 	}
 }

@@ -1,7 +1,7 @@
 #include "Axton.h"
 #include "Axton/Core/EntryPoint.h"
 
-#include "RayTraceLayer.h"
+//#include "RayTraceLayer.h"
 #include "imgui/imgui.h"
 
 class SimpleLayer : public Axton::Layer
@@ -22,11 +22,11 @@ class SimpleLayer : public Axton::Layer
 class SandboxApplication : public Axton::Application
 {
 public:
-	SandboxApplication(const Axton::Window::Builder& window)
-		: Axton::Application(window)
+	SandboxApplication(const Axton::Window::Specs& specs)
+		: Axton::Application(specs)
 	{
-		//PushLayer(new SimpleLayer());
-		PushLayer(new RayTraceLayer());
+		PushLayer(new SimpleLayer());
+		//PushLayer(new RayTraceLayer());
 	}
 
 	~SandboxApplication()
@@ -37,8 +37,6 @@ public:
 
 Axton::Application* Axton::CreateApplication()
 {
-	Window::Builder window;
-	window.Title("Sandbox").VSync(false);
-
-	return new SandboxApplication(window);
+	Window::Specs window;
+	return new SandboxApplication(window.setTitle("Sandbox").setVSync(false));
 }

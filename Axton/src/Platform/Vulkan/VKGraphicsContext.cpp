@@ -1,106 +1,280 @@
 #include "axpch.h"
 #include "VKGraphicsContext.h"
+#include "Platform/Vulkan/VKRendererAPI.h"
+
+#include <GLFW/glfw3.h>
 
 namespace Axton::Vulkan
 {
-	// Validation layers enabled for debugging **TODO: Allow sandbox to set these**
-	static std::vector<const char*> s_ValidationLayers = {
-		"VK_LAYER_KHRONOS_validation"
-	};
-
-#ifdef AX_DEBUG
-	static const bool s_EnableValidationLayers = true;
-#else
-	const bool EnableValidationLayers = false;
-#endif
-
 	namespace Utils
 	{
-		static bool CheckValidationLayerSupport()
+		bool checkValidationSupport(const std::vector<const char*> validationLayers)
 		{
-			std::vector<vk::LayerProperties> availableLayers = vk::enumerateInstanceLayerProperties();
+			std::vector<vk::LayerProperties> properties = vk::enumerateInstanceLayerProperties();
 
-			for (auto const& name : s_ValidationLayers)
+			for (const char* layer : validationLayers)
 			{
 				bool layerFound = false;
 
-				for (auto const& lp : availableLayers)
+				for (const auto& property : properties)
 				{
-					if (strcmp(lp.layerName, name) == 0)
+					if (strcmp(layer, property.layerName))
+					{
 						layerFound = true;
+						break;
+					}
 				}
 
-				if (!layerFound) return false;
+				if (!layerFound)
+					return false;
 			}
 
 			return true;
 		}
 
-		static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
-			VkDebugUtilsMessageSeverityFlagBitsEXT           messageSeverity,
-			VkDebugUtilsMessageTypeFlagsEXT                  messageTypes,
-			const VkDebugUtilsMessengerCallbackDataEXT*		pCallbackData,
-			void*											pUserData)
+		VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+			VkDebugUtilsMessageSeverityFlagBitsEXT messaageSeverity,
+			VkDebugUtilsMessageTypeFlagsEXT messageType,
+			const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+			void* pUserData
+		)
 		{
-			CoreLog::Trace("Validation Layers: {0}", pCallbackData->pMessage);
+			CoreLog::Trace("Validation Layer: {0}\n", pCallbackData->pMessage);
 			return VK_FALSE;
 		}
 
-		static void PopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& info)
+		vk::Result createDebugUtilsMessenger(vk::Instance instance, const vk::DebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+			const vk::AllocationCallbacks* pAllocator, vk::DebugUtilsMessengerEXT* pDebugMessenger)
 		{
-			info.setMessageSeverity(vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError);
-			info.setMessageType(vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance);
-			info.pfnUserCallback = DebugCallback;
-		}
-
-		static VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pCallback) {
-			auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-			if (func != nullptr) {
-				return func(instance, pCreateInfo, pAllocator, pCallback);
-			}
-			else {
-				return VK_ERROR_EXTENSION_NOT_PRESENT;
-			}
-		}
-
-		static void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT callback, const VkAllocationCallbacks* pAllocator) {
-			auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-			if (func != nullptr) {
-				func(instance, callback, pAllocator);
-			}
-		}
-
-		static std::vector<const char*> GetRequiredExtensions()
-		{
-			uint32_t glfwExtensionCount = 0;
-			const char** glfwExtensions;
-			glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-			std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-			if (s_EnableValidationLayers)
+			auto func = (PFN_vkCreateDebugUtilsMessengerEXT)instance.getProcAddr("vkCreateDebugUtilsMessengerEXT");
+			if (func)
 			{
-				extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+				return vk::Result(func(instance, reinterpret_cast<const VkDebugUtilsMessengerCreateInfoEXT*>(pCreateInfo), nullptr, reinterpret_cast<VkDebugUtilsMessengerEXT*>(pDebugMessenger)));
+			}
+			else
+			{
+				return vk::Result::eErrorExtensionNotPresent;
+			}
+		}
+
+		void destroyDebugUtilsMessenger(vk::Instance instance, vk::DebugUtilsMessengerEXT debugMessenger)
+		{
+			auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)instance.getProcAddr("vkDestroyDebugUtilsMessengerEXT");
+			if (func)
+			{
+				func(instance, debugMessenger, nullptr);
+			}
+		}
+
+		bool isDeviceSuitable(vk::PhysicalDevice pDevice, vk::SurfaceKHR surface, const std::vector<const char*> deviceExtensions)
+		{
+			std::vector<vk::ExtensionProperties> extProperties = pDevice.enumerateDeviceExtensionProperties();
+			std::unordered_set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+			std::vector<vk::SurfaceFormatKHR> surfaceFormats = pDevice.getSurfaceFormatsKHR(surface);
+			std::vector<vk::PresentModeKHR> presentModes = pDevice.getSurfacePresentModesKHR(surface);
+
+			for (const auto& extension : extProperties)
+			{
+				requiredExtensions.erase(extension.extensionName);
 			}
 
-			return extensions;
+			bool swapChainAdequate = false;
+			if (requiredExtensions.empty()) {
+				swapChainAdequate = !surfaceFormats.empty() && !presentModes.empty();
+			}
+
+			vk::PhysicalDeviceProperties properties = pDevice.getProperties();
+			return properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu && requiredExtensions.empty() && swapChainAdequate;
 		}
 	}
 
-	VKGraphicsContext::VKGraphicsContext()
-		: m_Instance(nullptr), m_WindowHandle(nullptr)
+	Ref<VKGraphicsContext> VKGraphicsContext::Create(void* windowHandle, const std::vector<const char*> deviceExtensions, const std::vector<const char*> validationLayers)
 	{
+		Ref<VKGraphicsContext> context = CreateRef<VKGraphicsContext>();
+
+		context->createInstance(validationLayers);
+
+		if (!validationLayers.empty())
+		{
+			context->createDebugMessenger();
+		}
+
+		context->createSurfaceKHR(windowHandle);
+		context->createPhysicalDevice(deviceExtensions);
+		context->createLogicalDevice(deviceExtensions, validationLayers);
+		context->createCommandPool();
+
+		return context;
 	}
 
-	void VKGraphicsContext::Init(void* window)
+	void VKGraphicsContext::Update()
 	{
-		m_WindowHandle = static_cast<GLFWwindow*>(window);
+		m_CurrentFrame = (m_CurrentFrame + 1) % VKRendererAPI::MAX_FRAMES_IN_FLIGHT;
+	}
 
-		CreateInstance();
-		SetupDebugMessenger();
+	void VKGraphicsContext::QueueDeletion(std::function<void()> func)
+	{
+		m_DeletionQueue.push(func);
+	}
 
+	void VKGraphicsContext::QueueCommand(std::function<void(vk::CommandBuffer&)> func)
+	{
+		m_CommandQueue.push(func);
+	}
+
+	void VKGraphicsContext::SubmitCommand(std::function<void(vk::CommandBuffer&)> func)
+	{
+		vk::CommandBufferAllocateInfo allocInfo{};
+		allocInfo
+			.setLevel(vk::CommandBufferLevel::ePrimary)
+			.setCommandPool(m_CommandPool)
+			.setCommandBufferCount(1);
+
+		vk::CommandBufferBeginInfo beginInfo{};
+		beginInfo
+			.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+
+		vk::CommandBuffer buffer = m_Device.allocateCommandBuffers(allocInfo)[0];
+
+		buffer.begin(beginInfo);
+
+		func(buffer);
+
+		buffer.end();
+
+		vk::SubmitInfo submitInfo{};
+		submitInfo
+			.setCommandBufferCount(1)
+			.setPCommandBuffers(&buffer);
+
+		m_GraphicsQueue.submit({ submitInfo }, VK_NULL_HANDLE);
+		m_GraphicsQueue.waitIdle();
+
+		m_Device.freeCommandBuffers(m_CommandPool, buffer);
+	}
+
+	void VKGraphicsContext::SubmitQueue(const QueueSubmitInfo& queueSubmitInfo)
+	{
+		vk::SubmitInfo submitInfo{};
+		submitInfo
+			.setWaitSemaphoreCount(static_cast<uint32_t>(queueSubmitInfo.WaitSemaphores.size()))
+			.setPWaitSemaphores(queueSubmitInfo.WaitSemaphores.data())
+			.setPWaitDstStageMask(queueSubmitInfo.WaitStages.data())
+			.setCommandBufferCount(1)
+			.setPCommandBuffers(&m_CommandBuffers[m_CurrentFrame])
+			.setSignalSemaphoreCount(static_cast<uint32_t>(queueSubmitInfo.SignalSemaphores.size()))
+			.setPSignalSemaphores(queueSubmitInfo.SignalSemaphores.data());
+
+		m_GraphicsQueue.submit(submitInfo, queueSubmitInfo.Fence);
+	}
+
+	vk::Result VKGraphicsContext::PresentQueue(const QueueSubmitInfo& queueSubmitInfo, const std::vector<vk::SwapchainKHR>& swapchains, uint32_t imageIndex)
+	{
+		vk::PresentInfoKHR presentInfo{};
+		presentInfo
+			.setWaitSemaphoreCount(static_cast<uint32_t>(queueSubmitInfo.WaitSemaphores.size()))
+			.setPWaitSemaphores(queueSubmitInfo.WaitSemaphores.data())
+			.setSwapchainCount(static_cast<uint32_t>(swapchains.size()))
+			.setPSwapchains(swapchains.data())
+			.setPImageIndices(&imageIndex);
+
+		return m_PresentQueue.presentKHR(presentInfo);
+	}
+
+	void VKGraphicsContext::FlushCommandQueue()
+	{
+		vk::CommandBufferBeginInfo beginInfo{};
+		beginInfo
+			.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit)
+			.setPInheritanceInfo(nullptr);
+
+		m_CommandBuffers[m_CurrentFrame].begin(beginInfo);
+
+		while (!m_CommandQueue.empty())
+		{
+			m_CommandQueue.front()(m_CommandBuffers[m_CurrentFrame]);
+			m_CommandQueue.pop();
+		}
+
+		m_CommandBuffers[m_CurrentFrame].end();
+	}
+
+	void VKGraphicsContext::Destroy()
+	{
+		while (!m_DeletionQueue.empty())
+		{
+			m_DeletionQueue.front()();
+			m_DeletionQueue.pop();
+		}
+
+		m_Device.destroy(m_CommandPool);
+		m_Device.destroy();
+
+		Utils::destroyDebugUtilsMessenger(m_Instance, m_Debug);
+		m_Instance.destroySurfaceKHR(m_Surface);
+		m_Instance.destroy();
+	}
+
+	void VKGraphicsContext::createInstance(const std::vector<const char*> validationLayers)
+	{
+		vk::ApplicationInfo appInfo{};
+		appInfo
+			.setPApplicationName("AxtonVulkan")
+			.setApplicationVersion(VK_MAKE_VERSION(0, 1, 0))
+			.setPEngineName("AxtonEngine")
+			.setEngineVersion(VK_MAKE_VERSION(0, 1, 0))
+			.setApiVersion(VK_API_VERSION_1_0);
+
+		vk::InstanceCreateInfo createInfo{};
+		createInfo
+			.setPApplicationInfo(&appInfo);
+
+		uint32_t glfwExtensionCount = 0;
+		const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+
+		if (!validationLayers.empty())
+		{
+			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
+			if (!Utils::checkValidationSupport(validationLayers))
+				AX_ASSERT_CORE("Validation layers requested, but not available!");
+
+			createInfo
+				.setEnabledLayerCount(static_cast<uint32_t>(validationLayers.size()))
+				.setPpEnabledLayerNames(validationLayers.data());
+		}
+		else
+		{
+			createInfo.setEnabledLayerCount(0);
+		}
+
+		createInfo
+			.setEnabledExtensionCount(static_cast<uint32_t>(extensions.size()))
+			.setPpEnabledExtensionNames(extensions.data());
+
+		m_Instance = vk::createInstance(createInfo);
+		AX_ASSERT_CORE(m_Instance, "Failed to create Instance!");
+	}
+
+	void VKGraphicsContext::createDebugMessenger()
+	{
+		vk::DebugUtilsMessengerCreateInfoEXT debugInfo{};
+		debugInfo
+			.setMessageSeverity(vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning)
+			.setMessageType(vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance)
+			.setPfnUserCallback(Utils::debugCallback)
+			.setPUserData(nullptr);
+
+		vk::Result result = Utils::createDebugUtilsMessenger(m_Instance, &debugInfo, nullptr, &m_Debug);
+		AX_ASSERT_CORE(result == vk::Result::eSuccess, "Failed to create DebugMessengerEXT!");
+	}
+
+	void VKGraphicsContext::createSurfaceKHR(void* windowHandle)
+	{
 		VkSurfaceKHR rawSurface;
-		if (glfwCreateWindowSurface(m_Instance, m_WindowHandle, nullptr, &rawSurface) != VK_SUCCESS)
+		if (glfwCreateWindowSurface(m_Instance, static_cast<GLFWwindow*>(windowHandle), nullptr, &rawSurface) != VK_SUCCESS)
 		{
 			AX_ASSERT_CORE(false, "Failed to create SurfaceKHR!");
 		}
@@ -108,66 +282,106 @@ namespace Axton::Vulkan
 		m_Surface = rawSurface;
 	}
 
-	void VKGraphicsContext::SwapBuffers()
+	void VKGraphicsContext::createPhysicalDevice(const std::vector<const char*> deviceExtensions)
 	{
-		// This is controlled by the render engine
+		std::vector<vk::PhysicalDevice> devices = m_Instance.enumeratePhysicalDevices();
+		AX_ASSERT_CORE(!devices.empty(), "Failed to find GPUs with Vulkan Support!");
+
+		for (const auto& device : devices)
+		{
+			findQueueFamilies(device);
+
+			if (Utils::isDeviceSuitable(device, m_Surface, deviceExtensions) && m_QueueFamilies.IsComplete())
+			{
+				m_PhysicalDevice = device;
+				break;
+			}
+		}
+
+		AX_ASSERT_CORE(m_PhysicalDevice, "Failed to find suitable PhysicalDevice!");
 	}
 
-	void VKGraphicsContext::CreateInstance()
+	void VKGraphicsContext::findQueueFamilies(vk::PhysicalDevice device)
 	{
-		if (s_EnableValidationLayers && !Utils::CheckValidationLayerSupport())
+		std::vector<vk::QueueFamilyProperties> queueFamilies = device.getQueueFamilyProperties();
+
+		for (size_t i = 0; i < queueFamilies.size(); i++)
 		{
-			AX_ASSERT_CORE(false, "Requested Vk Validation Layers not available!");
+			if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics)
+			{
+				m_QueueFamilies.GraphicsFamily = static_cast<uint32_t>(i);
+			}
+
+			VkBool32 presentSupport = device.getSurfaceSupportKHR(static_cast<uint32_t>(i), m_Surface);
+			if (presentSupport)
+			{
+				m_QueueFamilies.PresentFamily = static_cast<uint32_t>(i);
+			}
+
+			if (m_QueueFamilies.IsComplete()) break;
 		}
-
-		vk::ApplicationInfo appInfo{};
-		appInfo.setPApplicationName("Axton Application");
-		appInfo.setApplicationVersion(VK_MAKE_VERSION(0, 1, 0));
-		appInfo.setPEngineName("Axton");
-		appInfo.setEngineVersion(VK_MAKE_VERSION(0, 1, 0));
-		appInfo.setApiVersion(VK_API_VERSION_1_0);
-
-		vk::InstanceCreateInfo createInfo{};
-		createInfo.setPApplicationInfo(&appInfo);
-
-		vk::DebugUtilsMessengerCreateInfoEXT debugInfo{};
-
-		if (s_EnableValidationLayers)
-		{
-			createInfo.setEnabledLayerCount(static_cast<uint32_t>(s_ValidationLayers.size()));
-			createInfo.setPpEnabledLayerNames(s_ValidationLayers.data());
-
-			Utils::PopulateDebugMessengerCreateInfo(debugInfo);
-			createInfo.setPNext((VkDebugUtilsMessengerCreateInfoEXT*)&debugInfo);
-		}
-
-		std::vector<const char*> glfwExtensions = Utils::GetRequiredExtensions();
-
-		createInfo.setEnabledExtensionCount(static_cast<uint32_t>(glfwExtensions.size()));
-		createInfo.setPpEnabledExtensionNames(glfwExtensions.data());
-
-		if (vk::createInstance(&createInfo, nullptr, &m_Instance) != vk::Result::eSuccess)
-		{
-			AX_ASSERT_CORE(false, "Failed to create VkInstance!");
-		}
-
-		std::vector<vk::ExtensionProperties> extensions = vk::enumerateInstanceExtensionProperties();
-
-		CoreLog::Trace("Available Extensions: ");
-
-		for (auto const& ext : extensions)
-			CoreLog::Trace("\t{0}", ext.extensionName);
 	}
 
-	void VKGraphicsContext::SetupDebugMessenger()
+	void VKGraphicsContext::createLogicalDevice(const std::vector<const char*> deviceExtensions, const std::vector<const char*> validationLayers)
 	{
-		if (!s_EnableValidationLayers) return;
+		std::unordered_set<uint32_t> uniqueQueues = { m_QueueFamilies.GraphicsFamily.value(), m_QueueFamilies.PresentFamily.value() };
 
-		vk::DebugUtilsMessengerCreateInfoEXT createInfo{};
-		Utils::PopulateDebugMessengerCreateInfo(createInfo);
+		std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos;
+		for (uint32_t queue : uniqueQueues)
+		{
+			vk::DeviceQueueCreateInfo queueCreateInfo{};
+			float queuePriority = 1.0f;
+			queueCreateInfo
+				.setQueueFamilyIndex(queue)
+				.setQueueCount(1)
+				.setPQueuePriorities(&queuePriority);
 
-		if (Utils::CreateDebugUtilsMessengerEXT(m_Instance, reinterpret_cast<const VkDebugUtilsMessengerCreateInfoEXT*>(&createInfo), nullptr, &m_DebugMessenger) != VK_SUCCESS) {
-			AX_ASSERT_CORE(false, "Failed to create DebugCallback!");
+			queueCreateInfos.push_back(queueCreateInfo);
 		}
+
+		vk::PhysicalDeviceFeatures deviceFeatures{};
+
+		vk::DeviceCreateInfo createInfo{};
+		createInfo
+			.setPQueueCreateInfos(queueCreateInfos.data())
+			.setQueueCreateInfoCount(static_cast<uint32_t>(queueCreateInfos.size()))
+			.setPEnabledFeatures(&deviceFeatures)
+			.setEnabledExtensionCount(static_cast<uint32_t>(deviceExtensions.size()))
+			.setPpEnabledExtensionNames(deviceExtensions.data());
+
+		if (!validationLayers.empty())
+		{
+			createInfo
+				.setEnabledLayerCount(static_cast<uint32_t>(validationLayers.size()))
+				.setPpEnabledLayerNames(validationLayers.data());
+		}
+		else
+		{
+			createInfo.setEnabledLayerCount(0);
+		}
+
+		m_Device = m_PhysicalDevice.createDevice(createInfo);
+		AX_ASSERT_CORE(m_Device, "Failed to create LogicalDevice!");
+
+		m_GraphicsQueue = m_Device.getQueue(m_QueueFamilies.GraphicsFamily.value(), 0);
+		m_PresentQueue = m_Device.getQueue(m_QueueFamilies.PresentFamily.value(), 0);
+	}
+
+	void VKGraphicsContext::createCommandPool()
+	{
+		vk::CommandPoolCreateInfo createInfo{};
+		createInfo
+			.setQueueFamilyIndex(m_QueueFamilies.GraphicsFamily.value())
+			.setFlags(vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
+
+		m_CommandPool = m_Device.createCommandPool(createInfo);
+
+		vk::CommandBufferAllocateInfo allocInfo{};
+		allocInfo
+			.setCommandPool(m_CommandPool)
+			.setCommandBufferCount(VKRendererAPI::MAX_FRAMES_IN_FLIGHT)
+			.setLevel(vk::CommandBufferLevel::ePrimary);
+
+		m_CommandBuffers = m_Device.allocateCommandBuffers(allocInfo);
 	}
 }
