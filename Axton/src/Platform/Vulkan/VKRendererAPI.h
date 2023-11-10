@@ -1,6 +1,7 @@
 #pragma once
 #include "VKGraphicsContext.h"
 #include "VKSwapchain.h"
+#include "VKRenderPass.h"
 #include "VKGraphicsPipeline.h"
 #include "Axton/Renderer/RendererAPI.h"
 
@@ -18,9 +19,9 @@ namespace Axton::Vulkan
 		virtual void EndFrame() override;
 		virtual void OnUpdate() override;
 
-		static VKGraphicsContext& GetGraphicsContext() { return *s_Singleton->m_GraphicsContext; }
-		static VKSwapchain& GetSwapchain() { return *s_Singleton->m_Swapchain; }
-		static VKGraphicsPipeline& GetGraphicsPipeline() { return *s_Singleton->m_GraphicsPipeline; }
+		static Ref<VKGraphicsContext> GetGraphicsContext() { return s_Singleton->m_GraphicsContext; }
+		static Ref<VKSwapchain> GetSwapchain() { return s_Singleton->m_Swapchain; }
+		static Ref<VKRenderPass> GetRenderPass() { return s_Singleton->m_RenderPass; }
 
 	private:
 		void OnWindowResized(int width, int height);
@@ -30,7 +31,9 @@ namespace Axton::Vulkan
 
 		Ref<VKGraphicsContext> m_GraphicsContext;
 		Ref<VKSwapchain> m_Swapchain;
-		Ref<VKGraphicsPipeline> m_GraphicsPipeline;
+		Ref<VKRenderPass> m_RenderPass;
+		std::vector<Ref<VKGraphicsPipeline>> m_GraphicsPipelines;
+		Ref<VKBuffer> m_VertexBuffer;
 
 		std::vector<vk::Semaphore> m_ImageAvailable;
 		std::vector<vk::Semaphore> m_RenderFinished;

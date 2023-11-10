@@ -45,6 +45,7 @@ namespace Axton::Vulkan
 		void Destroy();
 
 		uint32_t GetCurrentFrame() { return m_CurrentFrame; }
+		vk::CommandBuffer& GetBuffer() { return m_CommandBuffers[m_CurrentFrame]; }
 		vk::Instance& GetInstance() { return m_Instance; }
 		vk::SurfaceKHR& GetSurface() { return m_Surface; }
 		vk::PhysicalDevice& GetPhysicalDevice() { return m_PhysicalDevice; }

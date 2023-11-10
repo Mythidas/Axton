@@ -11,11 +11,13 @@ namespace Axton::Vulkan
 	public:
 		struct Specs
 		{
-			size_t Size;
-			vk::BufferUsageFlagBits Usage;
-			vk::MemoryPropertyFlags MemProperties;
+			size_t Size{ 0 };
+			uint32_t Binding{ 0 };
+			vk::BufferUsageFlagBits Usage{};
+			vk::MemoryPropertyFlags MemProperties{};
 
 			Specs& setSize(size_t size) { Size = size; return *this; }
+			Specs& setBinding(uint32_t binding) { Binding = binding; return *this; }
 			Specs& setUsage(vk::BufferUsageFlagBits usage) { Usage = usage; return *this; }
 			Specs& setMemProperties(vk::MemoryPropertyFlags props) { MemProperties = props; return *this; }
 			Ref<VKBuffer> Build() { return VKBuffer::Create(*this); }
@@ -23,6 +25,7 @@ namespace Axton::Vulkan
 
 		static Ref<VKBuffer> Create(const Specs& specs);
 
+		void Process();
 		void SetData(void* data, size_t size);
 
 		vk::Buffer& GetBuffer() { return m_Buffer; }

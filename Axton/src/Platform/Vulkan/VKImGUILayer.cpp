@@ -35,7 +35,7 @@ namespace Axton::Vulkan
 			.setPoolSizeCount(static_cast<uint32_t>(std::size(poolSizes)))
 			.setPPoolSizes(poolSizes);
 
-		vk::DescriptorPool imguiPool = VKRendererAPI::GetGraphicsContext().GetDevice().createDescriptorPool(poolInfo);
+		vk::DescriptorPool imguiPool = VKRendererAPI::GetGraphicsContext()->GetDevice().createDescriptorPool(poolInfo);
 
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -48,28 +48,28 @@ namespace Axton::Vulkan
 
 		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), true);
 
-		VKGraphicsContext gContext = VKRendererAPI::GetGraphicsContext();
+		Ref<VKGraphicsContext> gContext = VKRendererAPI::GetGraphicsContext();
 		ImGui_ImplVulkan_InitInfo initInfo{};
-		initInfo.Instance = gContext.GetInstance();
-		initInfo.PhysicalDevice = gContext.GetPhysicalDevice();
-		initInfo.Device = gContext.GetDevice();
-		initInfo.Queue = gContext.GetGraphicsQueue();
+		initInfo.Instance = gContext->GetInstance();
+		initInfo.PhysicalDevice = gContext->GetPhysicalDevice();
+		initInfo.Device = gContext->GetDevice();
+		initInfo.Queue = gContext->GetGraphicsQueue();
 		initInfo.DescriptorPool = imguiPool;
 		initInfo.MinImageCount = VKRendererAPI::MAX_FRAMES_IN_FLIGHT;
 		initInfo.ImageCount = VKRendererAPI::MAX_FRAMES_IN_FLIGHT;
 		initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
-		ImGui_ImplVulkan_Init(&initInfo, VKRendererAPI::GetGraphicsPipeline().GetRenderPass());
+		ImGui_ImplVulkan_Init(&initInfo, VKRendererAPI::GetRenderPass()->GetRenderPass());
 
-		gContext.SubmitCommand([&](vk::CommandBuffer buffer)
+		gContext->SubmitCommand([&](vk::CommandBuffer buffer)
 			{
 				ImGui_ImplVulkan_CreateFontsTexture(buffer);
 			});
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
 
-		vk::Device device = gContext.GetDevice();
-		gContext.QueueDeletion([device, imguiPool]()
+		vk::Device device = gContext->GetDevice();
+		gContext->QueueDeletion([device, imguiPool]()
 			{
 				device.destroy(imguiPool);
 				ImGui_ImplVulkan_Shutdown();
@@ -88,7 +88,7 @@ namespace Axton::Vulkan
 
 	void VKImGUILayer::EndUI() const
 	{
-		VKRendererAPI::GetGraphicsContext().QueueCommand([&](vk::CommandBuffer buffer)
+		VKRendererAPI::GetGraphicsContext()->QueueCommand([&](vk::CommandBuffer buffer)
 		{
 			ImGuiIO& io = ImGui::GetIO();
 			io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());

@@ -1,95 +1,121 @@
 #include "axpch.h"
 #include "VKGraphicsPipeline.h"
-
-#include <glm/glm.hpp>
+#include "VKRenderPass.h"
+#include "VKRendererAPI.h"
+#include "Axton/Utils/FileSystem.h"
 
 namespace Axton::Vulkan
 {
-	Ref<VKGraphicsPipeline> VKGraphicsPipeline::Create(Ref<VKGraphicsContext> graphicsContext, Ref<VKSwapchain> swapchain)
+	namespace Utils
 	{
-		Ref<VKGraphicsPipeline> graphicsPipeline = CreateRef<VKGraphicsPipeline>();
-		graphicsPipeline->m_GraphicsContext = graphicsContext;
-		graphicsPipeline->m_Swapchain = swapchain;
-
-		graphicsPipeline->createPipelineLayout();
-		graphicsPipeline->createRenderPass();
-		graphicsPipeline->createPipeline();
-
-		struct Vertex
+		uint32_t getAttributeSize(VKGraphicsPipeline::Attribute attribute)
 		{
-			glm::vec2 pos;
-			glm::vec3 col;
-			glm::vec2 tex;
-		};
-
-		std::vector<Vertex> vertices =
-		{
-			Vertex(glm::vec2( 0.0f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
-			Vertex(glm::vec2( 0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)),
-			Vertex(glm::vec2(-0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f))
-		};
-
-		graphicsPipeline->m_VertexBuffer = VKBuffer::Specs().setSize(sizeof(Vertex) * vertices.size()).setUsage(vk::BufferUsageFlagBits::eVertexBuffer).setMemProperties(vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent).Build();
-		graphicsPipeline->m_VertexBuffer->SetData(vertices.data(), sizeof(Vertex)* vertices.size());
-
-		swapchain->CreateFramebuffers(graphicsPipeline->m_RenderPass);
-
-		graphicsContext->QueueDeletion([graphicsPipeline]()
+			switch (attribute)
 			{
-				graphicsPipeline->m_GraphicsContext->GetDevice().destroy(graphicsPipeline->m_RenderPass);
-				graphicsPipeline->m_GraphicsContext->GetDevice().destroy(graphicsPipeline->m_Layout);
-				graphicsPipeline->m_GraphicsContext->GetDevice().destroy(graphicsPipeline->m_Pipeline);
-			});
+			case VKGraphicsPipeline::Attribute::Float2: return 4 * 2;
+			case VKGraphicsPipeline::Attribute::Float3: return 4 * 3;
+			case VKGraphicsPipeline::Attribute::Float4: return 4 * 4;
+			}
 
-		return graphicsPipeline;
+			return 0;
+		}
+
+		vk::Format getFormatInternal(VKGraphicsPipeline::Attribute attribute)
+		{
+			switch (attribute)
+			{
+			case VKGraphicsPipeline::Attribute::Float2: return vk::Format::eR32G32Sfloat;
+			case VKGraphicsPipeline::Attribute::Float3: return vk::Format::eR32G32B32Sfloat;
+			case VKGraphicsPipeline::Attribute::Float4: return vk::Format::eR32G32B32A32Sfloat;
+			}
+
+			return vk::Format::eUndefined;
+		}
+
+		vk::VertexInputBindingDescription getBindingDescription(const std::vector<VKGraphicsPipeline::Attribute>& attributes)
+		{
+			uint32_t size = 0;
+			for (const auto& attribute : attributes)
+			{
+				size += Utils::getAttributeSize(attribute);
+			}
+
+			vk::VertexInputBindingDescription bindingDescription{};
+			bindingDescription
+				.setBinding(0)
+				.setInputRate(vk::VertexInputRate::eVertex)
+				.setStride(size);
+
+			return bindingDescription;
+		}
+
+		std::vector<vk::VertexInputAttributeDescription> getAttributeDescriptions(const std::vector<VKGraphicsPipeline::Attribute>& attributes)
+		{
+			std::vector<vk::VertexInputAttributeDescription> vertexArray(attributes.size());
+
+			uint32_t size = 0;
+			for (uint32_t i = 0; i < attributes.size(); i++)
+			{
+				vk::VertexInputAttributeDescription attributeDescription{};
+				attributeDescription
+					.setBinding(0)
+					.setLocation(i)
+					.setFormat(Utils::getFormatInternal(attributes[i]))
+					.setOffset(size);
+
+				vertexArray[i] = attributeDescription;
+				size += Utils::getAttributeSize(attributes[i]);
+			}
+
+			return vertexArray;
+		}
 	}
 
-	void VKGraphicsPipeline::BeginRender()
+	Ref<VKGraphicsPipeline> VKGraphicsPipeline::Create(const Specs& specs)
 	{
-		m_GraphicsContext->QueueCommand([this](vk::CommandBuffer& buffer)
-			{
-				vk::ClearValue clearColor(vk::ClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f }));
-				vk::RenderPassBeginInfo renderPassInfo{};
-				renderPassInfo
-					.setRenderPass(m_RenderPass)
-					.setFramebuffer(m_Swapchain->GetFramebuffer())
-					.setRenderArea(vk::Rect2D().setOffset({ 0, 0 }).setExtent(m_Swapchain->GetExtent()))
-					.setClearValueCount(1)
-					.setPClearValues(&clearColor);
+		Ref<VKGraphicsPipeline> shader = CreateRef<VKGraphicsPipeline>();
+		shader->m_Specs = specs;
 
-				buffer.beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
-				buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline);
+		shader->createPipelineLayout();
+		shader->createPipeline();
 
-				vk::Viewport viewport{};
-				viewport
-					.setX(0.0f)
-					.setY(0.0f)
-					.setWidth(static_cast<float>(m_Swapchain->GetExtent().width))
-					.setHeight(static_cast<float>(m_Swapchain->GetExtent().height))
-					.setMinDepth(0.0f)
-					.setMaxDepth(1.0f);
+		VKRendererAPI::GetGraphicsContext()->QueueDeletion([shader]()
+		{
+			VKRendererAPI::GetGraphicsContext()->GetDevice().destroy(shader->m_Pipeline);
+			VKRendererAPI::GetGraphicsContext()->GetDevice().destroy(shader->m_Layout);
+		});
 
-				buffer.setViewport(0, { viewport });
-
-				vk::Rect2D scissor{};
-				scissor
-					.setOffset(vk::Offset2D(0, 0))
-					.setExtent(m_Swapchain->GetExtent());
-
-				buffer.setScissor(0, { scissor });
-
-				vk::DeviceSize offsets[] = { 0 };
-				buffer.bindVertexBuffers(0, { m_VertexBuffer->GetBuffer() }, { 0 });
-				buffer.draw(3, 1, 0, 0);
-			});
+		return shader;
 	}
 
-	void VKGraphicsPipeline::EndRender()
+	void VKGraphicsPipeline::Process()
 	{
-		m_GraphicsContext->QueueCommand([this](vk::CommandBuffer& buffer)
-			{
-				buffer.endRenderPass();
-			});
+		VKRendererAPI::GetGraphicsContext()->QueueCommand([this](vk::CommandBuffer& buffer)
+		{
+			Ref<VKSwapchain> swapchain = VKRendererAPI::GetSwapchain();
+
+			buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline);
+
+			vk::Viewport viewport{};
+			viewport
+				.setX(0.0f)
+				.setY(0.0f)
+				.setWidth(static_cast<float>(swapchain->GetExtent().width))
+				.setHeight(static_cast<float>(swapchain->GetExtent().height))
+				.setMinDepth(0.0f)
+				.setMaxDepth(1.0f);
+
+			buffer.setViewport(0, { viewport });
+
+			vk::Rect2D scissor{};
+			scissor
+				.setOffset(vk::Offset2D(0, 0))
+				.setExtent(swapchain->GetExtent());
+
+			buffer.setScissor(0, { scissor });
+
+			buffer.draw(3, 1, 0, 0);
+		});
 	}
 
 	void VKGraphicsPipeline::createPipelineLayout()
@@ -99,66 +125,18 @@ namespace Axton::Vulkan
 			.setSetLayoutCount(0)
 			.setPushConstantRangeCount(0);
 
-		m_Layout = m_GraphicsContext->GetDevice().createPipelineLayout(pipelineLayoutInfo);
+		m_Layout = VKRendererAPI::GetGraphicsContext()->GetDevice().createPipelineLayout(pipelineLayoutInfo);
 		AX_ASSERT_CORE(m_Layout, "Failed to create PipelineLayout!");
-	}
-
-	void VKGraphicsPipeline::createRenderPass()
-	{
-		vk::AttachmentDescription colorAttachment{};
-		colorAttachment
-			.setFormat(m_Swapchain->GetFormat())
-			.setSamples(vk::SampleCountFlagBits::e1)
-			.setLoadOp(vk::AttachmentLoadOp::eClear)
-			.setStoreOp(vk::AttachmentStoreOp::eStore)
-			.setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
-			.setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
-			.setInitialLayout(vk::ImageLayout::eUndefined)
-			.setFinalLayout(vk::ImageLayout::ePresentSrcKHR);
-
-		vk::AttachmentReference colorAttachmentRef{};
-		colorAttachmentRef
-			.setAttachment(0)
-			.setLayout(vk::ImageLayout::eColorAttachmentOptimal);
-
-		vk::SubpassDependency dependency{};
-		dependency
-			.setSrcSubpass(VK_SUBPASS_EXTERNAL)
-			.setDstSubpass(0)
-			.setSrcStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput)
-			.setSrcAccessMask(vk::AccessFlagBits::eNone)
-			.setDstStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput)
-			.setDstAccessMask(vk::AccessFlagBits::eColorAttachmentWrite);
-
-		vk::SubpassDescription subpass{};
-		subpass
-			.setPipelineBindPoint(vk::PipelineBindPoint::eGraphics)
-			.setColorAttachmentCount(1)
-			.setPColorAttachments(&colorAttachmentRef);
-
-		vk::RenderPassCreateInfo renderPassInfo{};
-		renderPassInfo
-			.setAttachmentCount(1)
-			.setPAttachments(&colorAttachment)
-			.setSubpassCount(1)
-			.setPSubpasses(&subpass)
-			.setDependencyCount(1)
-			.setPDependencies(&dependency);
-
-		m_RenderPass = m_GraphicsContext->GetDevice().createRenderPass(renderPassInfo);
-		AX_ASSERT_CORE(m_RenderPass, "Failed to create RenderPass!");
 	}
 
 	void VKGraphicsPipeline::createPipeline()
 	{
-		Ref<VKShader> vertShaderModule = VKShader::Specs().setPath("C:\\Programming\\Axton\\Axton\\internal\\shaders\\vert.spv").setStage(vk::ShaderStageFlagBits::eVertex).Build();
-		Ref<VKShader> fragShaderModule = VKShader::Specs().setPath("C:\\Programming\\Axton\\Axton\\internal\\shaders\\frag.spv").setStage(vk::ShaderStageFlagBits::eFragment).Build();
+		Ref<VKSwapchain> swapchain = VKRendererAPI::GetSwapchain();
+		Ref<VKRenderPass> renderPass = VKRendererAPI::GetRenderPass();
+		vk::Device device = VKRendererAPI::GetGraphicsContext()->GetDevice();
 
-		// Each shader covers a stage in the pipeline
-
-		vk::PipelineShaderStageCreateInfo shaderStages[] = { vertShaderModule->GetStageInfo(), fragShaderModule->GetStageInfo() };
-
-		// Fixed function phases we want control of
+		auto shaders = createTempShaders();
+		auto shaderStages = getShaderStageInfo(shaders);
 
 		std::vector<vk::DynamicState> dynamicStates =
 		{
@@ -171,15 +149,8 @@ namespace Axton::Vulkan
 			.setDynamicStateCount(static_cast<uint32_t>(dynamicStates.size()))
 			.setPDynamicStates(dynamicStates.data());
 
-		m_VertexArray = VKVertexArray::Create
-		({
-			VKVertexArray::Float2,	
-			VKVertexArray::Float3,	
-			VKVertexArray::Float2,	
-		});
-
-		auto& bindingDescription = m_VertexArray->GetBindingDescription();
-		auto& attributeDescriptions = m_VertexArray->GetAttributeDescriptions();
+		auto bindingDescription = Utils::getBindingDescription(m_Specs.VertexAttributes);
+		auto attributeDescriptions = Utils::getAttributeDescriptions(m_Specs.VertexAttributes);
 
 		vk::PipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo
@@ -192,15 +163,15 @@ namespace Axton::Vulkan
 		viewport
 			.setX(0.0f)
 			.setY(0.0f)
-			.setWidth(static_cast<float>(m_Swapchain->GetExtent().width))
-			.setHeight(static_cast<float>(m_Swapchain->GetExtent().height))
+			.setWidth(static_cast<float>(swapchain->GetExtent().width))
+			.setHeight(static_cast<float>(swapchain->GetExtent().height))
 			.setMinDepth(0.0f)
 			.setMaxDepth(1.0f);
 
 		vk::Rect2D scissor{};
 		scissor
 			.setOffset(vk::Offset2D(0, 0))
-			.setExtent(m_Swapchain->GetExtent());
+			.setExtent(swapchain->GetExtent());
 
 		// Viewport info for Pipeline
 
@@ -270,7 +241,7 @@ namespace Axton::Vulkan
 		vk::GraphicsPipelineCreateInfo createInfo{};
 		createInfo
 			.setStageCount(2)
-			.setPStages(shaderStages)
+			.setPStages(shaderStages.data())
 			.setPViewportState(&viewportState)
 			.setPVertexInputState(&vertexInputInfo)
 			.setPInputAssemblyState(&inputAssembly)
@@ -279,14 +250,55 @@ namespace Axton::Vulkan
 			.setPColorBlendState(&colorBlending)
 			.setPDynamicState(&dynamicState)
 			.setLayout(m_Layout)
-			.setRenderPass(m_RenderPass)
+			.setRenderPass(renderPass->GetRenderPass())
 			.setSubpass(0)
 			.setBasePipelineHandle(VK_NULL_HANDLE);
 
-		m_Pipeline = m_GraphicsContext->GetDevice().createGraphicsPipeline(VK_NULL_HANDLE, createInfo).value;
+		m_Pipeline = device.createGraphicsPipeline(VK_NULL_HANDLE, createInfo).value;
 		AX_ASSERT_CORE(m_Pipeline, "Failed to create GraphicsPipeline!");
 
-		vertShaderModule->Destroy();
-		fragShaderModule->Destroy();
+		// Destroy temp shaders
+		for (auto& shader : shaders)
+		{
+			device.destroy(shader);
+		}
+	}
+
+	std::vector<vk::ShaderModule> VKGraphicsPipeline::createTempShaders()
+	{
+		std::vector<vk::ShaderModule> shaders(m_Specs.Shaders.size());
+
+		for (size_t i = 0; i < shaders.size(); i++)
+		{
+			vk::Device device = VKRendererAPI::GetGraphicsContext()->GetDevice();
+
+			FileSystem fs(m_Specs.Shaders[i].Path);
+			std::vector<char> buffer = fs.ToSignedBuffer();
+
+			vk::ShaderModuleCreateInfo createInfo{};
+			createInfo
+				.setCodeSize(buffer.size())
+				.setPCode(reinterpret_cast<const uint32_t*>(buffer.data()));
+
+			shaders[i] = device.createShaderModule(createInfo);
+		}
+
+		return shaders;
+	}
+
+	std::vector<vk::PipelineShaderStageCreateInfo> VKGraphicsPipeline::getShaderStageInfo(const std::vector<vk::ShaderModule>& shaders)
+	{
+		std::vector<vk::PipelineShaderStageCreateInfo> stages(shaders.size());
+
+		for (size_t i = 0; i < stages.size(); i++)
+		{
+			stages[i] = vk::PipelineShaderStageCreateInfo();
+			stages[i]
+				.setStage(m_Specs.Shaders[i].Stage)
+				.setModule(shaders[i])
+				.setPName("main");
+		}
+
+		return stages;
 	}
 }

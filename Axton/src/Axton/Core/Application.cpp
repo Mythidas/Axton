@@ -43,6 +43,8 @@ namespace Axton
 
 			m_RendererAPI->BeginFrame();
 
+			m_RendererAPI->OnUpdate();
+
 			for (Layer* layer : m_LayerStack)
 			{
 				layer->OnUpdate();
@@ -65,8 +67,6 @@ namespace Axton
 				}
 				m_ImGUILayer->EndUI();
 			}
-
-			m_RendererAPI->OnUpdate();
 
 			m_RendererAPI->EndFrame();
 		}
