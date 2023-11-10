@@ -1,6 +1,8 @@
 #include "axpch.h"
 #include "VKGraphicsPipeline.h"
 
+#include <glm/glm.hpp>
+
 namespace Axton::Vulkan
 {
 	Ref<VKGraphicsPipeline> VKGraphicsPipeline::Create(Ref<VKGraphicsContext> graphicsContext, Ref<VKSwapchain> swapchain)
@@ -12,6 +14,23 @@ namespace Axton::Vulkan
 		graphicsPipeline->createPipelineLayout();
 		graphicsPipeline->createRenderPass();
 		graphicsPipeline->createPipeline();
+
+		struct Vertex
+		{
+			glm::vec2 pos;
+			glm::vec3 col;
+			glm::vec2 tex;
+		};
+
+		std::vector<Vertex> vertices =
+		{
+			Vertex(glm::vec2( 0.0f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
+			Vertex(glm::vec2( 0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)),
+			Vertex(glm::vec2(-0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f))
+		};
+
+		graphicsPipeline->m_VertexBuffer = VKBuffer::Specs().setSize(sizeof(Vertex) * vertices.size()).setUsage(vk::BufferUsageFlagBits::eVertexBuffer).setMemProperties(vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent).Build();
+		graphicsPipeline->m_VertexBuffer->SetData(vertices.data(), sizeof(Vertex)* vertices.size());
 
 		swapchain->CreateFramebuffers(graphicsPipeline->m_RenderPass);
 
@@ -58,6 +77,9 @@ namespace Axton::Vulkan
 					.setExtent(m_Swapchain->GetExtent());
 
 				buffer.setScissor(0, { scissor });
+
+				vk::DeviceSize offsets[] = { 0 };
+				buffer.bindVertexBuffers(0, { m_VertexBuffer->GetBuffer() }, { 0 });
 				buffer.draw(3, 1, 0, 0);
 			});
 	}
@@ -149,12 +171,22 @@ namespace Axton::Vulkan
 			.setDynamicStateCount(static_cast<uint32_t>(dynamicStates.size()))
 			.setPDynamicStates(dynamicStates.data());
 
+		m_VertexArray = VKVertexArray::Create
+		({
+			VKVertexArray::Float2,	
+			VKVertexArray::Float3,	
+			VKVertexArray::Float2,	
+		});
+
+		auto& bindingDescription = m_VertexArray->GetBindingDescription();
+		auto& attributeDescriptions = m_VertexArray->GetAttributeDescriptions();
+
 		vk::PipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo
-			.setVertexBindingDescriptionCount(0)
-			.setPVertexBindingDescriptions(nullptr)
-			.setVertexAttributeDescriptionCount(0)
-			.setPVertexAttributeDescriptions(nullptr);
+			.setVertexBindingDescriptionCount(1)
+			.setPVertexBindingDescriptions(&bindingDescription)
+			.setVertexAttributeDescriptionCount(static_cast<uint32_t>(attributeDescriptions.size()))
+			.setPVertexAttributeDescriptions(attributeDescriptions.data());
 
 		vk::Viewport viewport{};
 		viewport

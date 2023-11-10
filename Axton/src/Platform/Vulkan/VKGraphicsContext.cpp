@@ -115,12 +115,12 @@ namespace Axton::Vulkan
 
 	void VKGraphicsContext::QueueDeletion(std::function<void()> func)
 	{
-		m_DeletionQueue.push(func);
+		m_DeletionQueue.Enque(func);
 	}
 
 	void VKGraphicsContext::QueueCommand(std::function<void(vk::CommandBuffer&)> func)
 	{
-		m_CommandQueue.push(func);
+		m_CommandQueue.Enque(func);
 	}
 
 	void VKGraphicsContext::SubmitCommand(std::function<void(vk::CommandBuffer&)> func)
@@ -191,10 +191,9 @@ namespace Axton::Vulkan
 
 		m_CommandBuffers[m_CurrentFrame].begin(beginInfo);
 
-		while (!m_CommandQueue.empty())
+		while (!m_CommandQueue.Empty())
 		{
-			m_CommandQueue.front()(m_CommandBuffers[m_CurrentFrame]);
-			m_CommandQueue.pop();
+			m_CommandQueue.Deque()(m_CommandBuffers[m_CurrentFrame]);
 		}
 
 		m_CommandBuffers[m_CurrentFrame].end();
@@ -202,10 +201,9 @@ namespace Axton::Vulkan
 
 	void VKGraphicsContext::Destroy()
 	{
-		while (!m_DeletionQueue.empty())
+		while (!m_DeletionQueue.Empty())
 		{
-			m_DeletionQueue.front()();
-			m_DeletionQueue.pop();
+			m_DeletionQueue.Deque()();
 		}
 
 		m_Device.destroy(m_CommandPool);
@@ -307,7 +305,7 @@ namespace Axton::Vulkan
 
 		for (size_t i = 0; i < queueFamilies.size(); i++)
 		{
-			if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics)
+			if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics && queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute)
 			{
 				m_QueueFamilies.GraphicsFamily = static_cast<uint32_t>(i);
 			}
@@ -365,6 +363,7 @@ namespace Axton::Vulkan
 
 		m_GraphicsQueue = m_Device.getQueue(m_QueueFamilies.GraphicsFamily.value(), 0);
 		m_PresentQueue = m_Device.getQueue(m_QueueFamilies.PresentFamily.value(), 0);
+		m_ComputeQueue = m_Device.getQueue(m_QueueFamilies.GraphicsFamily.value(), 0);
 	}
 
 	void VKGraphicsContext::createCommandPool()

@@ -34,6 +34,8 @@ namespace Axton::Vulkan
 			AX_ASSERT_CORE(m_ImageAvailable[i] && m_RenderFinished[i] && m_InFlight[i], "Failed to create SyncObjects!");
 		}
 
+
+
 		m_GraphicsContext->QueueDeletion([this]()
 		{
 			for (auto& semaphore : m_ImageAvailable)

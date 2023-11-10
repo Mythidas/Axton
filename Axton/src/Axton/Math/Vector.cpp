@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "Vector.h"
 #include "Mathf.h"
-#include "Bit.h"
+#include "Axton/Utils/Bit.h"
 
 namespace Axton
 {

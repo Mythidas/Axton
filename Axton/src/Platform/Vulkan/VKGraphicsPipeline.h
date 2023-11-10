@@ -3,6 +3,8 @@
 #include "VKShader.h"
 #include "VKGraphicsContext.h"
 #include "VKSwapchain.h"
+#include "VKVertexArray.h"
+#include "VKBuffer.h"
 
 #include <vulkan/vulkan.hpp>
 
@@ -27,6 +29,9 @@ namespace Axton::Vulkan
 		vk::Pipeline m_Pipeline;
 		vk::PipelineLayout m_Layout;
 		vk::RenderPass m_RenderPass;
+		Ref<VKVertexArray> m_VertexArray;
+		Ref<VKBuffer> m_VertexBuffer;
+
 		Ref<VKGraphicsContext> m_GraphicsContext;
 		Ref<VKSwapchain> m_Swapchain;
 	};

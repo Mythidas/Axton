@@ -158,7 +158,7 @@
     <ClInclude Include="Axton\Event\Event.h" />
     <ClInclude Include="Axton\Event\Events.h" />
     <ClInclude Include="Axton\ImGUI\ImGUILayer.h" />
-    <ClInclude Include="Axton\Math\Bit.h" />
+    <ClInclude Include="Axton\Utils\Bit.h" />
     <ClInclude Include="Axton\Math\Interval.h" />
     <ClInclude Include="Axton\Math\Mathf.h" />
     <ClInclude Include="Axton\Math\Matrix.h" />
@@ -166,9 +166,13 @@
     <ClInclude Include="Axton\Math\Ray.h" />
     <ClInclude Include="Axton\Math\Vector.h" />
     <ClInclude Include="Axton\Renderer\Camera.h" />
+    <ClInclude Include="Axton\Renderer\Image.h" />
     <ClInclude Include="Axton\Renderer\RendererAPI.h" />
     <ClInclude Include="Axton\Utils\FileSystem.h" />
+    <ClInclude Include="Axton\Utils\Queue.h" />
     <ClInclude Include="Axton\Utils\Stringf.h" />
+    <ClInclude Include="Platform\Vulkan\VKBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\VKComputePipeline.h" />
     <ClInclude Include="Platform\Vulkan\VKGraphicsContext.h" />
     <ClInclude Include="Platform\Vulkan\VKGraphicsPipeline.h" />
     <ClInclude Include="Platform\Vulkan\VKImGUILayer.h" />
@@ -176,6 +180,7 @@
     <ClInclude Include="Platform\Vulkan\VKRendererAPI.h" />
     <ClInclude Include="Platform\Vulkan\VKShader.h" />
     <ClInclude Include="Platform\Vulkan\VKSwapchain.h" />
+    <ClInclude Include="Platform\Vulkan\VKVertexArray.h" />
     <ClInclude Include="Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="axpch.h" />
   </ItemGroup>
@@ -192,7 +197,7 @@
     <ClCompile Include="Axton\Event\Events.cpp" />
     <ClCompile Include="Axton\ImGUI\ImGUI.cpp" />
     <ClCompile Include="Axton\ImGUI\ImGUILayer.cpp" />
-    <ClCompile Include="Axton\Math\Bit.cpp" />
+    <ClCompile Include="Axton\Utils\Bit.cpp" />
     <ClCompile Include="Axton\Math\Interval.cpp" />
     <ClCompile Include="Axton\Math\Mathf.cpp" />
     <ClCompile Include="Axton\Math\Ray.cpp" />
@@ -200,6 +205,8 @@
     <ClCompile Include="Axton\Renderer\RendererAPI.cpp" />
     <ClCompile Include="Axton\Utils\FileSystem.cpp" />
     <ClCompile Include="Axton\Utils\Stringf.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKComputePipeline.cpp" />
     <ClCompile Include="Platform\Vulkan\VKGraphicsContext.cpp" />
     <ClCompile Include="Platform\Vulkan\VKGraphicsPipeline.cpp" />
     <ClCompile Include="Platform\Vulkan\VKImGUILayer.cpp" />
@@ -207,6 +214,7 @@
     <ClCompile Include="Platform\Vulkan\VKRendererAPI.cpp" />
     <ClCompile Include="Platform\Vulkan\VKShader.cpp" />
     <ClCompile Include="Platform\Vulkan\VKSwapchain.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKVertexArray.cpp" />
     <ClCompile Include="Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="axpch.cpp" />
   </ItemGroup>

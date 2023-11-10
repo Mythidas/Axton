@@ -88,7 +88,7 @@
     <ClInclude Include="Axton\ImGUI\ImGUILayer.h">
       <Filter>Axton\ImGUI</Filter>
     </ClInclude>
-    <ClInclude Include="Axton\Math\Bit.h">
+    <ClInclude Include="Axton\Utils\Bit.h">
       <Filter>Axton\Math</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Math\Interval.h">
@@ -146,6 +146,11 @@
       <Filter>Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="axpch.h" />
+    <ClInclude Include="Axton\Renderer\Image.h" />
+    <ClInclude Include="Platform\Vulkan\VKComputePipeline.h" />
+    <ClInclude Include="Axton\Utils\Queue.h" />
+    <ClInclude Include="Platform\Vulkan\VKVertexArray.h" />
+    <ClInclude Include="Platform\Vulkan\VKBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -184,7 +189,7 @@
     <ClCompile Include="Axton\ImGUI\ImGUILayer.cpp">
       <Filter>Axton\ImGUI</Filter>
     </ClCompile>
-    <ClCompile Include="Axton\Math\Bit.cpp">
+    <ClCompile Include="Axton\Utils\Bit.cpp">
       <Filter>Axton\Math</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Math\Interval.cpp">
@@ -233,5 +238,8 @@
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="axpch.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKComputePipeline.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKVertexArray.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKBuffer.cpp" />
   </ItemGroup>
 </Project>

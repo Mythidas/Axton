@@ -1,7 +1,11 @@
 #pragma once
 
+#include "Axton/Core/Defines.h"
+#include "Axton/Utils/Queue.h"
+
 #include <vulkan/vulkan.hpp>
 #include <queue>
+#include <functional>
 
 namespace Axton::Vulkan
 {
@@ -63,13 +67,14 @@ namespace Axton::Vulkan
 		vk::SurfaceKHR m_Surface;
 		vk::DebugUtilsMessengerEXT m_Debug;
 		uint32_t m_CurrentFrame = 0;
-		std::queue<std::function<void()>> m_DeletionQueue;
-		std::queue<std::function<void(vk::CommandBuffer&)>> m_CommandQueue;
+		Queue<std::function<void()>> m_DeletionQueue;
+		Queue<std::function<void(vk::CommandBuffer&)>> m_CommandQueue;
 
 		vk::PhysicalDevice m_PhysicalDevice;
 		vk::Device m_Device;
 		vk::Queue m_GraphicsQueue;
 		vk::Queue m_PresentQueue;
+		vk::Queue m_ComputeQueue;
 
 		QueueFamilies m_QueueFamilies;
 
