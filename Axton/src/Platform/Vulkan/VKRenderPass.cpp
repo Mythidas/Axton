@@ -1,9 +1,10 @@
 #include "axpch.h"
 #include "VKRenderPass.h"
+#include "VKRenderEngine.h"
 
 namespace Axton::Vulkan
 {
-	Ref<VKRenderPass> VKRenderPass::Create(Ref<VKGraphicsContext> graphicsContext, vk::Format format)
+	Ref<VKRenderPass> VKRenderPass::Create(vk::Format format)
 	{
 		Ref<VKRenderPass> renderPass = CreateRef<VKRenderPass>();
 
@@ -47,11 +48,11 @@ namespace Axton::Vulkan
 			.setDependencyCount(1)
 			.setPDependencies(&dependency);
 
-		vk::Device device = graphicsContext->GetDevice();
+		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
 		renderPass->m_RenderPass = device.createRenderPass(renderPassInfo);
 		AX_ASSERT_CORE(renderPass->m_RenderPass, "Failed to create RenderPass!");
 
-		graphicsContext->QueueDeletion([device, renderPass]()
+		VKRenderEngine::GetGraphicsContext()->QueueDeletion([device, renderPass]()
 		{
 			device.destroy(renderPass->m_RenderPass);
 		});

@@ -1,24 +1,21 @@
 #include "axpch.h"
-#include "VKRendererAPI.h"
+#include "VKRenderEngine.h"
 #include "Axton/Event/Events.h"
 
 #include <GLFW/glfw3.h>
 
 namespace Axton::Vulkan
 {
-	VKRendererAPI* VKRendererAPI::s_Singleton = nullptr;
+	VKRenderEngine* VKRenderEngine::s_Singleton = nullptr;
 
-	/// TEMP COMPUTE SHADER TESTING ///
-	std::array<Ref<VKImage>, VKRendererAPI::MAX_FRAMES_IN_FLIGHT> s_ComputeImages;
-
-	VKRendererAPI::VKRendererAPI(void* windowHandle)
+	VKRenderEngine::VKRenderEngine(void* windowHandle)
 	{
 		AX_ASSERT_CORE(!s_Singleton, "Only one VKRendererAPI can be created!");
 		s_Singleton = this;
 
 		m_GraphicsContext = VKGraphicsContext::Create(windowHandle, { VK_KHR_SWAPCHAIN_EXTENSION_NAME }, { "VK_LAYER_KHRONOS_validation" });
-		m_Swapchain = VKSwapchain::Create(m_GraphicsContext);
-		m_RenderPass = VKRenderPass::Create(m_GraphicsContext, m_Swapchain->GetFormat());
+		m_Swapchain = VKSwapchain::Create();
+		m_RenderPass = VKRenderPass::Create(m_Swapchain->GetFormat());
 
 		m_Swapchain->CreateFramebuffers(m_RenderPass->GetRenderPass());
 
@@ -39,66 +36,6 @@ namespace Axton::Vulkan
 			AX_ASSERT_CORE(m_ImageAvailable[i] && m_RenderFinished[i] && m_InFlight[i], "Failed to create SyncObjects!");
 		}
 
-		struct Vertex
-		{
-			glm::vec2 pos;
-			glm::vec3 col;
-			glm::vec2 tex;
-		};
-
-		std::vector<Vertex> vertices =
-		{
-			Vertex(glm::vec2(0.0f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
-			Vertex(glm::vec2(0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)),
-			Vertex(glm::vec2(-0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f))
-		};
-
-		VKGraphicsPipeline::Specs graphicsPipeline{};
-		graphicsPipeline
-			.setShaders({
-				{ "C:\\Programming\\Axton\\Axton\\internal\\shaders\\vert.spv", vk::ShaderStageFlagBits::eVertex },
-				{ "C:\\Programming\\Axton\\Axton\\internal\\shaders\\frag.spv", vk::ShaderStageFlagBits::eFragment },
-			})
-			.setVertexAttributes({
-				VKGraphicsPipeline::Float2,
-				VKGraphicsPipeline::Float3,
-				VKGraphicsPipeline::Float2
-			});
-
-		m_GraphicsPipelines.push_back(graphicsPipeline.Build());
-
-		m_VertexBuffer = VKBuffer::Specs()
-			.setSize(sizeof(Vertex)* vertices.size())
-			.setUsage(vk::BufferUsageFlagBits::eVertexBuffer)
-			.setMemProperties(vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible)
-			.Build();
-
-		m_VertexBuffer->SetData(vertices.data(), sizeof(Vertex)* vertices.size());
-
-		/// TEMP COMPUTE SHADER TESTING ///
-		for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-		{
-			VKImage::Specs imageSpecs{};
-			imageSpecs
-				.setImageType(vk::ImageType::e2D)
-				.setExtent(vk::Extent3D(m_Swapchain->GetExtent().width, m_Swapchain->GetExtent().height, 1))
-				.setUsage(vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eSampled)
-				.setLayout(vk::ImageLayout::eGeneral)
-				.setFormat(vk::Format::eR32G32B32A32Sfloat)
-				.setDstStage(vk::PipelineStageFlagBits::eComputeShader)
-				.setDstMask(vk::AccessFlagBits::eShaderWrite)
-				.setViewType(vk::ImageViewType::e2D)
-				.setAspectFlags(vk::ImageAspectFlagBits::eColor);
-
-			s_ComputeImages[i] = imageSpecs.Build();
-		}
-
-		//VKPipeline::Specs vkComputePipeline{};
-		//vkComputePipeline
-		//	.setShaders({
-		//		{ "C:\\Programming\\Axton\\Axton\\internal\\shaders\\VoxelImageGen.spv", vk::ShaderStageFlagBits::eCompute }
-		//	});
-
 		m_GraphicsContext->QueueDeletion([this]()
 		{
 			for (auto& semaphore : m_ImageAvailable)
@@ -115,16 +52,16 @@ namespace Axton::Vulkan
 			}
 		});
 
-		Events::OnWindowResize += AX_BIND_FNC(OnWindowResized);
+		Events::OnWindowResize += AX_BIND_FNC(onWindowResized);
 	}
 
-	VKRendererAPI::~VKRendererAPI()
+	VKRenderEngine::~VKRenderEngine()
 	{
 		m_GraphicsContext->GetDevice().waitIdle();
 		m_GraphicsContext->Destroy();
 	}
 
-	void VKRendererAPI::BeginFrame()
+	void VKRenderEngine::BeginFrame()
 	{
 		if (m_FramebufferInvalid) return;
 
@@ -169,7 +106,7 @@ namespace Axton::Vulkan
 		});
 	}
 
-	void VKRendererAPI::EndFrame()
+	void VKRenderEngine::EndFrame()
 	{
 		m_GraphicsContext->QueueCommand([](vk::CommandBuffer& buffer)
 		{
@@ -205,17 +142,12 @@ namespace Axton::Vulkan
 		m_GraphicsContext->Update();
 	}
 
-	void VKRendererAPI::OnUpdate()
+	void VKRenderEngine::OnUpdate()
 	{
-		m_VertexBuffer->Process();
 
-		for (auto& pipeline : m_GraphicsPipelines)
-		{
-			pipeline->Process();
-		}
 	}
 
-	void VKRendererAPI::OnWindowResized(int width, int height)
+	void VKRenderEngine::onWindowResized(int width, int height)
 	{
 		m_FramebufferInvalid = false;
 

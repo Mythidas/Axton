@@ -1,6 +1,6 @@
 #include "axpch.h"
 #include "VKImGUILayer.h"
-#include "VKRendererAPI.h"
+#include "VKRenderEngine.h"
 #include "Axton/Core/Application.h"
 
 #include <imgui.h>
@@ -35,7 +35,7 @@ namespace Axton::Vulkan
 			.setPoolSizeCount(static_cast<uint32_t>(std::size(poolSizes)))
 			.setPPoolSizes(poolSizes);
 
-		vk::DescriptorPool imguiPool = VKRendererAPI::GetGraphicsContext()->GetDevice().createDescriptorPool(poolInfo);
+		vk::DescriptorPool imguiPool = VKRenderEngine::GetGraphicsContext()->GetDevice().createDescriptorPool(poolInfo);
 
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -48,18 +48,18 @@ namespace Axton::Vulkan
 
 		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), true);
 
-		Ref<VKGraphicsContext> gContext = VKRendererAPI::GetGraphicsContext();
+		Ref<VKGraphicsContext> gContext = VKRenderEngine::GetGraphicsContext();
 		ImGui_ImplVulkan_InitInfo initInfo{};
 		initInfo.Instance = gContext->GetInstance();
 		initInfo.PhysicalDevice = gContext->GetPhysicalDevice();
 		initInfo.Device = gContext->GetDevice();
 		initInfo.Queue = gContext->GetGraphicsQueue();
 		initInfo.DescriptorPool = imguiPool;
-		initInfo.MinImageCount = VKRendererAPI::MAX_FRAMES_IN_FLIGHT;
-		initInfo.ImageCount = VKRendererAPI::MAX_FRAMES_IN_FLIGHT;
+		initInfo.MinImageCount = VKRenderEngine::MAX_FRAMES_IN_FLIGHT;
+		initInfo.ImageCount = VKRenderEngine::MAX_FRAMES_IN_FLIGHT;
 		initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
-		ImGui_ImplVulkan_Init(&initInfo, VKRendererAPI::GetRenderPass()->GetRenderPass());
+		ImGui_ImplVulkan_Init(&initInfo, VKRenderEngine::GetRenderPass()->GetRenderPass());
 
 		gContext->SubmitCommand([&](vk::CommandBuffer buffer)
 			{
@@ -88,7 +88,7 @@ namespace Axton::Vulkan
 
 	void VKImGUILayer::EndUI() const
 	{
-		VKRendererAPI::GetGraphicsContext()->QueueCommand([&](vk::CommandBuffer buffer)
+		VKRenderEngine::GetGraphicsContext()->QueueCommand([&](vk::CommandBuffer buffer)
 		{
 			ImGuiIO& io = ImGui::GetIO();
 			io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());

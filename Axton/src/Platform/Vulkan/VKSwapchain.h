@@ -1,6 +1,5 @@
 #pragma once
 
-#include "VKGraphicsContext.h"
 #include "VKImage.h"
 #include <vulkan/vulkan.hpp>
 
@@ -8,9 +7,9 @@ namespace Axton::Vulkan
 {
 	class VKSwapchain
 	{
-		friend class VKRendererAPI;
+		friend class VKRenderEngine;
 	public:
-		static Ref<VKSwapchain> Create(Ref<VKGraphicsContext> graphicsContext);
+		static Ref<VKSwapchain> Create();
 
 		void CreateFramebuffers(vk::RenderPass renderPass);
 		void Recreate(vk::RenderPass renderPass);
@@ -28,7 +27,6 @@ namespace Axton::Vulkan
 
 	private:
 		vk::SwapchainKHR m_Swapchain;
-		Ref<VKGraphicsContext> m_GraphicsContext;
 
 		std::vector<Ref<VKImage>> m_Images;
 		vk::Format m_SwapchainFormat;

@@ -9,6 +9,20 @@ class SimpleLayer : public Axton::Layer
 	virtual void OnAttach() override
 	{
 		Axton::Log::Info("Simple Layer");
+
+		struct Vertex
+		{
+			glm::vec2 pos;
+			glm::vec3 col;
+			glm::vec2 tex;
+		};
+
+		std::vector<Vertex> vertices =
+		{
+			{ glm::vec2(0.0f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f) },
+			{ glm::vec2(0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f) },
+			{ glm::vec2(-0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f) }
+		};
 	}
 
 	virtual void OnRenderUI() override

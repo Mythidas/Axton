@@ -1,5 +1,6 @@
 #include "axpch.h"
 #include "VKSwapchain.h"
+#include "VKRenderEngine.h"
 #include "Axton/Core/Application.h"
 
 namespace Axton::Vulkan
@@ -52,13 +53,12 @@ namespace Axton::Vulkan
 		}
 	}
 
-	Ref<VKSwapchain> VKSwapchain::Create(Ref<VKGraphicsContext> graphicsContext)
+	Ref<VKSwapchain> VKSwapchain::Create()
 	{
 		Ref<VKSwapchain> swapchain = CreateRef<VKSwapchain>();
-		swapchain->m_GraphicsContext = graphicsContext;
 		swapchain->createSwapchain();
 
-		graphicsContext->QueueDeletion([swapchain]()
+		VKRenderEngine::GetGraphicsContext()->QueueDeletion([swapchain]()
 		{
 			for (auto& image : swapchain->m_Images)
 			{
@@ -67,10 +67,10 @@ namespace Axton::Vulkan
 
 			for (auto& buffer : swapchain->m_Framebuffers)
 			{
-				swapchain->m_GraphicsContext->GetDevice().destroy(buffer);
+				VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(buffer);
 			}
 
-			swapchain->m_GraphicsContext->GetDevice().destroy(swapchain->m_Swapchain);
+			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(swapchain->m_Swapchain);
 
 			swapchain->m_Images.clear();
 			swapchain->m_Framebuffers.clear();
@@ -96,13 +96,13 @@ namespace Axton::Vulkan
 				.setHeight(m_SwapchainExtent.height)
 				.setLayers(1);
 
-			m_Framebuffers[i] = m_GraphicsContext->GetDevice().createFramebuffer(createInfo);
+			m_Framebuffers[i] = VKRenderEngine::GetGraphicsContext()->GetDevice().createFramebuffer(createInfo);
 		}
 	}
 
 	void VKSwapchain::Recreate(vk::RenderPass renderPass)
 	{
-		m_GraphicsContext->GetDevice().waitIdle();
+		VKRenderEngine::GetGraphicsContext()->GetDevice().waitIdle();
 
 		for (auto& image : m_Images)
 		{
@@ -111,10 +111,10 @@ namespace Axton::Vulkan
 
 		for (auto& buffer : m_Framebuffers)
 		{
-			m_GraphicsContext->GetDevice().destroy(buffer);
+			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(buffer);
 		}
 
-		m_GraphicsContext->GetDevice().destroy(m_Swapchain);
+		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Swapchain);
 
 		m_Images.clear();
 		m_Framebuffers.clear();
@@ -125,9 +125,11 @@ namespace Axton::Vulkan
 
 	void VKSwapchain::createSwapchain()
 	{
-		vk::SurfaceCapabilitiesKHR capabilities = m_GraphicsContext->GetPhysicalDevice().getSurfaceCapabilitiesKHR(m_GraphicsContext->GetSurface());
-		std::vector<vk::SurfaceFormatKHR> surfaceFormats = m_GraphicsContext->GetPhysicalDevice().getSurfaceFormatsKHR(m_GraphicsContext->GetSurface());
-		std::vector<vk::PresentModeKHR> presentModes = m_GraphicsContext->GetPhysicalDevice().getSurfacePresentModesKHR(m_GraphicsContext->GetSurface());
+		Ref<VKGraphicsContext> gContext = VKRenderEngine::GetGraphicsContext();
+
+		vk::SurfaceCapabilitiesKHR capabilities = gContext->GetPhysicalDevice().getSurfaceCapabilitiesKHR(gContext->GetSurface());
+		std::vector<vk::SurfaceFormatKHR> surfaceFormats = gContext->GetPhysicalDevice().getSurfaceFormatsKHR(gContext->GetSurface());
+		std::vector<vk::PresentModeKHR> presentModes = gContext->GetPhysicalDevice().getSurfacePresentModesKHR(gContext->GetSurface());
 
 		vk::SurfaceFormatKHR format = Utils::chooseSurfaceFormat(surfaceFormats);
 		vk::PresentModeKHR mode = Utils::choosePresentMode(presentModes);
@@ -141,7 +143,7 @@ namespace Axton::Vulkan
 
 		vk::SwapchainCreateInfoKHR createInfo{};
 		createInfo
-			.setSurface(m_GraphicsContext->GetSurface())
+			.setSurface(gContext->GetSurface())
 			.setMinImageCount(imageCount)
 			.setImageFormat(format.format)
 			.setImageColorSpace(format.colorSpace)
@@ -155,7 +157,7 @@ namespace Axton::Vulkan
 			.setOldSwapchain(VK_NULL_HANDLE);
 
 		std::unordered_set<uint32_t> families;
-		for (const uint32_t& family : m_GraphicsContext->GetQueueFamilyIndices())
+		for (const uint32_t& family : gContext->GetQueueFamilyIndices())
 		{
 			families.insert(family);
 		}
@@ -164,8 +166,8 @@ namespace Axton::Vulkan
 		{
 			createInfo
 				.setImageSharingMode(vk::SharingMode::eConcurrent)
-				.setQueueFamilyIndexCount(static_cast<uint32_t>(m_GraphicsContext->GetQueueFamilyIndices().size()))
-				.setPQueueFamilyIndices(m_GraphicsContext->GetQueueFamilyIndices().data());
+				.setQueueFamilyIndexCount(static_cast<uint32_t>(gContext->GetQueueFamilyIndices().size()))
+				.setPQueueFamilyIndices(gContext->GetQueueFamilyIndices().data());
 		}
 		else
 		{
@@ -175,10 +177,10 @@ namespace Axton::Vulkan
 				.setPQueueFamilyIndices(nullptr);
 		}
 
-		m_Swapchain = m_GraphicsContext->GetDevice().createSwapchainKHR(createInfo);
+		m_Swapchain = gContext->GetDevice().createSwapchainKHR(createInfo);
 		AX_ASSERT_CORE(m_Swapchain, "Failed to create Swapchain!");
 
-		for (const auto& image : m_GraphicsContext->GetDevice().getSwapchainImagesKHR(m_Swapchain))
+		for (const auto& image : gContext->GetDevice().getSwapchainImagesKHR(m_Swapchain))
 		{
 			m_Images.push_back(VKImage::Specs().setViewType(vk::ImageViewType::e2D).setFormat(format.format).setAspectFlags(vk::ImageAspectFlagBits::eColor).Build(image));
 		}

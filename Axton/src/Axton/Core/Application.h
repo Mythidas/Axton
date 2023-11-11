@@ -3,7 +3,7 @@
 #include "Defines.h"
 #include "Window.h"
 #include "LayerStack.h"
-#include "Axton/Renderer/RendererAPI.h"
+#include "Axton/Renderer/RenderEngine.h"
 
 namespace Axton
 {
@@ -32,7 +32,7 @@ namespace Axton
 		static Application* s_Instance;
 
 		Scope<Window> m_Window;
-		Scope<RendererAPI> m_RendererAPI;
+		Scope<RenderEngine> m_RenderEngine;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 

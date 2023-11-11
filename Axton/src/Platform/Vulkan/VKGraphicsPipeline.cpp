@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "VKGraphicsPipeline.h"
 #include "VKRenderPass.h"
-#include "VKRendererAPI.h"
+#include "VKRenderEngine.h"
 #include "Axton/Utils/FileSystem.h"
 
 namespace Axton::Vulkan
@@ -79,10 +79,10 @@ namespace Axton::Vulkan
 		shader->createPipelineLayout();
 		shader->createPipeline();
 
-		VKRendererAPI::GetGraphicsContext()->QueueDeletion([shader]()
+		VKRenderEngine::GetGraphicsContext()->QueueDeletion([shader]()
 		{
-			VKRendererAPI::GetGraphicsContext()->GetDevice().destroy(shader->m_Pipeline);
-			VKRendererAPI::GetGraphicsContext()->GetDevice().destroy(shader->m_Layout);
+			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(shader->m_Pipeline);
+			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(shader->m_Layout);
 		});
 
 		return shader;
@@ -90,9 +90,9 @@ namespace Axton::Vulkan
 
 	void VKGraphicsPipeline::Process()
 	{
-		VKRendererAPI::GetGraphicsContext()->QueueCommand([this](vk::CommandBuffer& buffer)
+		VKRenderEngine::GetGraphicsContext()->QueueCommand([this](vk::CommandBuffer& buffer)
 		{
-			Ref<VKSwapchain> swapchain = VKRendererAPI::GetSwapchain();
+			Ref<VKSwapchain> swapchain = VKRenderEngine::GetSwapchain();
 
 			buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline);
 
@@ -125,15 +125,15 @@ namespace Axton::Vulkan
 			.setSetLayoutCount(0)
 			.setPushConstantRangeCount(0);
 
-		m_Layout = VKRendererAPI::GetGraphicsContext()->GetDevice().createPipelineLayout(pipelineLayoutInfo);
+		m_Layout = VKRenderEngine::GetGraphicsContext()->GetDevice().createPipelineLayout(pipelineLayoutInfo);
 		AX_ASSERT_CORE(m_Layout, "Failed to create PipelineLayout!");
 	}
 
 	void VKGraphicsPipeline::createPipeline()
 	{
-		Ref<VKSwapchain> swapchain = VKRendererAPI::GetSwapchain();
-		Ref<VKRenderPass> renderPass = VKRendererAPI::GetRenderPass();
-		vk::Device device = VKRendererAPI::GetGraphicsContext()->GetDevice();
+		Ref<VKSwapchain> swapchain = VKRenderEngine::GetSwapchain();
+		Ref<VKRenderPass> renderPass = VKRenderEngine::GetRenderPass();
+		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
 
 		auto shaders = createTempShaders();
 		auto shaderStages = getShaderStageInfo(shaders);
@@ -270,7 +270,7 @@ namespace Axton::Vulkan
 
 		for (size_t i = 0; i < shaders.size(); i++)
 		{
-			vk::Device device = VKRendererAPI::GetGraphicsContext()->GetDevice();
+			vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
 
 			FileSystem fs(m_Specs.Shaders[i].Path);
 			std::vector<char> buffer = fs.ToSignedBuffer();

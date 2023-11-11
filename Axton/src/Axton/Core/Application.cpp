@@ -5,7 +5,6 @@
 #include "Input.h"
 #include "Axton/Debug/Log.h"
 #include "Axton/Event/Events.h"
-#include "Axton/Renderer/RendererAPI.h"
 #include "Axton/ImGUI/ImGUILayer.h"
 
 namespace Axton
@@ -23,7 +22,7 @@ namespace Axton
 		Input::Construct();
 
 		m_Window = specs.Build();
-		m_RendererAPI = RendererAPI::Create(m_Window->GetNativeWindow());
+		m_RenderEngine = RenderEngine::Create(m_Window->GetNativeWindow());
 
 		m_ImGUILayer = ImGUILayer::Create();
 		PushOverlay(m_ImGUILayer);
@@ -41,9 +40,9 @@ namespace Axton
 			Time::OnUpdate();
 			m_Window->OnUpdate();
 
-			m_RendererAPI->BeginFrame();
+			m_RenderEngine->BeginFrame();
 
-			m_RendererAPI->OnUpdate();
+			m_RenderEngine->OnUpdate();
 
 			for (Layer* layer : m_LayerStack)
 			{
@@ -68,7 +67,7 @@ namespace Axton
 				m_ImGUILayer->EndUI();
 			}
 
-			m_RendererAPI->EndFrame();
+			m_RenderEngine->EndFrame();
 		}
 	}
 

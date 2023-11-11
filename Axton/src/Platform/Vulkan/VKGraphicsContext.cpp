@@ -1,6 +1,6 @@
 #include "axpch.h"
 #include "VKGraphicsContext.h"
-#include "Platform/Vulkan/VKRendererAPI.h"
+#include "Platform/Vulkan/VKRenderEngine.h"
 
 #include <GLFW/glfw3.h>
 
@@ -110,7 +110,7 @@ namespace Axton::Vulkan
 
 	void VKGraphicsContext::Update()
 	{
-		m_CurrentFrame = (m_CurrentFrame + 1) % VKRendererAPI::MAX_FRAMES_IN_FLIGHT;
+		m_CurrentFrame = (m_CurrentFrame + 1) % VKRenderEngine::MAX_FRAMES_IN_FLIGHT;
 	}
 
 	void VKGraphicsContext::QueueDeletion(std::function<void()> func)
@@ -378,7 +378,7 @@ namespace Axton::Vulkan
 		vk::CommandBufferAllocateInfo allocInfo{};
 		allocInfo
 			.setCommandPool(m_CommandPool)
-			.setCommandBufferCount(VKRendererAPI::MAX_FRAMES_IN_FLIGHT)
+			.setCommandBufferCount(VKRenderEngine::MAX_FRAMES_IN_FLIGHT)
 			.setLevel(vk::CommandBufferLevel::ePrimary);
 
 		m_CommandBuffers = m_Device.allocateCommandBuffers(allocInfo);

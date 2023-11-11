@@ -1,12 +1,12 @@
 #include "axpch.h"
 #include "VKUtils.h"
-#include "VKRendererAPI.h"
+#include "VKRenderEngine.h"
 
 namespace Axton::Vulkan
 {
 	uint32_t VKUtils::FindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags flags)
 	{
-		vk::PhysicalDevice device = VKRendererAPI::GetGraphicsContext()->GetPhysicalDevice();
+		vk::PhysicalDevice device = VKRenderEngine::GetGraphicsContext()->GetPhysicalDevice();
 
 		vk::PhysicalDeviceMemoryProperties memProperties = device.getMemoryProperties();
 

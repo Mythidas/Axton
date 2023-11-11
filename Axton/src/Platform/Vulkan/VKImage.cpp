@@ -1,6 +1,6 @@
 #include "axpch.h"
 #include "VKImage.h"
-#include "VKRendererAPI.h"
+#include "VKRenderEngine.h"
 #include "VKUtils.h"
 
 namespace Axton::Vulkan
@@ -24,7 +24,7 @@ namespace Axton::Vulkan
 			barrier.subresourceRange.baseArrayLayer = 0;
 			barrier.subresourceRange.layerCount = 1;
 
-			VKRendererAPI::GetGraphicsContext()->SubmitCommand([barrier, srcStage, dstStage](vk::CommandBuffer& buffer)
+			VKRenderEngine::GetGraphicsContext()->SubmitCommand([barrier, srcStage, dstStage](vk::CommandBuffer& buffer)
 			{
 					buffer.pipelineBarrier(
 						srcStage, dstStage,
@@ -39,7 +39,7 @@ namespace Axton::Vulkan
 
 	Ref<VKImage> VKImage::Create(const Specs& specs)
 	{
-		vk::Device device = VKRendererAPI::GetGraphicsContext()->GetDevice();
+		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
 		Ref<VKImage> vkImage = CreateRef<VKImage>();
 
 		vk::ImageCreateInfo imageInfo{};
@@ -83,7 +83,7 @@ namespace Axton::Vulkan
 
 		vkImage->m_ImageView = device.createImageView(createInfo);
 
-		VKRendererAPI::GetGraphicsContext()->QueueDeletion([device, vkImage]() {
+		VKRenderEngine::GetGraphicsContext()->QueueDeletion([device, vkImage]() {
 			device.destroy(vkImage->m_Image);
 			device.destroy(vkImage->m_ImageView);
 			device.freeMemory(vkImage->m_ImageMemory);
@@ -110,11 +110,11 @@ namespace Axton::Vulkan
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		vkImage->m_ImageView = VKRendererAPI::GetGraphicsContext()->GetDevice().createImageView(createInfo);
+		vkImage->m_ImageView = VKRenderEngine::GetGraphicsContext()->GetDevice().createImageView(createInfo);
 
-		VKRendererAPI::GetGraphicsContext()->QueueDeletion([vkImage]() {
-			VKRendererAPI::GetGraphicsContext()->GetDevice().destroy(vkImage->m_Image);
-			VKRendererAPI::GetGraphicsContext()->GetDevice().destroy(vkImage->m_ImageView);
+		VKRenderEngine::GetGraphicsContext()->QueueDeletion([vkImage]() {
+			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(vkImage->m_Image);
+			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(vkImage->m_ImageView);
 		});
 
 		return vkImage;
@@ -123,6 +123,6 @@ namespace Axton::Vulkan
 	void VKImage::Destroy()
 	{
 		if (m_ImageView)
-			VKRendererAPI::GetGraphicsContext()->GetDevice().destroy(m_ImageView);
+			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_ImageView);
 	}
 }

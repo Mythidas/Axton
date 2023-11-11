@@ -1,6 +1,6 @@
 #include "axpch.h"
 #include "VKBuffer.h"
-#include "VKRendererAPI.h"
+#include "VKRenderEngine.h"
 #include "VKUtils.h"
 
 namespace Axton::Vulkan
@@ -9,7 +9,7 @@ namespace Axton::Vulkan
 	{
 		Ref<VKBuffer> buffer = CreateRef<VKBuffer>();
 		buffer->m_Specs = specs;
-		vk::Device device = VKRendererAPI::GetGraphicsContext()->GetDevice();
+		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
 
 		vk::BufferCreateInfo bufferInfo{};
 		bufferInfo
@@ -29,7 +29,7 @@ namespace Axton::Vulkan
 		buffer->m_Memory = device.allocateMemory(allocInfo);
 		device.bindBufferMemory(buffer->m_Buffer, buffer->m_Memory, 0);
 
-		VKRendererAPI::GetGraphicsContext()->QueueDeletion([device, buffer]()
+		VKRenderEngine::GetGraphicsContext()->QueueDeletion([device, buffer]()
 			{
 				device.destroy(buffer->m_Buffer);
 				device.freeMemory(buffer->m_Memory);
@@ -40,7 +40,7 @@ namespace Axton::Vulkan
 
 	void VKBuffer::Process()
 	{
-		VKRendererAPI::GetGraphicsContext()->QueueCommand([this](vk::CommandBuffer& buffer)
+		VKRenderEngine::GetGraphicsContext()->QueueCommand([this](vk::CommandBuffer& buffer)
 		{
 			buffer.bindVertexBuffers(0, { m_Buffer }, { 0 });
 		});
@@ -50,7 +50,7 @@ namespace Axton::Vulkan
 	{
 		AX_ASSERT_CORE(size <= m_Specs.Size, "Size is larger than allocated buffer!");
 
-		vk::Device device = VKRendererAPI::GetGraphicsContext()->GetDevice();
+		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
 
 		void* pData = device.mapMemory(m_Memory, 0, size, vk::MemoryMapFlags::Flags());
 		memcpy(pData, data, size);

@@ -112,7 +112,7 @@
     <ClInclude Include="Axton\Renderer\Image.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Axton\Renderer\RendererAPI.h">
+    <ClInclude Include="Axton\Renderer\RenderEngine.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Utils\Bit.h">
@@ -142,7 +142,7 @@
     <ClInclude Include="Platform\Vulkan\VKRenderPass.h">
       <Filter>Platform\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\Vulkan\VKRendererAPI.h">
+    <ClInclude Include="Platform\Vulkan\VKRenderEngine.h">
       <Filter>Platform\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Vulkan\VKGraphicsPipeline.h">
@@ -157,6 +157,7 @@
     <ClInclude Include="axpch.h" />
     <ClInclude Include="Platform\Vulkan\VKUtils.h" />
     <ClInclude Include="Platform\Vulkan\VKComputePipeline.h" />
+    <ClInclude Include="Axton\Renderer\RendererAPI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -207,7 +208,7 @@
     <ClCompile Include="Axton\Math\Vector.cpp">
       <Filter>Axton\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Axton\Renderer\RendererAPI.cpp">
+    <ClCompile Include="Axton\Renderer\RenderEngine.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Utils\Bit.cpp">
@@ -234,7 +235,7 @@
     <ClCompile Include="Platform\Vulkan\VKRenderPass.cpp">
       <Filter>Platform\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\Vulkan\VKRendererAPI.cpp">
+    <ClCompile Include="Platform\Vulkan\VKRenderEngine.cpp">
       <Filter>Platform\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Vulkan\VKGraphicsPipeline.cpp">

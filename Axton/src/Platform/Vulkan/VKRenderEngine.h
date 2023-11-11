@@ -3,17 +3,17 @@
 #include "VKSwapchain.h"
 #include "VKRenderPass.h"
 #include "VKGraphicsPipeline.h"
-#include "Axton/Renderer/RendererAPI.h"
+#include "Axton/Renderer/RenderEngine.h"
 
 #include <vulkan/vulkan.hpp>
 
 namespace Axton::Vulkan
 {
-	class VKRendererAPI : public RendererAPI
+	class VKRenderEngine : public RenderEngine
 	{
 	public:
-		VKRendererAPI(void* windowHandle);
-		~VKRendererAPI();
+		VKRenderEngine(void* windowHandle);
+		~VKRenderEngine();
 
 		virtual void BeginFrame() override;
 		virtual void EndFrame() override;
@@ -24,16 +24,14 @@ namespace Axton::Vulkan
 		static Ref<VKRenderPass> GetRenderPass() { return s_Singleton->m_RenderPass; }
 
 	private:
-		void OnWindowResized(int width, int height);
+		void onWindowResized(int width, int height);
 
 	private:
-		static VKRendererAPI* s_Singleton;
+		static VKRenderEngine* s_Singleton;
 
 		Ref<VKGraphicsContext> m_GraphicsContext;
 		Ref<VKSwapchain> m_Swapchain;
 		Ref<VKRenderPass> m_RenderPass;
-		std::vector<Ref<VKGraphicsPipeline>> m_GraphicsPipelines;
-		Ref<VKBuffer> m_VertexBuffer;
 
 		std::vector<vk::Semaphore> m_ImageAvailable;
 		std::vector<vk::Semaphore> m_RenderFinished;
