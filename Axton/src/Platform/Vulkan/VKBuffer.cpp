@@ -38,21 +38,13 @@ namespace Axton::Vulkan
 		return buffer;
 	}
 
-	void VKBuffer::Process()
-	{
-		VKRenderEngine::GetGraphicsContext()->QueueCommand([this](vk::CommandBuffer& buffer)
-		{
-			buffer.bindVertexBuffers(0, { m_Buffer }, { 0 });
-		});
-	}
-
 	void VKBuffer::SetData(void* data, size_t size)
 	{
 		AX_ASSERT_CORE(size <= m_Specs.Size, "Size is larger than allocated buffer!");
 
 		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
 
-		void* pData = device.mapMemory(m_Memory, 0, size, vk::MemoryMapFlags::Flags());
+		void* pData = device.mapMemory(m_Memory, 0, size);
 		memcpy(pData, data, size);
 		device.unmapMemory(m_Memory);
 	}

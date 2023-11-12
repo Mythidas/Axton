@@ -10,6 +10,8 @@
 
 // Renderer
 #include "Axton/Renderer/Camera.h"
+#include "Axton/Renderer/GraphicsPipeline.h"
+#include "Axton/Renderer/RenderBuffer.h"
 
 // Debugging
 #include "Axton/Debug/Log.h"

@@ -2,7 +2,6 @@
 #include "VKGraphicsContext.h"
 #include "VKSwapchain.h"
 #include "VKRenderPass.h"
-#include "VKGraphicsPipeline.h"
 #include "Axton/Renderer/RenderEngine.h"
 
 #include <vulkan/vulkan.hpp>
@@ -17,7 +16,6 @@ namespace Axton::Vulkan
 
 		virtual void BeginFrame() override;
 		virtual void EndFrame() override;
-		virtual void OnUpdate() override;
 
 		static Ref<VKGraphicsContext> GetGraphicsContext() { return s_Singleton->m_GraphicsContext; }
 		static Ref<VKSwapchain> GetSwapchain() { return s_Singleton->m_Swapchain; }

@@ -145,7 +145,7 @@
     <ClInclude Include="Platform\Vulkan\VKRenderEngine.h">
       <Filter>Platform\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\Vulkan\VKGraphicsPipeline.h">
+    <ClInclude Include="Platform\Vulkan\Client API\VKGraphicsPipeline.h">
       <Filter>Platform\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Vulkan\VKSwapchain.h">
@@ -156,8 +156,13 @@
     </ClInclude>
     <ClInclude Include="axpch.h" />
     <ClInclude Include="Platform\Vulkan\VKUtils.h" />
-    <ClInclude Include="Platform\Vulkan\VKComputePipeline.h" />
     <ClInclude Include="Axton\Renderer\RendererAPI.h" />
+    <ClInclude Include="Axton\Renderer\GraphicsPipeline.h" />
+    <ClInclude Include="Axton\Renderer\ComputePipeline.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKVertexBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKComputePipeline.h" />
+    <ClInclude Include="Axton\Renderer\RenderBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKRenderBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -238,7 +243,7 @@
     <ClCompile Include="Platform\Vulkan\VKRenderEngine.cpp">
       <Filter>Platform\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\Vulkan\VKGraphicsPipeline.cpp">
+    <ClCompile Include="Platform\Vulkan\Client API\VKGraphicsPipeline.cpp">
       <Filter>Platform\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Vulkan\VKSwapchain.cpp">
@@ -249,6 +254,11 @@
     </ClCompile>
     <ClCompile Include="axpch.cpp" />
     <ClCompile Include="Platform\Vulkan\VKUtils.cpp" />
-    <ClCompile Include="Platform\Vulkan\VKComputePipeline.cpp" />
+    <ClCompile Include="Axton\Renderer\GraphicsPipeline.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKVertexBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\ComputePipeline.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKComputePipeline.cpp" />
+    <ClCompile Include="Axton\Renderer\RenderBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKRenderBuffer.cpp" />
   </ItemGroup>
 </Project>

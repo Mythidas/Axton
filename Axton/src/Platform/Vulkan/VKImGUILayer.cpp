@@ -88,21 +88,20 @@ namespace Axton::Vulkan
 
 	void VKImGUILayer::EndUI() const
 	{
-		VKRenderEngine::GetGraphicsContext()->QueueCommand([&](vk::CommandBuffer buffer)
+		vk::CommandBuffer buffer = VKRenderEngine::GetGraphicsContext()->GetCommandBuffer();
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());
+
+		ImGui::Render();
+		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), buffer);
+
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
-			ImGuiIO& io = ImGui::GetIO();
-			io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());
-
-			ImGui::Render();
-			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), buffer);
-
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-			{
-				GLFWwindow* backupContext = glfwGetCurrentContext();
-				ImGui::UpdatePlatformWindows();
-				ImGui::RenderPlatformWindowsDefault();
-				glfwMakeContextCurrent(backupContext);
-			}
-		});
+			GLFWwindow* backupContext = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backupContext);
+		}
 	}
 }

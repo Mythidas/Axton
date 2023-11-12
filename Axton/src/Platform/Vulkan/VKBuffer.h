@@ -25,7 +25,6 @@ namespace Axton::Vulkan
 
 		static Ref<VKBuffer> Create(const Specs& specs);
 
-		void Process();
 		void SetData(void* data, size_t size);
 
 		vk::Buffer& GetBuffer() { return m_Buffer; }

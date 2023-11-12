@@ -34,18 +34,18 @@ namespace Axton::Vulkan
 		static Ref<VKGraphicsContext> Create(void* windowHandle, const std::vector<const char*> deviceExtensions, const std::vector<const char*> validationLayers);
 
 		void Update();
-		void QueueDeletion(std::function<void()> func);
-		void QueueCommand(std::function<void(vk::CommandBuffer&)> func);
-		void SubmitCommand(std::function<void(vk::CommandBuffer&)> func);
-		void SubmitQueue(const QueueSubmitInfo& queueSubmitInfo);
-		vk::Result PresentQueue(const QueueSubmitInfo& queueSubmitInfo, const std::vector<vk::SwapchainKHR>& swapchains, uint32_t imageIndex);
-
-		void FlushCommandQueue();
-
 		void Destroy();
 
+		void QueueDeletion(std::function<void()> func);
+
+		void SubmitCommand(std::function<void(vk::CommandBuffer&)> func);
+
+		void SubmitGraphicsQueue(const QueueSubmitInfo& queueSubmitInfo);
+		vk::Result SubmitPresentQueue(const QueueSubmitInfo& queueSubmitInfo, const std::vector<vk::SwapchainKHR>& swapchains, uint32_t imageIndex);
+
+
 		uint32_t GetCurrentFrame() { return m_CurrentFrame; }
-		vk::CommandBuffer& GetBuffer() { return m_CommandBuffers[m_CurrentFrame]; }
+		vk::CommandBuffer& GetCommandBuffer() { return m_CommandBuffers[m_CurrentFrame]; }
 		vk::Instance& GetInstance() { return m_Instance; }
 		vk::SurfaceKHR& GetSurface() { return m_Surface; }
 		vk::PhysicalDevice& GetPhysicalDevice() { return m_PhysicalDevice; }
@@ -69,7 +69,6 @@ namespace Axton::Vulkan
 		vk::DebugUtilsMessengerEXT m_Debug;
 		uint32_t m_CurrentFrame = 0;
 		Queue<std::function<void()>> m_DeletionQueue;
-		Queue<std::function<void(vk::CommandBuffer&)>> m_CommandQueue;
 
 		vk::PhysicalDevice m_PhysicalDevice;
 		vk::Device m_Device;

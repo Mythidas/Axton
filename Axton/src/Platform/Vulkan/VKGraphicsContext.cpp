@@ -113,14 +113,24 @@ namespace Axton::Vulkan
 		m_CurrentFrame = (m_CurrentFrame + 1) % VKRenderEngine::MAX_FRAMES_IN_FLIGHT;
 	}
 
+	void VKGraphicsContext::Destroy()
+	{
+		while (!m_DeletionQueue.Empty())
+		{
+			m_DeletionQueue.Deque()();
+		}
+
+		m_Device.destroy(m_CommandPool);
+		m_Device.destroy();
+
+		Utils::destroyDebugUtilsMessenger(m_Instance, m_Debug);
+		m_Instance.destroySurfaceKHR(m_Surface);
+		m_Instance.destroy();
+	}
+
 	void VKGraphicsContext::QueueDeletion(std::function<void()> func)
 	{
 		m_DeletionQueue.Enque(func);
-	}
-
-	void VKGraphicsContext::QueueCommand(std::function<void(vk::CommandBuffer&)> func)
-	{
-		m_CommandQueue.Enque(func);
 	}
 
 	void VKGraphicsContext::SubmitCommand(std::function<void(vk::CommandBuffer&)> func)
@@ -148,13 +158,14 @@ namespace Axton::Vulkan
 			.setCommandBufferCount(1)
 			.setPCommandBuffers(&buffer);
 
+		// May be an issue if a Different queue is needed
 		m_GraphicsQueue.submit({ submitInfo }, VK_NULL_HANDLE);
 		m_GraphicsQueue.waitIdle();
 
 		m_Device.freeCommandBuffers(m_CommandPool, buffer);
 	}
 
-	void VKGraphicsContext::SubmitQueue(const QueueSubmitInfo& queueSubmitInfo)
+	void VKGraphicsContext::SubmitGraphicsQueue(const QueueSubmitInfo& queueSubmitInfo)
 	{
 		vk::SubmitInfo submitInfo{};
 		submitInfo
@@ -169,7 +180,7 @@ namespace Axton::Vulkan
 		m_GraphicsQueue.submit(submitInfo, queueSubmitInfo.Fence);
 	}
 
-	vk::Result VKGraphicsContext::PresentQueue(const QueueSubmitInfo& queueSubmitInfo, const std::vector<vk::SwapchainKHR>& swapchains, uint32_t imageIndex)
+	vk::Result VKGraphicsContext::SubmitPresentQueue(const QueueSubmitInfo& queueSubmitInfo, const std::vector<vk::SwapchainKHR>& swapchains, uint32_t imageIndex)
 	{
 		vk::PresentInfoKHR presentInfo{};
 		presentInfo
@@ -180,38 +191,6 @@ namespace Axton::Vulkan
 			.setPImageIndices(&imageIndex);
 
 		return m_PresentQueue.presentKHR(presentInfo);
-	}
-
-	void VKGraphicsContext::FlushCommandQueue()
-	{
-		vk::CommandBufferBeginInfo beginInfo{};
-		beginInfo
-			.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit)
-			.setPInheritanceInfo(nullptr);
-
-		m_CommandBuffers[m_CurrentFrame].begin(beginInfo);
-
-		while (!m_CommandQueue.Empty())
-		{
-			m_CommandQueue.Deque()(m_CommandBuffers[m_CurrentFrame]);
-		}
-
-		m_CommandBuffers[m_CurrentFrame].end();
-	}
-
-	void VKGraphicsContext::Destroy()
-	{
-		while (!m_DeletionQueue.Empty())
-		{
-			m_DeletionQueue.Deque()();
-		}
-
-		m_Device.destroy(m_CommandPool);
-		m_Device.destroy();
-
-		Utils::destroyDebugUtilsMessenger(m_Instance, m_Debug);
-		m_Instance.destroySurfaceKHR(m_Surface);
-		m_Instance.destroy();
 	}
 
 	void VKGraphicsContext::createInstance(const std::vector<const char*> validationLayers)

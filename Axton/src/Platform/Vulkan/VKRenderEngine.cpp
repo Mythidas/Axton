@@ -57,7 +57,6 @@ namespace Axton::Vulkan
 
 	VKRenderEngine::~VKRenderEngine()
 	{
-		m_GraphicsContext->GetDevice().waitIdle();
 		m_GraphicsContext->Destroy();
 	}
 
@@ -91,29 +90,30 @@ namespace Axton::Vulkan
 
 		m_GraphicsContext->GetDevice().resetFences({ m_InFlight[currentFrame] });
 
-		m_GraphicsContext->QueueCommand([this](vk::CommandBuffer& buffer)
-		{
-			vk::ClearValue clearColor(vk::ClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f }));
-			vk::RenderPassBeginInfo renderPassInfo{};
-			renderPassInfo
-				.setRenderPass(m_RenderPass->GetRenderPass())
-				.setFramebuffer(m_Swapchain->GetFramebuffer())
-				.setRenderArea(vk::Rect2D().setOffset({ 0, 0 }).setExtent(m_Swapchain->GetExtent()))
-				.setClearValueCount(1)
-				.setPClearValues(&clearColor);
+		vk::CommandBufferBeginInfo beginInfo{};
+		beginInfo
+			.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit)
+			.setPInheritanceInfo(nullptr);
 
-			buffer.beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
-		});
+		vk::CommandBuffer buffer = m_GraphicsContext->GetCommandBuffer();
+		buffer.begin(beginInfo);
+
+		vk::ClearValue clearColor(vk::ClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f }));
+		vk::RenderPassBeginInfo renderPassInfo{};
+		renderPassInfo
+			.setRenderPass(m_RenderPass->GetRenderPass())
+			.setFramebuffer(m_Swapchain->GetFramebuffer())
+			.setRenderArea(vk::Rect2D().setOffset({ 0, 0 }).setExtent(m_Swapchain->GetExtent()))
+			.setClearValueCount(1)
+			.setPClearValues(&clearColor);
+
+		buffer.beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 	}
 
 	void VKRenderEngine::EndFrame()
 	{
-		m_GraphicsContext->QueueCommand([](vk::CommandBuffer& buffer)
-		{
-			buffer.endRenderPass();
-		});
-
-		m_GraphicsContext->FlushCommandQueue();
+		m_GraphicsContext->GetCommandBuffer().endRenderPass();
+		m_GraphicsContext->GetCommandBuffer().end();
 
 		uint32_t currentFrame = m_GraphicsContext->GetCurrentFrame();
 
@@ -122,11 +122,11 @@ namespace Axton::Vulkan
 		submitInfo.WaitStages = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
 		submitInfo.SignalSemaphores = { m_RenderFinished[currentFrame] };
 		submitInfo.Fence = m_InFlight[currentFrame];
-		m_GraphicsContext->SubmitQueue(submitInfo);
+		m_GraphicsContext->SubmitGraphicsQueue(submitInfo);
 
 		std::vector<vk::SwapchainKHR> swapchains = { m_Swapchain->GetSwapchain() };
 		submitInfo.WaitSemaphores = { m_RenderFinished[currentFrame] };
-		vk::Result result = m_GraphicsContext->PresentQueue(submitInfo, swapchains, m_Swapchain->m_ImageIndex);
+		vk::Result result = m_GraphicsContext->SubmitPresentQueue(submitInfo, swapchains, m_Swapchain->m_ImageIndex);
 
 		if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR || m_FramebufferResized)
 		{
@@ -140,11 +140,6 @@ namespace Axton::Vulkan
 		}
 
 		m_GraphicsContext->Update();
-	}
-
-	void VKRenderEngine::OnUpdate()
-	{
-
 	}
 
 	void VKRenderEngine::onWindowResized(int width, int height)

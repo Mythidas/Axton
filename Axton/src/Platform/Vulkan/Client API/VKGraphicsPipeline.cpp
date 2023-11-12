@@ -1,38 +1,39 @@
 #include "axpch.h"
 #include "VKGraphicsPipeline.h"
-#include "VKRenderPass.h"
-#include "VKRenderEngine.h"
+#include "../VKRenderPass.h"
+#include "../VKRenderEngine.h"
+#include "../VKSwapchain.h"
 #include "Axton/Utils/FileSystem.h"
 
 namespace Axton::Vulkan
 {
 	namespace Utils
 	{
-		uint32_t getAttributeSize(VKGraphicsPipeline::Attribute attribute)
+		uint32_t getAttributeSize(VertexAttribute attribute)
 		{
 			switch (attribute)
 			{
-			case VKGraphicsPipeline::Attribute::Float2: return 4 * 2;
-			case VKGraphicsPipeline::Attribute::Float3: return 4 * 3;
-			case VKGraphicsPipeline::Attribute::Float4: return 4 * 4;
+			case VertexAttribute::Float2: return 4 * 2;
+			case VertexAttribute::Float3: return 4 * 3;
+			case VertexAttribute::Float4: return 4 * 4;
 			}
 
 			return 0;
 		}
 
-		vk::Format getFormatInternal(VKGraphicsPipeline::Attribute attribute)
+		vk::Format getFormatInternal(VertexAttribute attribute)
 		{
 			switch (attribute)
 			{
-			case VKGraphicsPipeline::Attribute::Float2: return vk::Format::eR32G32Sfloat;
-			case VKGraphicsPipeline::Attribute::Float3: return vk::Format::eR32G32B32Sfloat;
-			case VKGraphicsPipeline::Attribute::Float4: return vk::Format::eR32G32B32A32Sfloat;
+			case VertexAttribute::Float2: return vk::Format::eR32G32Sfloat;
+			case VertexAttribute::Float3: return vk::Format::eR32G32B32Sfloat;
+			case VertexAttribute::Float4: return vk::Format::eR32G32B32A32Sfloat;
 			}
 
 			return vk::Format::eUndefined;
 		}
 
-		vk::VertexInputBindingDescription getBindingDescription(const std::vector<VKGraphicsPipeline::Attribute>& attributes)
+		vk::VertexInputBindingDescription getBindingDescription(const std::vector<VertexAttribute>& attributes)
 		{
 			uint32_t size = 0;
 			for (const auto& attribute : attributes)
@@ -49,7 +50,7 @@ namespace Axton::Vulkan
 			return bindingDescription;
 		}
 
-		std::vector<vk::VertexInputAttributeDescription> getAttributeDescriptions(const std::vector<VKGraphicsPipeline::Attribute>& attributes)
+		std::vector<vk::VertexInputAttributeDescription> getAttributeDescriptions(const std::vector<VertexAttribute>& attributes)
 		{
 			std::vector<vk::VertexInputAttributeDescription> vertexArray(attributes.size());
 
@@ -71,51 +72,55 @@ namespace Axton::Vulkan
 		}
 	}
 
-	Ref<VKGraphicsPipeline> VKGraphicsPipeline::Create(const Specs& specs)
+	VKGraphicsPipeline::VKGraphicsPipeline(const Specs& specs)
 	{
-		Ref<VKGraphicsPipeline> shader = CreateRef<VKGraphicsPipeline>();
-		shader->m_Specs = specs;
+		m_Specs = specs;
 
-		shader->createPipelineLayout();
-		shader->createPipeline();
+		createPipelineLayout();
+		createPipeline();
 
-		VKRenderEngine::GetGraphicsContext()->QueueDeletion([shader]()
+		VKRenderEngine::GetGraphicsContext()->QueueDeletion([this]()
 		{
-			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(shader->m_Pipeline);
-			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(shader->m_Layout);
+			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Pipeline);
+			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Layout);
 		});
-
-		return shader;
 	}
 
-	void VKGraphicsPipeline::Process()
+	void VKGraphicsPipeline::Render(uint32_t count)
 	{
-		VKRenderEngine::GetGraphicsContext()->QueueCommand([this](vk::CommandBuffer& buffer)
+		vk::CommandBuffer buffer = VKRenderEngine::GetGraphicsContext()->GetCommandBuffer();
+
+		Ref<VKSwapchain> swapchain = VKRenderEngine::GetSwapchain();
+
+		buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline);
+
+		vk::Viewport viewport{};
+		viewport
+			.setX(0.0f)
+			.setY(0.0f)
+			.setWidth(static_cast<float>(swapchain->GetExtent().width))
+			.setHeight(static_cast<float>(swapchain->GetExtent().height))
+			.setMinDepth(0.0f)
+			.setMaxDepth(1.0f);
+
+		buffer.setViewport(0, { viewport });
+
+		vk::Rect2D scissor{};
+		scissor
+			.setOffset(vk::Offset2D(0, 0))
+			.setExtent(swapchain->GetExtent());
+
+		buffer.setScissor(0, { scissor });
+
+		for (const auto& buffer : m_Specs.Buffers)
 		{
-			Ref<VKSwapchain> swapchain = VKRenderEngine::GetSwapchain();
+			if (buffer->GetUsage() == BufferUsage::Vertex || buffer->GetUsage() == BufferUsage::Index)
+			{
+				buffer->Bind();
+			}
+		}
 
-			buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline);
-
-			vk::Viewport viewport{};
-			viewport
-				.setX(0.0f)
-				.setY(0.0f)
-				.setWidth(static_cast<float>(swapchain->GetExtent().width))
-				.setHeight(static_cast<float>(swapchain->GetExtent().height))
-				.setMinDepth(0.0f)
-				.setMaxDepth(1.0f);
-
-			buffer.setViewport(0, { viewport });
-
-			vk::Rect2D scissor{};
-			scissor
-				.setOffset(vk::Offset2D(0, 0))
-				.setExtent(swapchain->GetExtent());
-
-			buffer.setScissor(0, { scissor });
-
-			buffer.draw(3, 1, 0, 0);
-		});
+		buffer.draw(count, 1, 0, 0);
 	}
 
 	void VKGraphicsPipeline::createPipelineLayout()
@@ -135,8 +140,14 @@ namespace Axton::Vulkan
 		Ref<VKRenderPass> renderPass = VKRenderEngine::GetRenderPass();
 		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
 
-		auto shaders = createTempShaders();
-		auto shaderStages = getShaderStageInfo(shaders);
+		vk::ShaderModule vertShader = createTempShader(m_Specs.VertPath);
+		vk::ShaderModule fragShader = createTempShader(m_Specs.FragPath);
+
+		vk::PipelineShaderStageCreateInfo shaderStages[] =
+		{
+			getShaderStageInfo(vertShader, vk::ShaderStageFlagBits::eVertex),
+			getShaderStageInfo(fragShader, vk::ShaderStageFlagBits::eFragment)
+		};
 
 		std::vector<vk::DynamicState> dynamicStates =
 		{
@@ -241,7 +252,7 @@ namespace Axton::Vulkan
 		vk::GraphicsPipelineCreateInfo createInfo{};
 		createInfo
 			.setStageCount(2)
-			.setPStages(shaderStages.data())
+			.setPStages(shaderStages)
 			.setPViewportState(&viewportState)
 			.setPVertexInputState(&vertexInputInfo)
 			.setPInputAssemblyState(&inputAssembly)
@@ -258,47 +269,33 @@ namespace Axton::Vulkan
 		AX_ASSERT_CORE(m_Pipeline, "Failed to create GraphicsPipeline!");
 
 		// Destroy temp shaders
-		for (auto& shader : shaders)
-		{
-			device.destroy(shader);
-		}
+		device.destroy(vertShader);
+		device.destroy(fragShader);
 	}
 
-	std::vector<vk::ShaderModule> VKGraphicsPipeline::createTempShaders()
+	vk::ShaderModule VKGraphicsPipeline::createTempShader(const std::string& path)
 	{
-		std::vector<vk::ShaderModule> shaders(m_Specs.Shaders.size());
+		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
 
-		for (size_t i = 0; i < shaders.size(); i++)
-		{
-			vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
+		FileSystem fs(path);
+		std::vector<char> buffer = fs.ToSignedBuffer();
 
-			FileSystem fs(m_Specs.Shaders[i].Path);
-			std::vector<char> buffer = fs.ToSignedBuffer();
+		vk::ShaderModuleCreateInfo createInfo{};
+		createInfo
+			.setCodeSize(buffer.size())
+			.setPCode(reinterpret_cast<const uint32_t*>(buffer.data()));
 
-			vk::ShaderModuleCreateInfo createInfo{};
-			createInfo
-				.setCodeSize(buffer.size())
-				.setPCode(reinterpret_cast<const uint32_t*>(buffer.data()));
-
-			shaders[i] = device.createShaderModule(createInfo);
-		}
-
-		return shaders;
+		return device.createShaderModule(createInfo);
 	}
 
-	std::vector<vk::PipelineShaderStageCreateInfo> VKGraphicsPipeline::getShaderStageInfo(const std::vector<vk::ShaderModule>& shaders)
+	vk::PipelineShaderStageCreateInfo VKGraphicsPipeline::getShaderStageInfo(vk::ShaderModule shader, vk::ShaderStageFlagBits stage)
 	{
-		std::vector<vk::PipelineShaderStageCreateInfo> stages(shaders.size());
+		vk::PipelineShaderStageCreateInfo createInfo{};
+		createInfo
+			.setStage(stage)
+			.setModule(shader)
+			.setPName("main");
 
-		for (size_t i = 0; i < stages.size(); i++)
-		{
-			stages[i] = vk::PipelineShaderStageCreateInfo();
-			stages[i]
-				.setStage(m_Specs.Shaders[i].Stage)
-				.setModule(shaders[i])
-				.setPName("main");
-		}
-
-		return stages;
+		return createInfo;
 	}
 }

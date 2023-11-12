@@ -42,8 +42,6 @@ namespace Axton
 
 			m_RenderEngine->BeginFrame();
 
-			m_RenderEngine->OnUpdate();
-
 			for (Layer* layer : m_LayerStack)
 			{
 				layer->OnUpdate();
