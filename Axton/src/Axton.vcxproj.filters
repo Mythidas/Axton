@@ -136,7 +136,7 @@
     <ClInclude Include="Platform\Vulkan\VKImGUILayer.h">
       <Filter>Platform\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\Vulkan\VKImage.h">
+    <ClInclude Include="Platform\Vulkan\VKImageCore.h">
       <Filter>Platform\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Vulkan\VKRenderPass.h">
@@ -163,6 +163,10 @@
     <ClInclude Include="Platform\Vulkan\Client API\VKComputePipeline.h" />
     <ClInclude Include="Axton\Renderer\RenderBuffer.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKRenderBuffer.h" />
+    <ClInclude Include="Axton\Renderer\VertexBuffer.h" />
+    <ClInclude Include="Axton\Renderer\IndexBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKIndexBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKImage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -234,7 +238,7 @@
     <ClCompile Include="Platform\Vulkan\VKImGUILayer.cpp">
       <Filter>Platform\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\Vulkan\VKImage.cpp">
+    <ClCompile Include="Platform\Vulkan\VKImageCore.cpp">
       <Filter>Platform\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Vulkan\VKRenderPass.cpp">
@@ -260,5 +264,10 @@
     <ClCompile Include="Platform\Vulkan\Client API\VKComputePipeline.cpp" />
     <ClCompile Include="Axton\Renderer\RenderBuffer.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKRenderBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKIndexBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\Image.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKImage.cpp" />
   </ItemGroup>
 </Project>

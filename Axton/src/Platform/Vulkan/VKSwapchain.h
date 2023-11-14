@@ -1,6 +1,6 @@
 #pragma once
 
-#include "VKImage.h"
+#include "VKImageCore.h"
 #include <vulkan/vulkan.hpp>
 
 namespace Axton::Vulkan
@@ -17,7 +17,7 @@ namespace Axton::Vulkan
 		vk::SwapchainKHR& GetSwapchain() { return m_Swapchain; }
 		vk::Format& GetFormat() { return m_SwapchainFormat; }
 		vk::Extent2D& GetExtent() { return m_SwapchainExtent; }
-		const std::vector<Ref<VKImage>>& GetImages() { return m_Images; }
+		const std::vector<Ref<VKImageCore>>& GetImages() { return m_Images; }
 		const std::vector<vk::Framebuffer>& GetFramebuffers() { return m_Framebuffers; }
 		vk::Framebuffer& GetFramebuffer() { return m_Framebuffers[m_ImageIndex]; }
 
@@ -28,7 +28,7 @@ namespace Axton::Vulkan
 	private:
 		vk::SwapchainKHR m_Swapchain;
 
-		std::vector<Ref<VKImage>> m_Images;
+		std::vector<Ref<VKImageCore>> m_Images;
 		vk::Format m_SwapchainFormat;
 		vk::Extent2D m_SwapchainExtent;
 		std::vector<vk::Framebuffer> m_Framebuffers;

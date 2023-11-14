@@ -29,23 +29,62 @@ namespace Axton::Vulkan
 		buffer->m_Memory = device.allocateMemory(allocInfo);
 		device.bindBufferMemory(buffer->m_Buffer, buffer->m_Memory, 0);
 
-		VKRenderEngine::GetGraphicsContext()->QueueDeletion([device, buffer]()
+		if (!specs.Staging)
+		{
+			VKRenderEngine::GetGraphicsContext()->QueueDeletion([device, buffer]()
 			{
 				device.destroy(buffer->m_Buffer);
 				device.freeMemory(buffer->m_Memory);
 			});
+		}
 
 		return buffer;
 	}
 
-	void VKBuffer::SetData(void* data, size_t size)
+	VKBuffer::~VKBuffer()
 	{
-		AX_ASSERT_CORE(size <= m_Specs.Size, "Size is larger than allocated buffer!");
+		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Buffer);
+		VKRenderEngine::GetGraphicsContext()->GetDevice().freeMemory(m_Memory);
+	}
 
+	void VKBuffer::SetData(void* data, size_t size, uint32_t offset)
+	{
+		AX_ASSERT_CORE(size + offset <= m_Specs.Size, "Size is larger than allocated buffer!");
 		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
 
-		void* pData = device.mapMemory(m_Memory, 0, size);
-		memcpy(pData, data, size);
-		device.unmapMemory(m_Memory);
+		if (m_Specs.MemProperties & vk::MemoryPropertyFlagBits::eDeviceLocal)
+		{
+			Ref<VKBuffer> stagingBuffer = Specs()
+				.setSize(size)
+				.setUsage(vk::BufferUsageFlagBits::eTransferSrc)
+				.setMemProperties(vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)
+				.setStaging(true)
+				.Build();
+
+			void* pData = device.mapMemory(stagingBuffer->m_Memory, offset, size);
+			memcpy(pData, data, size);
+			device.unmapMemory(stagingBuffer->m_Memory);
+
+			VKRenderEngine::GetGraphicsContext()->SubmitCommand([stagingBuffer, offset, this](vk::CommandBuffer& commandBuffer)
+			{
+					vk::BufferCopy copyRegion{};
+					copyRegion
+						.setSrcOffset(0)
+						.setDstOffset(offset)
+						.setSize(stagingBuffer->m_Specs.Size);
+
+					commandBuffer.copyBuffer(stagingBuffer->m_Buffer, m_Buffer, { copyRegion });
+			});
+		}
+		else if (m_Specs.MemProperties & vk::MemoryPropertyFlagBits::eHostVisible && m_Specs.MemProperties & vk::MemoryPropertyFlagBits::eHostCoherent)
+		{
+			void* pData = device.mapMemory(m_Memory, offset, size);
+			memcpy(pData, data, size);
+			device.unmapMemory(m_Memory);
+		}
+		else
+		{
+			AX_ASSERT_CORE(false, "Buffer MemProperties not supported for SetData!");
+		}
 	}
 }

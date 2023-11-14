@@ -18,16 +18,20 @@ namespace Axton::Vulkan
 		vk::PipelineLayout& GetPipelineLayout() { return m_Layout; }
 
 	private:
+		void createDescriptorPool();
+		void createDescriptorSetLayout();
+		void createDescriptorSets();
 		void createPipelineLayout();
 		void createPipeline();
-
-		vk::ShaderModule createTempShader(const std::string& path);
-		vk::PipelineShaderStageCreateInfo getShaderStageInfo(vk::ShaderModule shader, vk::ShaderStageFlagBits stage);
 
 	private:
 		Specs m_Specs;
 
 		vk::Pipeline m_Pipeline;
 		vk::PipelineLayout m_Layout;
+
+		vk::DescriptorPool m_DescriptorPool;
+		std::vector<vk::DescriptorSet> m_DescriptorSets;
+		vk::DescriptorSetLayout m_DescriptorSetLayout;
 	};
 }

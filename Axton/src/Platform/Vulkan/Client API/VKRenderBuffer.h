@@ -10,14 +10,21 @@ namespace Axton::Vulkan
 	public:
 		VKRenderBuffer(const Specs& specs);
 
-		virtual void Bind() const override;
-		virtual void SetData(void* data, size_t size) override;
+		virtual void SetData(void* data, size_t size, uint32_t offset) override;
 
 		virtual BufferUsage GetUsage() const override { return m_Specs.Usage; }
+
+		void UpdateDescriptorSet(vk::DescriptorSet& set);
+
+		vk::DescriptorPoolSize GetPoolSize();
+		vk::DescriptorSetLayoutBinding GetLayoutBinding();
+
+	private:
+		Ref<VKBuffer> getCurrentBuffer() const;
 
 	private:
 		Specs m_Specs;
 
-		Ref<VKBuffer> m_Buffer;
+		std::vector<Ref<VKBuffer>> m_Buffers;
 	};
 }

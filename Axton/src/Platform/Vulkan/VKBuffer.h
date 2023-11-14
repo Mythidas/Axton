@@ -12,21 +12,23 @@ namespace Axton::Vulkan
 		struct Specs
 		{
 			size_t Size{ 0 };
-			uint32_t Binding{ 0 };
-			vk::BufferUsageFlagBits Usage{};
+			vk::BufferUsageFlags Usage{};
 			vk::MemoryPropertyFlags MemProperties{};
+			bool Staging{ false };
 
 			Specs& setSize(size_t size) { Size = size; return *this; }
-			Specs& setBinding(uint32_t binding) { Binding = binding; return *this; }
-			Specs& setUsage(vk::BufferUsageFlagBits usage) { Usage = usage; return *this; }
+			Specs& setUsage(vk::BufferUsageFlags usage) { Usage = usage; return *this; }
 			Specs& setMemProperties(vk::MemoryPropertyFlags props) { MemProperties = props; return *this; }
+			Specs& setStaging(bool staging) { Staging = staging; return *this; }
 			Ref<VKBuffer> Build() { return VKBuffer::Create(*this); }
 		};
 
 		static Ref<VKBuffer> Create(const Specs& specs);
+		~VKBuffer();
 
-		void SetData(void* data, size_t size);
+		void SetData(void* data, size_t size, uint32_t offset);
 
+		VKBuffer::Specs& GetSpecs() { return m_Specs; }
 		vk::Buffer& GetBuffer() { return m_Buffer; }
 		vk::DeviceMemory& GetMemory() { return m_Memory; }
 

@@ -182,7 +182,7 @@ namespace Axton::Vulkan
 
 		for (const auto& image : gContext->GetDevice().getSwapchainImagesKHR(m_Swapchain))
 		{
-			m_Images.push_back(VKImage::Specs().setViewType(vk::ImageViewType::e2D).setFormat(format.format).setAspectFlags(vk::ImageAspectFlagBits::eColor).Build(image));
+			m_Images.push_back(VKImageCore::Specs().setViewType(vk::ImageViewType::e2D).setFormat(format.format).setAspectFlags(vk::ImageAspectFlagBits::eColor).Build(image));
 		}
 		m_SwapchainFormat = format.format;
 		m_SwapchainExtent = extent;

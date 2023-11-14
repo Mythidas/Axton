@@ -12,6 +12,9 @@
 #include "Axton/Renderer/Camera.h"
 #include "Axton/Renderer/GraphicsPipeline.h"
 #include "Axton/Renderer/RenderBuffer.h"
+#include "Axton/Renderer/VertexBuffer.h"
+#include "Axton/Renderer/IndexBuffer.h"
+#include "Axton/Renderer/Image.h"
 
 // Debugging
 #include "Axton/Debug/Log.h"

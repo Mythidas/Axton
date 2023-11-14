@@ -1,5 +1,5 @@
 #include "axpch.h"
-#include "VKImage.h"
+#include "VKImageCore.h"
 #include "VKRenderEngine.h"
 #include "VKUtils.h"
 
@@ -37,10 +37,10 @@ namespace Axton::Vulkan
 		}
 	}
 
-	Ref<VKImage> VKImage::Create(const Specs& specs)
+	Ref<VKImageCore> VKImageCore::Create(const Specs& specs)
 	{
 		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
-		Ref<VKImage> vkImage = CreateRef<VKImage>();
+		Ref<VKImageCore> vkImage = CreateRef<VKImageCore>();
 
 		vk::ImageCreateInfo imageInfo{};
 		imageInfo
@@ -92,9 +92,9 @@ namespace Axton::Vulkan
 		return vkImage;
 	}
 
-	Ref<VKImage> VKImage::Create(vk::Image image, const Specs& specs)
+	Ref<VKImageCore> VKImageCore::Create(vk::Image image, const Specs& specs)
 	{
-		Ref<VKImage> vkImage = CreateRef<VKImage>();
+		Ref<VKImageCore> vkImage = CreateRef<VKImageCore>();
 
 		vkImage->m_Image = image;
 
@@ -120,7 +120,7 @@ namespace Axton::Vulkan
 		return vkImage;
 	}
 
-	void VKImage::Destroy()
+	void VKImageCore::Destroy()
 	{
 		if (m_ImageView)
 			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_ImageView);

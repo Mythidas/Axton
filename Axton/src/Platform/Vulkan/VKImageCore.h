@@ -4,7 +4,7 @@
 
 namespace Axton::Vulkan
 {
-	class VKImage
+	class VKImageCore
 	{
 	public:
 		struct Specs
@@ -33,12 +33,12 @@ namespace Axton::Vulkan
 			Specs& setViewType(vk::ImageViewType viewType) { ViewType = viewType; return *this; }
 			Specs& setAspectFlags(vk::ImageAspectFlags flags) { AspectFlags = flags; return *this; }
 
-			Ref<VKImage> Build() { return VKImage::Create(*this); }
-			Ref<VKImage> Build(vk::Image image) { return VKImage::Create(image, *this); }
+			Ref<VKImageCore> Build() { return VKImageCore::Create(*this); }
+			Ref<VKImageCore> Build(vk::Image image) { return VKImageCore::Create(image, *this); }
 		};
 
-		static Ref<VKImage> Create(const Specs& specs);
-		static Ref<VKImage> Create(vk::Image image, const Specs& specs);
+		static Ref<VKImageCore> Create(const Specs& specs);
+		static Ref<VKImageCore> Create(vk::Image image, const Specs& specs);
 
 		void Destroy();
 
