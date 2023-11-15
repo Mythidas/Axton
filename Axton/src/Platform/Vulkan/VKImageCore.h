@@ -44,10 +44,12 @@ namespace Axton::Vulkan
 
 		vk::Image& GetImage() { return m_Image; }
 		vk::ImageView& GetView() { return m_ImageView; }
+		vk::Sampler& GetSampler() { return m_Sampler; }
 
 	private:
 		vk::Image m_Image;
 		vk::DeviceMemory m_ImageMemory;
 		vk::ImageView m_ImageView;
+		vk::Sampler m_Sampler;
 	};
 }

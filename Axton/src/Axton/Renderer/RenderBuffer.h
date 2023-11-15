@@ -58,6 +58,8 @@ namespace Axton
 		};
 
 		virtual void SetData(void* data, size_t size, uint32_t offset) = 0;
+		virtual void* MapBufferPtr() = 0;
+		virtual void UnmapBufferPtr() = 0;
 
 		virtual BufferUsage GetUsage() const = 0;
 

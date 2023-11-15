@@ -167,6 +167,8 @@
     <ClInclude Include="Axton\Renderer\IndexBuffer.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKIndexBuffer.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKImage.h" />
+    <ClInclude Include="Axton\Renderer\PipelineAssets.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKPipelineAssets.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -269,5 +271,7 @@
     <ClCompile Include="Axton\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="Axton\Renderer\Image.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKImage.cpp" />
+    <ClCompile Include="Axton\Renderer\PipelineAssets.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKPipelineAssets.cpp" />
   </ItemGroup>
 </Project>

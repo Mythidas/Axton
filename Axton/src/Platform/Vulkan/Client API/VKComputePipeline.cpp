@@ -1,6 +1,7 @@
 #include "axpch.h"
 #include "VKComputePipeline.h"
 #include "VKRenderBuffer.h"
+#include "VKPipelineAssets.h"
 #include "../VKRenderEngine.h"
 #include "../VKUtils.h"
 
@@ -23,78 +24,26 @@ namespace Axton::Vulkan
 	{
 		vk::CommandBuffer buffer = VKRenderEngine::GetGraphicsContext()->GetCommandBuffer();
 
-		buffer.bindPipeline(vk::PipelineBindPoint::eCompute, m_Pipeline);
-		buffer.bindDescriptorSets(vk::PipelineBindPoint::eCompute, m_Layout, 0, { m_DescriptorSets[VKRenderEngine::GetGraphicsContext()->GetCurrentFrame()] }, {  });
-		buffer.dispatch(width, height, depth);
-	}
-
-	void VKComputePipeline::createDescriptorPool()
-	{
-		std::vector<vk::DescriptorPoolSize> poolSizes;
-
-		for (auto& rBuffer : m_Specs.Buffers)
+		VKRenderEngine::GetGraphicsContext()->QueueComputeCommand([width, height, depth, this](vk::CommandBuffer& buffer)
 		{
-			VKRenderBuffer* vkrBuffer = static_cast<VKRenderBuffer*>(rBuffer.get());
-			poolSizes.push_back(vkrBuffer->GetPoolSize());
-		}
-
-		vk::DescriptorPoolCreateInfo createInfo{};
-		createInfo
-			.setPoolSizeCount(static_cast<uint32_t>(poolSizes.size()))
-			.setPPoolSizes(poolSizes.data())
-			.setMaxSets(static_cast<uint32_t>(VKRenderEngine::MAX_FRAMES_IN_FLIGHT));
-
-		m_DescriptorPool = VKRenderEngine::GetGraphicsContext()->GetDevice().createDescriptorPool(createInfo);
-		AX_ASSERT_CORE(m_DescriptorPool, "Failed to create DescriptorPool!");
-	}
-
-	void VKComputePipeline::createDescriptorSetLayout()
-	{
-		std::vector<vk::DescriptorSetLayoutBinding> layoutBindings;
-
-		for (auto& rBuffer : m_Specs.Buffers)
-		{
-			VKRenderBuffer* vkrBuffer = static_cast<VKRenderBuffer*>(rBuffer.get());
-			layoutBindings.push_back(vkrBuffer->GetLayoutBinding());
-		}
-
-		vk::DescriptorSetLayoutCreateInfo layoutInfo{};
-		layoutInfo
-			.setBindingCount(static_cast<uint32_t>(layoutBindings.size()))
-			.setPBindings(layoutBindings.data());
-
-		m_DescriptorSetLayout = VKRenderEngine::GetGraphicsContext()->GetDevice().createDescriptorSetLayout(layoutInfo);
-		AX_ASSERT_CORE(m_DescriptorSetLayout, "Failed to create DescriptorSetLayout!");
-	}
-
-	void VKComputePipeline::createDescriptorSets()
-	{
-		std::vector<vk::DescriptorSetLayout> layouts(static_cast<uint32_t>(VKRenderEngine::MAX_FRAMES_IN_FLIGHT), m_DescriptorSetLayout);
-
-		vk::DescriptorSetAllocateInfo allocInfo{};
-		allocInfo
-			.setDescriptorPool(m_DescriptorPool)
-			.setDescriptorSetCount(static_cast<uint32_t>(layouts.size()))
-			.setPSetLayouts(layouts.data());
-
-		m_DescriptorSets = VKRenderEngine::GetGraphicsContext()->GetDevice().allocateDescriptorSets(allocInfo);
-
-		for (auto& set : m_DescriptorSets)
-		{
-			for (auto& buffer : m_Specs.Buffers)
+			buffer.bindPipeline(vk::PipelineBindPoint::eCompute, m_Pipeline);
+			if (!m_Specs.Assets->Empty())
 			{
-				VKRenderBuffer* rBuffer = static_cast<VKRenderBuffer*>(buffer.get());
-				rBuffer->UpdateDescriptorSet(set);
+				VKPipelineAssets* assets = static_cast<VKPipelineAssets*>(m_Specs.Assets.get());
+				buffer.bindDescriptorSets(vk::PipelineBindPoint::eCompute, m_Layout, 0, { assets->GetSet() }, {});
 			}
-		}
+			buffer.dispatch(width, height, depth);
+		});
 	}
 
 	void VKComputePipeline::createPipelineLayout()
 	{
+		vk::DescriptorSetLayout layout = static_cast<VKPipelineAssets*>(m_Specs.Assets.get())->GetLayout();
+
 		vk::PipelineLayoutCreateInfo createInfo{};
 		createInfo
-			.setSetLayoutCount(1)
-			.setPSetLayouts(&m_DescriptorSetLayout);
+			.setSetLayoutCount(layout ? 1 : 0)
+			.setPSetLayouts(&layout);
 
 		m_Layout = VKRenderEngine::GetGraphicsContext()->GetDevice().createPipelineLayout(createInfo);
 		AX_ASSERT_CORE(m_Layout, "Failed to create PipelineLayout! (ComputePipeline)");

@@ -98,21 +98,31 @@ namespace Axton::Vulkan
 		vk::CommandBuffer buffer = m_GraphicsContext->GetCommandBuffer();
 		buffer.begin(beginInfo);
 
-		vk::ClearValue clearColor(vk::ClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f }));
-		vk::RenderPassBeginInfo renderPassInfo{};
-		renderPassInfo
-			.setRenderPass(m_RenderPass->GetRenderPass())
-			.setFramebuffer(m_Swapchain->GetFramebuffer())
-			.setRenderArea(vk::Rect2D().setOffset({ 0, 0 }).setExtent(m_Swapchain->GetExtent()))
-			.setClearValueCount(1)
-			.setPClearValues(&clearColor);
+		m_GraphicsContext->QueueGraphicsCommand([this](vk::CommandBuffer& cBuffer)
+		{
+			vk::ClearValue clearColor(vk::ClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f }));
+			vk::RenderPassBeginInfo renderPassInfo{};
+			renderPassInfo
+				.setRenderPass(m_RenderPass->GetRenderPass())
+				.setFramebuffer(m_Swapchain->GetFramebuffer())
+				.setRenderArea(vk::Rect2D().setOffset({ 0, 0 }).setExtent(m_Swapchain->GetExtent()))
+				.setClearValueCount(1)
+				.setPClearValues(&clearColor);
 
-		buffer.beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
+			cBuffer.beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
+		});
 	}
 
 	void VKRenderEngine::EndFrame()
 	{
-		m_GraphicsContext->GetCommandBuffer().endRenderPass();
+		m_GraphicsContext->QueueGraphicsCommand([this](vk::CommandBuffer& cBuffer)
+		{
+			m_GraphicsContext->GetCommandBuffer().endRenderPass();
+		});
+
+		m_GraphicsContext->FlushGraphicsCommands();
+		m_GraphicsContext->FlushComputeCommands();
+
 		m_GraphicsContext->GetCommandBuffer().end();
 
 		uint32_t currentFrame = m_GraphicsContext->GetCurrentFrame();

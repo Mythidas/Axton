@@ -37,12 +37,15 @@ namespace Axton::Vulkan
 		void Destroy();
 
 		void QueueDeletion(std::function<void()> func);
+		void QueueGraphicsCommand(std::function<void(vk::CommandBuffer&)> func);
+		void QueueComputeCommand(std::function<void(vk::CommandBuffer&)> func);
 
-		void SubmitCommand(std::function<void(vk::CommandBuffer&)> func);
+		void FlushGraphicsCommands();
+		void FlushComputeCommands();
 
+		void SubmitGraphicsCommand(std::function<void(vk::CommandBuffer&)> func);
 		void SubmitGraphicsQueue(const QueueSubmitInfo& queueSubmitInfo);
 		vk::Result SubmitPresentQueue(const QueueSubmitInfo& queueSubmitInfo, const std::vector<vk::SwapchainKHR>& swapchains, uint32_t imageIndex);
-
 
 		uint32_t GetCurrentFrame() { return m_CurrentFrame; }
 		vk::CommandBuffer& GetCommandBuffer() { return m_CommandBuffers[m_CurrentFrame]; }
@@ -69,6 +72,8 @@ namespace Axton::Vulkan
 		vk::DebugUtilsMessengerEXT m_Debug;
 		uint32_t m_CurrentFrame = 0;
 		Queue<std::function<void()>> m_DeletionQueue;
+		Queue<std::function<void(vk::CommandBuffer&)>> m_GraphicsCommandQueue;
+		Queue<std::function<void(vk::CommandBuffer&)>> m_ComputeCommandQueue;
 
 		vk::PhysicalDevice m_PhysicalDevice;
 		vk::Device m_Device;

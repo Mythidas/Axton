@@ -24,7 +24,7 @@ namespace Axton::Vulkan
 			barrier.subresourceRange.baseArrayLayer = 0;
 			barrier.subresourceRange.layerCount = 1;
 
-			VKRenderEngine::GetGraphicsContext()->SubmitCommand([barrier, srcStage, dstStage](vk::CommandBuffer& buffer)
+			VKRenderEngine::GetGraphicsContext()->SubmitGraphicsCommand([barrier, srcStage, dstStage](vk::CommandBuffer& buffer)
 			{
 					buffer.pipelineBarrier(
 						srcStage, dstStage,
@@ -56,6 +56,7 @@ namespace Axton::Vulkan
 			.setSamples(vk::SampleCountFlagBits::e1);
 
 		vkImage->m_Image = device.createImage(imageInfo);
+		AX_ASSERT_CORE(vkImage->m_Image, "Failed to create Image!");
 
 		vk::MemoryRequirements memRequirements = device.getImageMemoryRequirements(vkImage->m_Image);
 
@@ -82,10 +83,27 @@ namespace Axton::Vulkan
 		createInfo.subresourceRange.layerCount = 1;
 
 		vkImage->m_ImageView = device.createImageView(createInfo);
+		AX_ASSERT_CORE(vkImage->m_ImageView, "Failed to create ImageView!");
+
+		vk::SamplerCreateInfo samplerInfo{};
+		samplerInfo
+			.setMagFilter(vk::Filter::eLinear)
+			.setMinFilter(vk::Filter::eLinear)
+			.setMipmapMode(vk::SamplerMipmapMode::eLinear)
+			.setAddressModeU(vk::SamplerAddressMode::eRepeat)
+			.setAddressModeV(vk::SamplerAddressMode::eRepeat)
+			.setAddressModeW(vk::SamplerAddressMode::eRepeat)
+			.setMinLod(-1000)
+			.setMaxLod(1000)
+			.setMaxAnisotropy(1.0f);
+
+		vkImage->m_Sampler = device.createSampler(samplerInfo);
+		AX_ASSERT_CORE(vkImage->m_Sampler, "Failed to create Sampler!");
 
 		VKRenderEngine::GetGraphicsContext()->QueueDeletion([device, vkImage]() {
 			device.destroy(vkImage->m_Image);
 			device.destroy(vkImage->m_ImageView);
+			device.destroy(vkImage->m_Sampler);
 			device.freeMemory(vkImage->m_ImageMemory);
 		});
 

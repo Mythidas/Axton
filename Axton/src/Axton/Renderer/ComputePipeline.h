@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RenderBuffer.h"
+#include "PipelineAssets.h"
 #include "Axton/Core/Defines.h"
 
 namespace Axton
@@ -11,10 +12,10 @@ namespace Axton
 		struct Specs
 		{
 			std::string ShaderPath;
-			std::vector<Ref<RenderBuffer>> Buffers;
+			Ref<PipelineAssets> Assets;
 
 			Specs& setShaderPath(const std::string& path) { ShaderPath = path; return *this; }
-			Specs& setBuffers(const std::vector<Ref<RenderBuffer>>& buffers) { Buffers = buffers; return *this; }
+			Specs& setAssets(Ref<PipelineAssets> assets) { Assets = assets; return *this; }
 			Ref<ComputePipeline> Build() { return Create(*this); }
 		};
 

@@ -165,6 +165,7 @@
     <ClInclude Include="Axton\Math\Ray.h" />
     <ClInclude Include="Axton\Math\Vector.h" />
     <ClInclude Include="Axton\Renderer\IndexBuffer.h" />
+    <ClInclude Include="Axton\Renderer\PipelineAssets.h" />
     <ClInclude Include="Axton\Renderer\RenderBuffer.h" />
     <ClInclude Include="Axton\Renderer\Camera.h" />
     <ClInclude Include="Axton\Renderer\ComputePipeline.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Platform\Vulkan\Client API\VKComputePipeline.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKImage.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKIndexBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKPipelineAssets.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKRenderBuffer.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKVertexBuffer.h" />
     <ClInclude Include="Platform\Vulkan\VKBuffer.h" />
@@ -213,6 +215,7 @@
     <ClCompile Include="Axton\Math\Vector.cpp" />
     <ClCompile Include="Axton\Renderer\Image.cpp" />
     <ClCompile Include="Axton\Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\PipelineAssets.cpp" />
     <ClCompile Include="Axton\Renderer\RenderBuffer.cpp" />
     <ClCompile Include="Axton\Renderer\ComputePipeline.cpp" />
     <ClCompile Include="Axton\Renderer\GraphicsPipeline.cpp" />
@@ -224,6 +227,7 @@
     <ClCompile Include="Platform\Vulkan\Client API\VKComputePipeline.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKImage.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKIndexBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKPipelineAssets.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKRenderBuffer.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKVertexBuffer.cpp" />
     <ClCompile Include="Platform\Vulkan\VKBuffer.cpp" />

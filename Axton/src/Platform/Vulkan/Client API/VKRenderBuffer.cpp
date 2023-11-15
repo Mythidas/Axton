@@ -54,6 +54,7 @@ namespace Axton::Vulkan
 			switch (usage)
 			{
 			case Axton::BufferUsage::Uniform: return vk::DescriptorType::eUniformBuffer;
+			case Axton::BufferUsage::ShaderStorage: return vk::DescriptorType::eStorageBuffer;
 			}
 
 			return vk::DescriptorType::eUniformBuffer;
@@ -81,6 +82,16 @@ namespace Axton::Vulkan
 	void VKRenderBuffer::SetData(void* data, size_t size, uint32_t offset)
 	{
 		getCurrentBuffer()->SetData(data, size, offset);
+	}
+
+	void* VKRenderBuffer::MapBufferPtr()
+	{
+		return getCurrentBuffer()->MapBufferPtr(0, m_Specs.Size);
+	}
+
+	void VKRenderBuffer::UnmapBufferPtr()
+	{
+		getCurrentBuffer()->UnmapBufferPtr();
 	}
 
 	void VKRenderBuffer::UpdateDescriptorSet(vk::DescriptorSet& set)

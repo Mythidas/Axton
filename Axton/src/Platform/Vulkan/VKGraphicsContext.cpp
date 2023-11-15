@@ -133,7 +133,37 @@ namespace Axton::Vulkan
 		m_DeletionQueue.Enque(func);
 	}
 
-	void VKGraphicsContext::SubmitCommand(std::function<void(vk::CommandBuffer&)> func)
+	void VKGraphicsContext::QueueGraphicsCommand(std::function<void(vk::CommandBuffer&)> func)
+	{
+		m_GraphicsCommandQueue.Enque(func);
+	}
+
+	void VKGraphicsContext::QueueComputeCommand(std::function<void(vk::CommandBuffer&)> func)
+	{
+		m_ComputeCommandQueue.Enque(func);
+	}
+
+	void VKGraphicsContext::FlushGraphicsCommands()
+	{
+		vk::CommandBuffer buffer = m_CommandBuffers[m_CurrentFrame];
+
+		while (!m_GraphicsCommandQueue.Empty())
+		{
+			m_GraphicsCommandQueue.Deque()(buffer);
+		}
+	}
+
+	void VKGraphicsContext::FlushComputeCommands()
+	{
+		vk::CommandBuffer buffer = m_CommandBuffers[m_CurrentFrame];
+
+		while (!m_ComputeCommandQueue.Empty())
+		{
+			m_ComputeCommandQueue.Deque()(buffer);
+		}
+	}
+
+	void VKGraphicsContext::SubmitGraphicsCommand(std::function<void(vk::CommandBuffer&)> func)
 	{
 		vk::CommandBufferAllocateInfo allocInfo{};
 		allocInfo
@@ -201,7 +231,7 @@ namespace Axton::Vulkan
 			.setApplicationVersion(VK_MAKE_VERSION(0, 1, 0))
 			.setPEngineName("AxtonEngine")
 			.setEngineVersion(VK_MAKE_VERSION(0, 1, 0))
-			.setApiVersion(VK_API_VERSION_1_0);
+			.setApiVersion(VK_API_VERSION_1_1);
 
 		vk::InstanceCreateInfo createInfo{};
 		createInfo

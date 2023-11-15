@@ -1,6 +1,7 @@
 #include "axpch.h"
 #include "VKGraphicsPipeline.h"
 #include "VKRenderBuffer.h"
+#include "VKPipelineAssets.h"
 #include "../VKRenderPass.h"
 #include "../VKRenderEngine.h"
 #include "../VKSwapchain.h"
@@ -77,13 +78,6 @@ namespace Axton::Vulkan
 	VKGraphicsPipeline::VKGraphicsPipeline(const Specs& specs)
 		: m_Specs(specs)
 	{
-		if (!specs.Buffers.empty())
-		{
-			createDescriptorPool();
-			createDescriptorSetLayout();
-			createDescriptorSets();
-		}
-
 		createPipelineLayout();
 		createPipeline();
 
@@ -91,123 +85,64 @@ namespace Axton::Vulkan
 		{
 			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Pipeline);
 			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Layout);
-			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_DescriptorPool);
-			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_DescriptorSetLayout);
 		});
 	}
 
 	void VKGraphicsPipeline::Render(uint32_t count)
 	{
-		vk::CommandBuffer buffer = VKRenderEngine::GetGraphicsContext()->GetCommandBuffer();
-
-		Ref<VKSwapchain> swapchain = VKRenderEngine::GetSwapchain();
-
-		buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline);
-
-		vk::Viewport viewport{};
-		viewport
-			.setX(0.0f)
-			.setY(0.0f)
-			.setWidth(static_cast<float>(swapchain->GetExtent().width))
-			.setHeight(static_cast<float>(swapchain->GetExtent().height))
-			.setMinDepth(0.0f)
-			.setMaxDepth(1.0f);
-
-		buffer.setViewport(0, { viewport });
-
-		vk::Rect2D scissor{};
-		scissor
-			.setOffset(vk::Offset2D(0, 0))
-			.setExtent(swapchain->GetExtent());
-
-		buffer.setScissor(0, { scissor });
-
-		if (m_Specs.VertexBuffer)
-			m_Specs.VertexBuffer->Bind();
-
-		if (!m_DescriptorSets.empty())
+		VKRenderEngine::GetGraphicsContext()->QueueGraphicsCommand([count, this](vk::CommandBuffer& buffer)
 		{
-			buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, m_Layout, 0, { m_DescriptorSets[VKRenderEngine::GetGraphicsContext()->GetCurrentFrame()] }, {  });
-		}
+			Ref<VKSwapchain> swapchain = VKRenderEngine::GetSwapchain();
 
-		if (m_Specs.IndexBuffer)
-		{
-			m_Specs.IndexBuffer->Bind();
-			buffer.drawIndexed(count, 1, 0, 0, 0);
-		}
-		else
-		{
-			buffer.draw(count, 1, 0, 0);
-		}
-	}
+			buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline);
 
-	void VKGraphicsPipeline::createDescriptorPool()
-	{
-		std::vector<vk::DescriptorPoolSize> poolSizes;
+			vk::Viewport viewport{};
+			viewport
+				.setX(0.0f)
+				.setY(0.0f)
+				.setWidth(static_cast<float>(swapchain->GetExtent().width))
+				.setHeight(static_cast<float>(swapchain->GetExtent().height))
+				.setMinDepth(0.0f)
+				.setMaxDepth(1.0f);
 
-		for (auto& rBuffer : m_Specs.Buffers)
-		{
-			VKRenderBuffer* vkrBuffer = static_cast<VKRenderBuffer*>(rBuffer.get());
-			poolSizes.push_back(vkrBuffer->GetPoolSize());
-		}
+			buffer.setViewport(0, { viewport });
 
-		vk::DescriptorPoolCreateInfo createInfo{};
-		createInfo
-			.setPoolSizeCount(static_cast<uint32_t>(poolSizes.size()))
-			.setPPoolSizes(poolSizes.data())
-			.setMaxSets(static_cast<uint32_t>(VKRenderEngine::MAX_FRAMES_IN_FLIGHT));
+			vk::Rect2D scissor{};
+			scissor
+				.setOffset(vk::Offset2D(0, 0))
+				.setExtent(swapchain->GetExtent());
 
-		m_DescriptorPool = VKRenderEngine::GetGraphicsContext()->GetDevice().createDescriptorPool(createInfo);
-		AX_ASSERT_CORE(m_DescriptorPool, "Failed to create DescriptorPool!");
-	}
+			buffer.setScissor(0, { scissor });
 
-	void VKGraphicsPipeline::createDescriptorSetLayout()
-	{
-		std::vector<vk::DescriptorSetLayoutBinding> layoutBindings;
+			if (m_Specs.VertexBuffer)
+				m_Specs.VertexBuffer->Bind();
 
-		for (auto& rBuffer : m_Specs.Buffers)
-		{
-			VKRenderBuffer* vkrBuffer = static_cast<VKRenderBuffer*>(rBuffer.get());
-			layoutBindings.push_back(vkrBuffer->GetLayoutBinding());
-		}
-
-		vk::DescriptorSetLayoutCreateInfo layoutInfo{};
-		layoutInfo
-			.setBindingCount(static_cast<uint32_t>(layoutBindings.size()))
-			.setPBindings(layoutBindings.data());
-
-		m_DescriptorSetLayout = VKRenderEngine::GetGraphicsContext()->GetDevice().createDescriptorSetLayout(layoutInfo);
-		AX_ASSERT_CORE(m_DescriptorSetLayout, "Failed to create DescriptorSetLayout!");
-	}
-
-	void VKGraphicsPipeline::createDescriptorSets()
-	{
-		std::vector<vk::DescriptorSetLayout> layouts(static_cast<uint32_t>(VKRenderEngine::MAX_FRAMES_IN_FLIGHT), m_DescriptorSetLayout);
-
-		vk::DescriptorSetAllocateInfo allocInfo{};
-		allocInfo
-			.setDescriptorPool(m_DescriptorPool)
-			.setDescriptorSetCount(static_cast<uint32_t>(layouts.size()))
-			.setPSetLayouts(layouts.data());
-
-		m_DescriptorSets = VKRenderEngine::GetGraphicsContext()->GetDevice().allocateDescriptorSets(allocInfo);
-
-		for (auto& set : m_DescriptorSets)
-		{
-			for (auto& buffer : m_Specs.Buffers)
+			if (!m_Specs.Assets->Empty())
 			{
-				VKRenderBuffer* rBuffer = static_cast<VKRenderBuffer*>(buffer.get());
-				rBuffer->UpdateDescriptorSet(set);
+				VKPipelineAssets* assets = static_cast<VKPipelineAssets*>(m_Specs.Assets.get());
+				buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, m_Layout, 0, { assets->GetSet() }, {});
 			}
-		}
+
+			if (m_Specs.IndexBuffer)
+			{
+				m_Specs.IndexBuffer->Bind();
+				buffer.drawIndexed(count, 1, 0, 0, 0);
+			}
+			else
+			{
+				buffer.draw(count, 1, 0, 0);
+			}
+		});
 	}
 
 	void VKGraphicsPipeline::createPipelineLayout()
 	{
+		vk::DescriptorSetLayout layout = static_cast<VKPipelineAssets*>(m_Specs.Assets.get())->GetLayout();
+
 		vk::PipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo
-			.setSetLayoutCount(m_DescriptorSetLayout ? 1 : 0)
-			.setPSetLayouts(&m_DescriptorSetLayout)
+			.setSetLayoutCount(layout ? 1 : 0)
+			.setPSetLayouts(&layout)
 			.setPushConstantRangeCount(0);
 
 		m_Layout = VKRenderEngine::GetGraphicsContext()->GetDevice().createPipelineLayout(pipelineLayoutInfo);

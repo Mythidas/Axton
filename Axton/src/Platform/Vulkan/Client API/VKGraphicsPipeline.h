@@ -18,9 +18,6 @@ namespace Axton::Vulkan
 		vk::PipelineLayout& GetPipelineLayout() { return m_Layout; }
 
 	private:
-		void createDescriptorPool();
-		void createDescriptorSetLayout();
-		void createDescriptorSets();
 		void createPipelineLayout();
 		void createPipeline();
 
@@ -29,9 +26,5 @@ namespace Axton::Vulkan
 
 		vk::Pipeline m_Pipeline;
 		vk::PipelineLayout m_Layout;
-
-		vk::DescriptorPool m_DescriptorPool;
-		std::vector<vk::DescriptorSet> m_DescriptorSets;
-		vk::DescriptorSetLayout m_DescriptorSetLayout;
 	};
 }

@@ -61,15 +61,17 @@ namespace Axton
 	public:
 		struct Specs
 		{
-			ImageType Type;
-			ImageUsage Usage;
-			ImageFormat Format;
-			ImageTiling Tiling;
-			ImageSamples Samples;
-			ImageMipLevels MipLevels;
-			ImageStages Stages;
-			UVector3 Extents;
+			uint32_t Binding{ 0 };
+			ImageType Type{ ImageType::e2D };
+			ImageUsage Usage{};
+			ImageFormat Format{};
+			ImageTiling Tiling{ ImageTiling::Nearest };
+			ImageSamples Samples{ ImageSamples::e1 };
+			ImageMipLevels MipLevels{ ImageMipLevels::e1 };
+			ImageStages Stages{};
+			UVector3 Extents{ 0 };
 
+			Specs& setBinding(uint32_t binding) { Binding = binding; return *this; }
 			Specs& setType(ImageType type) { Type = type; return *this; }
 			Specs& setUsage(ImageUsage usage) { Usage = usage; return *this; }
 			Specs& setFormat(ImageFormat format) { Format = format; return *this; }
@@ -81,7 +83,11 @@ namespace Axton
 			Ref<Image> Build() { return Create(*this); }
 		};
 
+		virtual void Resize(UVector3 extents) = 0;
 		virtual void SetData(void* data, size_t size) = 0;
+
+		virtual UVector3 GetExtents() const = 0;
+		virtual void* GetRendererID() const = 0;
 
 		static Ref<Image> Create(const Specs& specs);
 	};

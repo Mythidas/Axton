@@ -27,6 +27,8 @@ namespace Axton::Vulkan
 		~VKBuffer();
 
 		void SetData(void* data, size_t size, uint32_t offset);
+		void* MapBufferPtr(uint32_t offset, size_t size);
+		void UnmapBufferPtr();
 
 		VKBuffer::Specs& GetSpecs() { return m_Specs; }
 		vk::Buffer& GetBuffer() { return m_Buffer; }
@@ -37,5 +39,7 @@ namespace Axton::Vulkan
 
 		vk::Buffer m_Buffer;
 		vk::DeviceMemory m_Memory;
+
+		Ref<VKBuffer> m_StagingBuffer{ nullptr };
 	};
 }

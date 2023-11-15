@@ -11,6 +11,8 @@
 // Renderer
 #include "Axton/Renderer/Camera.h"
 #include "Axton/Renderer/GraphicsPipeline.h"
+#include "Axton/Renderer/ComputePipeline.h"
+#include "Axton/Renderer/PipelineAssets.h"
 #include "Axton/Renderer/RenderBuffer.h"
 #include "Axton/Renderer/VertexBuffer.h"
 #include "Axton/Renderer/IndexBuffer.h"
@@ -22,7 +24,15 @@
 #include "Axton/Debug/MemTracker.h"
 
 // Math
+#include "Axton/Math/Ray.h"
+#include "Axton/Math/Vector.h"
+#include "Axton/Math/Quaternion.h"
+#include "Axton/Math/Matrix.h"
+#include "Axton/Math/Interval.h"
+#include "Axton/Math/Mathf.h"
 
 // Utils
 #include "Axton/Utils/FileSystem.h"
 #include "Axton/Utils/Stringf.h"
+#include "Axton/Utils/Bit.h"
+#include "Axton/Utils/Queue.h"
