@@ -3,7 +3,7 @@
 layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 layout (rgba32f, binding = 0) writeonly uniform image2D imgOutput;
 
-layout (std140, binding = 0) uniform camera
+layout (std140, binding = 1) uniform camera
 {
 	vec4 u_CamPosition;
 	vec4 u_BackgroundColor;
@@ -114,7 +114,7 @@ struct Ray
 	vec3 Color;
 };
 
-vec3 getRayPoint(Ray ray, double t)
+vec3 getRayPoint(Ray ray, float t)
 {
 	return vec3(ray.Origin + ray.Direction * (t + 0.00001));
 }
