@@ -141,7 +141,7 @@ public:
 		m_VoxelImage->Barrier();
 		if (m_FinalImage)
 		{
-			ImGui::Image2D((ImTextureID)m_FinalImage->GetRendererID(), { (float)m_FinalImage->GetWidth(), (float)m_FinalImage->GetHeight() }, ImVec2(0, 1.0f), ImVec2(1.0f, 0));
+			ImGui::Image((ImTextureID)m_FinalImage->GetRendererID(), { (float)m_FinalImage->GetWidth(), (float)m_FinalImage->GetHeight() }, ImVec2(0, 1.0f), ImVec2(1.0f, 0));
 		}
 		ImGui::End();
 	}
