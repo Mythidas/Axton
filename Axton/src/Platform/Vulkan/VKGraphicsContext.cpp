@@ -143,6 +143,11 @@ namespace Axton::Vulkan
 		m_ComputeCommandQueue.Enque(func);
 	}
 
+	void VKGraphicsContext::ClearGraphicsCommands()
+	{
+		m_GraphicsCommandQueue.Clear();
+	}
+
 	void VKGraphicsContext::FlushGraphicsCommands()
 	{
 		vk::CommandBuffer buffer = m_CommandBuffers[m_CurrentFrame];

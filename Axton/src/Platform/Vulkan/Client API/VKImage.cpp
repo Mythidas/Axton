@@ -147,13 +147,14 @@ namespace Axton::Vulkan
 		m_DescriptorSet = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(m_ImageCore->GetSampler(), m_ImageCore->GetView(), VK_IMAGE_LAYOUT_GENERAL);
 	}
 
-	void VKImage::Resize(UVector3 extents)
+	bool VKImage::Resize(UVector3 extents)
 	{
 		extents.x = Mathf::Clamp(extents.x, 1U, extents.x);
 		extents.y = Mathf::Clamp(extents.y, 1U, extents.y);
 		extents.z = Mathf::Clamp(extents.z, 1U, extents.z);
 
-		if (extents == m_Specs.Extents) return;
+		if (extents == m_Specs.Extents)
+			return false;
 
 		m_Specs.Extents = extents;
 
@@ -171,6 +172,7 @@ namespace Axton::Vulkan
 			.Build();
 
 		m_DescriptorSet = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(m_ImageCore->GetSampler(), m_ImageCore->GetView(), VK_IMAGE_LAYOUT_GENERAL);
+		return true;
 	}
 
 	void VKImage::SetData(void* data, size_t size)

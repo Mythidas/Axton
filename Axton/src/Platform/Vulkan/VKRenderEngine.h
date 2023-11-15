@@ -37,5 +37,6 @@ namespace Axton::Vulkan
 
 		bool m_FramebufferInvalid = false;
 		bool m_FramebufferResized = false;
+		bool m_FrameInvalid = false;
 	};
 }

@@ -70,15 +70,14 @@ namespace Axton::Vulkan
 
 		vk::Device device = gContext->GetDevice();
 		gContext->QueueDeletion([device, imguiPool]()
-			{
-				device.destroy(imguiPool);
-				ImGui_ImplVulkan_Shutdown();
-			});
+		{
+			device.destroy(imguiPool);
+			ImGui_ImplVulkan_Shutdown();
+		});
 	}
 
 	void VKImGUILayer::BeginUI() const
 	{
-
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -88,21 +87,22 @@ namespace Axton::Vulkan
 
 	void VKImGUILayer::EndUI() const
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());
+
+		ImGui::Render();
+
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			GLFWwindow* backupContext = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backupContext);
+		}
+
 		VKRenderEngine::GetGraphicsContext()->QueueGraphicsCommand([this](vk::CommandBuffer& buffer)
 		{
-			ImGuiIO& io = ImGui::GetIO();
-			io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());
-
-			ImGui::Render();
 			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), buffer);
-
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-			{
-				GLFWwindow* backupContext = glfwGetCurrentContext();
-				ImGui::UpdatePlatformWindows();
-				ImGui::RenderPlatformWindowsDefault();
-				glfwMakeContextCurrent(backupContext);
-			}
 		});
 	}
 }

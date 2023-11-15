@@ -10,7 +10,7 @@ namespace Axton::Vulkan
 	public:
 		VKImage(const Specs& specs);
 
-		virtual void Resize(UVector3 extents) override;
+		virtual bool Resize(UVector3 extents) override;
 		virtual void SetData(void* data, size_t size) override;
 
 		virtual UVector3 GetExtents() const override { return m_Specs.Extents; };

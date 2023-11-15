@@ -83,7 +83,7 @@ namespace Axton
 			Ref<Image> Build() { return Create(*this); }
 		};
 
-		virtual void Resize(UVector3 extents) = 0;
+		virtual bool Resize(UVector3 extents) = 0;
 		virtual void SetData(void* data, size_t size) = 0;
 
 		virtual UVector3 GetExtents() const = 0;

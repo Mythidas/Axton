@@ -19,6 +19,7 @@ namespace Axton
 			Ref<PipelineAssets> Build() { return Create(*this); }
 		};
 
+		virtual void Rebuild() = 0;
 		virtual bool Empty() const = 0;
 
 		static Ref<PipelineAssets> Create(const PipelineAssets::Specs& specs);

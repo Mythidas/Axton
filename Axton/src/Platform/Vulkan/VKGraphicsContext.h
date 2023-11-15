@@ -40,6 +40,7 @@ namespace Axton::Vulkan
 		void QueueGraphicsCommand(std::function<void(vk::CommandBuffer&)> func);
 		void QueueComputeCommand(std::function<void(vk::CommandBuffer&)> func);
 
+		void ClearGraphicsCommands();
 		void FlushGraphicsCommands();
 		void FlushComputeCommands();
 

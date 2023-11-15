@@ -22,6 +22,12 @@ namespace Axton::Vulkan
 		});
 	}
 
+	void VKPipelineAssets::Rebuild()
+	{
+		VKRenderEngine::GetGraphicsContext()->GetDevice().freeDescriptorSets(m_DescriptorPool, m_DescriptorSets);
+		createDescriptorSets();
+	}
+
 	bool VKPipelineAssets::Empty() const
 	{
 		return m_Specs.Buffers.empty() && m_Specs.Images.empty();
@@ -52,6 +58,7 @@ namespace Axton::Vulkan
 		createInfo
 			.setPoolSizeCount(static_cast<uint32_t>(poolSizes.size()))
 			.setPPoolSizes(poolSizes.data())
+			.setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet)
 			.setMaxSets(static_cast<uint32_t>(VKRenderEngine::MAX_FRAMES_IN_FLIGHT));
 
 		m_DescriptorPool = VKRenderEngine::GetGraphicsContext()->GetDevice().createDescriptorPool(createInfo);

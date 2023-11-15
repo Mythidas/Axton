@@ -62,16 +62,24 @@ namespace Axton::Vulkan
 
 	void VKRenderEngine::BeginFrame()
 	{
-		if (m_FramebufferInvalid) return;
+		if (m_FramebufferInvalid)
+		{
+			m_FrameInvalid = true;
+			return;
+		}
 
 		uint32_t currentFrame = m_GraphicsContext->GetCurrentFrame();
 
 		if (m_GraphicsContext->GetDevice().waitForFences({ m_InFlight[currentFrame] }, VK_TRUE, UINT64_MAX) != vk::Result::eSuccess)
+		{
+			m_FrameInvalid = true;
 			return;
+		}
 
 		if (m_FramebufferResized)
 		{
 			m_FramebufferResized = false;
+			m_FrameInvalid = true;
 			m_Swapchain->Recreate(m_RenderPass->GetRenderPass());
 			return;
 		}
@@ -80,12 +88,15 @@ namespace Axton::Vulkan
 
 		if (result == vk::Result::eErrorOutOfDateKHR)
 		{
+			m_FrameInvalid = true;
 			m_Swapchain->Recreate(m_RenderPass->GetRenderPass());
 			return;
 		}
 		else if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR)
 		{
 			AX_ASSERT_CORE(false, "Failed to aquire Swapchain Image!");
+			m_FrameInvalid = true;
+			return;
 		}
 
 		m_GraphicsContext->GetDevice().resetFences({ m_InFlight[currentFrame] });
@@ -98,29 +109,30 @@ namespace Axton::Vulkan
 		vk::CommandBuffer buffer = m_GraphicsContext->GetCommandBuffer();
 		buffer.begin(beginInfo);
 
-		m_GraphicsContext->QueueGraphicsCommand([this](vk::CommandBuffer& cBuffer)
-		{
-			vk::ClearValue clearColor(vk::ClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f }));
-			vk::RenderPassBeginInfo renderPassInfo{};
-			renderPassInfo
-				.setRenderPass(m_RenderPass->GetRenderPass())
-				.setFramebuffer(m_Swapchain->GetFramebuffer())
-				.setRenderArea(vk::Rect2D().setOffset({ 0, 0 }).setExtent(m_Swapchain->GetExtent()))
-				.setClearValueCount(1)
-				.setPClearValues(&clearColor);
-
-			cBuffer.beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
-		});
+		m_GraphicsContext->ClearGraphicsCommands();
 	}
 
 	void VKRenderEngine::EndFrame()
 	{
-		m_GraphicsContext->QueueGraphicsCommand([this](vk::CommandBuffer& cBuffer)
+		if (m_FrameInvalid)
 		{
-			m_GraphicsContext->GetCommandBuffer().endRenderPass();
-		});
+			m_FrameInvalid = false;
+			return;
+		}
 
+		vk::ClearValue clearColor(vk::ClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f }));
+		vk::RenderPassBeginInfo renderPassInfo{};
+		renderPassInfo
+			.setRenderPass(m_RenderPass->GetRenderPass())
+			.setFramebuffer(m_Swapchain->GetFramebuffer())
+			.setRenderArea(vk::Rect2D().setOffset({ 0, 0 }).setExtent(m_Swapchain->GetExtent()))
+			.setClearValueCount(1)
+			.setPClearValues(&clearColor);
+
+		m_GraphicsContext->GetCommandBuffer().beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 		m_GraphicsContext->FlushGraphicsCommands();
+		m_GraphicsContext->GetCommandBuffer().endRenderPass();
+
 		m_GraphicsContext->FlushComputeCommands();
 
 		m_GraphicsContext->GetCommandBuffer().end();

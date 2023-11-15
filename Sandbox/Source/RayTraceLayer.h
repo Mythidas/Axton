@@ -47,12 +47,12 @@ public:
 
 		Timer timer("Gen All Chunks");
 
-		{
-			VoxModelLoader loader("C:\\Users\\Mythidas\\Desktop\\MagicaVoxel\\MagicaVoxel-0.99.7.1-win64\\vox\\room.vox");
-			Ref<Chunk> chunk = loader.GenChunk(world, { 0, 0, 50 });
-			Material mat{ 0.5, 0.1, 1.5, 0.0 };
-			chunk->MaterialIndex = world.AddMaterial(CreateRef<Material>(mat));
-		}
+		//{
+		//	VoxModelLoader loader("C:\\Users\\Mythidas\\Desktop\\MagicaVoxel\\MagicaVoxel-0.99.7.1-win64\\vox\\room.vox");
+		//	Ref<Chunk> chunk = loader.GenChunk(world, { 0, 0, 50 });
+		//	Material mat{ 0.5, 0.1, 1.5, 0.0 };
+		//	chunk->MaterialIndex = world.AddMaterial(CreateRef<Material>(mat));
+		//}
 
 		{
 			VoxModelLoader loader("C:\\Programming\\Axton\\Sandbox\\Assets\\Models\\green_cube.vox");
@@ -75,7 +75,12 @@ public:
 		m_Camera.OnResize(m_ViewportWidth, m_ViewportHeight);
 		world.LoadBuffers(m_Camera);
 
-		// m_FinalImage->Resize({ m_ViewportWidth, m_ViewportHeight, 1 });
+		if (m_FinalImage->Resize({ m_ViewportWidth, m_ViewportHeight, 1 }))
+		{
+			m_CompAssets->Rebuild();
+			return;
+		}
+			
 
 		m_CompPipeline->Dispatch(m_ViewportWidth / (uint32_t)8, m_ViewportHeight / (uint32_t)8, 1);
 	}
