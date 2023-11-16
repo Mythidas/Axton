@@ -90,5 +90,11 @@ namespace Axton
 		virtual void* GetRendererID() const = 0;
 
 		static Ref<Image> Create(const Specs& specs);
+
+	public:
+		operator bool() const
+		{
+			return GetRendererID() != nullptr;
+		}
 	};
 }

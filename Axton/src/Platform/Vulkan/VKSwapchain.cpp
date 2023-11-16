@@ -60,11 +60,6 @@ namespace Axton::Vulkan
 
 		VKRenderEngine::GetGraphicsContext()->QueueDeletion([swapchain]()
 		{
-			for (auto& image : swapchain->m_Images)
-			{
-				image->Destroy();
-			}
-
 			for (auto& buffer : swapchain->m_Framebuffers)
 			{
 				VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(buffer);
@@ -103,11 +98,6 @@ namespace Axton::Vulkan
 	void VKSwapchain::Recreate(vk::RenderPass renderPass)
 	{
 		VKRenderEngine::GetGraphicsContext()->GetDevice().waitIdle();
-
-		for (auto& image : m_Images)
-		{
-			image->Destroy();
-		}
 
 		for (auto& buffer : m_Framebuffers)
 		{

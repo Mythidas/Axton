@@ -10,6 +10,7 @@ namespace Axton::Vulkan
 	{
 	public:
 		VKPipelineAssets(const Specs& specs);
+		~VKPipelineAssets();
 
 		virtual void Rebuild() override;
 		virtual bool Empty() const override;

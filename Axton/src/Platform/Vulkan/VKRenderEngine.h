@@ -16,6 +16,7 @@ namespace Axton::Vulkan
 
 		virtual void BeginFrame() override;
 		virtual void EndFrame() override;
+		virtual void RenderFrame() override;
 
 		static Ref<VKGraphicsContext> GetGraphicsContext() { return s_Singleton->m_GraphicsContext; }
 		static Ref<VKSwapchain> GetSwapchain() { return s_Singleton->m_Swapchain; }

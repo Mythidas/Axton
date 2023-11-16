@@ -102,7 +102,8 @@ namespace Axton::Vulkan
 				.setStaging(true)
 				.Build();
 
-			return device.mapMemory(m_StagingBuffer->m_Memory, offset, size);
+			m_StagingBufferOffset = offset;
+			return device.mapMemory(m_StagingBuffer->m_Memory, 0, size);
 		}
 		else if (m_Specs.MemProperties & vk::MemoryPropertyFlagBits::eHostVisible && m_Specs.MemProperties & vk::MemoryPropertyFlagBits::eHostCoherent)
 		{
@@ -129,7 +130,7 @@ namespace Axton::Vulkan
 				vk::BufferCopy copyRegion{};
 				copyRegion
 					.setSrcOffset(0)
-					.setDstOffset(0)
+					.setDstOffset(m_StagingBufferOffset)
 					.setSize(m_StagingBuffer->m_Specs.Size);
 
 				commandBuffer.copyBuffer(m_StagingBuffer->m_Buffer, m_Buffer, { copyRegion });

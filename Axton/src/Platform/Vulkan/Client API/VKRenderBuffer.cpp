@@ -84,9 +84,9 @@ namespace Axton::Vulkan
 		getCurrentBuffer()->SetData(data, size, offset);
 	}
 
-	void* VKRenderBuffer::MapBufferPtr()
+	void* VKRenderBuffer::MapBufferPtr(uint32_t offset, size_t size)
 	{
-		return getCurrentBuffer()->MapBufferPtr(0, m_Specs.Size);
+		return getCurrentBuffer()->MapBufferPtr(offset, size);
 	}
 
 	void VKRenderBuffer::UnmapBufferPtr()

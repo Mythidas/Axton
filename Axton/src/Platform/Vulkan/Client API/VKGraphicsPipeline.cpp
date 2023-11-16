@@ -80,12 +80,12 @@ namespace Axton::Vulkan
 	{
 		createPipelineLayout();
 		createPipeline();
+	}
 
-		VKRenderEngine::GetGraphicsContext()->QueueDeletion([this]()
-		{
-			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Pipeline);
-			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Layout);
-		});
+	VKGraphicsPipeline::~VKGraphicsPipeline()
+	{
+		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Pipeline);
+		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Layout);
 	}
 
 	void VKGraphicsPipeline::Render(uint32_t count)

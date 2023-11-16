@@ -14,12 +14,12 @@ namespace Axton::Vulkan
 		createDescriptorPool();
 		createDescriptorSetLayout();
 		createDescriptorSets();
+	}
 
-		VKRenderEngine::GetGraphicsContext()->QueueDeletion([this]()
-		{
-			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_DescriptorPool);
-			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_DescriptorSetLayout);
-		});
+	VKPipelineAssets::~VKPipelineAssets()
+	{
+		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_DescriptorPool);
+		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_DescriptorSetLayout);
 	}
 
 	void VKPipelineAssets::Rebuild()

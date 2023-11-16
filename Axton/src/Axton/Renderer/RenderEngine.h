@@ -19,6 +19,7 @@ namespace Axton
 	public:
 		virtual void BeginFrame() = 0;
 		virtual void EndFrame() = 0;
+		virtual void RenderFrame() = 0;
 
 		static API GetAPI() { return s_API; }
 		static Scope<RenderEngine> Create(void* windowHandle);

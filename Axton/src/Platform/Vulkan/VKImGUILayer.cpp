@@ -35,7 +35,7 @@ namespace Axton::Vulkan
 			.setPoolSizeCount(static_cast<uint32_t>(std::size(poolSizes)))
 			.setPPoolSizes(poolSizes);
 
-		vk::DescriptorPool imguiPool = VKRenderEngine::GetGraphicsContext()->GetDevice().createDescriptorPool(poolInfo);
+		m_DescriptorPool = VKRenderEngine::GetGraphicsContext()->GetDevice().createDescriptorPool(poolInfo);
 
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -54,7 +54,7 @@ namespace Axton::Vulkan
 		initInfo.PhysicalDevice = gContext->GetPhysicalDevice();
 		initInfo.Device = gContext->GetDevice();
 		initInfo.Queue = gContext->GetGraphicsQueue();
-		initInfo.DescriptorPool = imguiPool;
+		initInfo.DescriptorPool = m_DescriptorPool;
 		initInfo.MinImageCount = VKRenderEngine::MAX_FRAMES_IN_FLIGHT;
 		initInfo.ImageCount = VKRenderEngine::MAX_FRAMES_IN_FLIGHT;
 		initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
@@ -69,9 +69,9 @@ namespace Axton::Vulkan
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
 
 		vk::Device device = gContext->GetDevice();
-		gContext->QueueDeletion([device, imguiPool]()
+		gContext->QueueDeletion([device, this]()
 		{
-			device.destroy(imguiPool);
+			device.destroy(m_DescriptorPool);
 			ImGui_ImplVulkan_Shutdown();
 		});
 	}

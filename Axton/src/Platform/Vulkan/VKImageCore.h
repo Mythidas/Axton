@@ -34,17 +34,19 @@ namespace Axton::Vulkan
 			Specs& setAspectFlags(vk::ImageAspectFlags flags) { AspectFlags = flags; return *this; }
 
 			Ref<VKImageCore> Build() { return VKImageCore::Create(*this); }
-			Ref<VKImageCore> Build(vk::Image image) { return VKImageCore::Create(image, *this); }
+			Ref<VKImageCore> Build(vk::Image image) { return VKImageCore::Create(*this, image); }
 		};
 
-		static Ref<VKImageCore> Create(const Specs& specs);
-		static Ref<VKImageCore> Create(vk::Image image, const Specs& specs);
-
-		void Destroy();
+		VKImageCore(const Specs& specs);
+		VKImageCore(const Specs& specs, vk::Image image);
+		~VKImageCore();
 
 		vk::Image& GetImage() { return m_Image; }
 		vk::ImageView& GetView() { return m_ImageView; }
 		vk::Sampler& GetSampler() { return m_Sampler; }
+
+		static Ref<VKImageCore> Create(const Specs& specs) { return CreateRef<VKImageCore>(specs); }
+		static Ref<VKImageCore> Create(const Specs& specs, vk::Image image) { return CreateRef<VKImageCore>(specs, image); }
 
 	private:
 		vk::Image m_Image;

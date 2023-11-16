@@ -1,7 +1,9 @@
 #include "axpch.h"
 #include "VKImage.h"
 #include "../VKRenderEngine.h"
+#include "../VKImGUILayer.h"
 #include "Axton/Math/Mathf.h"
+#include "Axton/Core/Application.h"
 
 #include <backends/imgui_impl_vulkan.h>
 
@@ -158,7 +160,6 @@ namespace Axton::Vulkan
 
 		m_Specs.Extents = extents;
 
-		m_ImageCore->Destroy();
 		m_ImageCore = VKImageCore::Specs()
 			.setFormat(Utils::formatToVulkan(m_Specs.Format))
 			.setImageType(Utils::typeToVulkan(m_Specs.Type))
@@ -171,6 +172,8 @@ namespace Axton::Vulkan
 			.setDstStage(Utils::stagesToVulkan(m_Specs.Stages))
 			.Build();
 
+		vk::DescriptorPool imguiPool = static_cast<VKImGUILayer*>(&Application::Get().GetImGUILayer())->GetDescriptorPool();
+		VKRenderEngine::GetGraphicsContext()->GetDevice().freeDescriptorSets(imguiPool, { m_DescriptorSet });
 		m_DescriptorSet = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(m_ImageCore->GetSampler(), m_ImageCore->GetView(), VK_IMAGE_LAYOUT_GENERAL);
 		return true;
 	}
@@ -220,31 +223,5 @@ namespace Axton::Vulkan
 			.setStageFlags(Utils::shaderStagesToVulkan(m_Specs.Stages));
 
 		return layoutBinding;
-	}
-
-	void VKImage::createImage(UVector3 extents)
-	{
-		extents.x = Mathf::Clamp(extents.x, 1U, extents.x);
-		extents.y = Mathf::Clamp(extents.y, 1U, extents.y);
-		extents.z = Mathf::Clamp(extents.z, 1U, extents.z);
-
-		if (extents == m_Specs.Extents) return;
-
-		m_Specs.Extents = extents;
-
-		m_ImageCore->Destroy();
-		m_ImageCore = VKImageCore::Specs()
-			.setFormat(Utils::formatToVulkan(m_Specs.Format))
-			.setImageType(Utils::typeToVulkan(m_Specs.Type))
-			.setExtent(vk::Extent3D(m_Specs.Extents.x, m_Specs.Extents.y, m_Specs.Extents.z))
-			.setViewType(Utils::viewTypeToVulkan(m_Specs.Type))
-			.setLayout(Utils::layoutToVulkan(m_Specs.Usage))
-			.setUsage(Utils::usageToVulkan(m_Specs.Usage))
-			.setAspectFlags(vk::ImageAspectFlagBits::eColor)
-			.setDstMask(Utils::accessToVulkan(m_Specs.Usage))
-			.setDstStage(Utils::stagesToVulkan(m_Specs.Stages))
-			.Build();
-
-		m_DescriptorSet = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(m_ImageCore->GetSampler(), m_ImageCore->GetView(), VK_IMAGE_LAYOUT_GENERAL);
 	}
 }

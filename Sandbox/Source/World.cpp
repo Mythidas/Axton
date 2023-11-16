@@ -6,7 +6,7 @@ World::World(uint32_t maxVoxels)
 {
 	m_VoxelStorage = RenderBuffer::Specs()
 		.setBinding(3)
-		.setSize(sizeof(uint32_t) * maxVoxels / 4)
+		.setSize(sizeof(uint32_t) * maxVoxels)
 		.setUsage(BufferUsage::ShaderStorage)
 		.setRate(BufferRate::Dyanamic)
 		.setStages(BufferStage::Compute)
@@ -68,8 +68,9 @@ size_t World::AddMaterial(Ref<Material> material)
 
 void World::BeginEdit(Ref<Chunk> chunk)
 {
-	uint32_t* voxelBuffer = static_cast<uint32_t*>(m_VoxelStorage->MapBufferPtr());
-	chunk->BeginEdit(voxelBuffer + chunk->Offset);
+	size_t size = Vector::Magnitude(chunk->Extents) / 4;
+	uint32_t* voxelBuffer = static_cast<uint32_t*>(m_VoxelStorage->MapBufferPtr(chunk->Offset * sizeof(uint32_t), size * sizeof(uint32_t)));
+	chunk->BeginEdit(voxelBuffer);
 }
 
 void World::EndEdit(Ref<Chunk> chunk)

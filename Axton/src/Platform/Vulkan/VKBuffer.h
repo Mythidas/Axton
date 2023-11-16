@@ -41,5 +41,6 @@ namespace Axton::Vulkan
 		vk::DeviceMemory m_Memory;
 
 		Ref<VKBuffer> m_StagingBuffer{ nullptr };
+		uint32_t m_StagingBufferOffset{ 0 };
 	};
 }

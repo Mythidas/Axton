@@ -37,10 +37,9 @@ namespace Axton::Vulkan
 		}
 	}
 
-	Ref<VKImageCore> VKImageCore::Create(const Specs& specs)
+	VKImageCore::VKImageCore(const Specs& specs)
 	{
 		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
-		Ref<VKImageCore> vkImage = CreateRef<VKImageCore>();
 
 		vk::ImageCreateInfo imageInfo{};
 		imageInfo
@@ -55,10 +54,10 @@ namespace Axton::Vulkan
 			.setSharingMode(vk::SharingMode::eExclusive)
 			.setSamples(vk::SampleCountFlagBits::e1);
 
-		vkImage->m_Image = device.createImage(imageInfo);
-		AX_ASSERT_CORE(vkImage->m_Image, "Failed to create Image!");
+		m_Image = device.createImage(imageInfo);
+		AX_ASSERT_CORE(m_Image, "Failed to create Image!");
 
-		vk::MemoryRequirements memRequirements = device.getImageMemoryRequirements(vkImage->m_Image);
+		vk::MemoryRequirements memRequirements = device.getImageMemoryRequirements(m_Image);
 
 		vk::MemoryAllocateInfo allocInfo{};
 		allocInfo
@@ -66,13 +65,13 @@ namespace Axton::Vulkan
 			.setMemoryTypeIndex(VKUtils::FindMemoryType(memRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal));
 
 
-		vkImage->m_ImageMemory = device.allocateMemory(allocInfo);
-		device.bindImageMemory(vkImage->m_Image, vkImage->m_ImageMemory, 0);
-		Utils::transitionLayout(vkImage->m_Image, vk::ImageLayout::eUndefined, vk::AccessFlagBits::eNone, vk::PipelineStageFlagBits::eAllCommands, specs.Layout, specs.DstMask, specs.DstStage);
+		m_ImageMemory = device.allocateMemory(allocInfo);
+		device.bindImageMemory(m_Image, m_ImageMemory, 0);
+		Utils::transitionLayout(m_Image, vk::ImageLayout::eUndefined, vk::AccessFlagBits::eNone, vk::PipelineStageFlagBits::eAllCommands, specs.Layout, specs.DstMask, specs.DstStage);
 
 		vk::ImageViewCreateInfo createInfo{};
 		createInfo
-			.setImage(vkImage->m_Image)
+			.setImage(m_Image)
 			.setViewType(specs.ViewType)
 			.setFormat(specs.Format)
 			.setComponents({ vk::ComponentSwizzle::eIdentity, vk::ComponentSwizzle::eIdentity, vk::ComponentSwizzle::eIdentity, vk::ComponentSwizzle::eIdentity });
@@ -82,8 +81,8 @@ namespace Axton::Vulkan
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		vkImage->m_ImageView = device.createImageView(createInfo);
-		AX_ASSERT_CORE(vkImage->m_ImageView, "Failed to create ImageView!");
+		m_ImageView = device.createImageView(createInfo);
+		AX_ASSERT_CORE(m_ImageView, "Failed to create ImageView!");
 
 		vk::SamplerCreateInfo samplerInfo{};
 		samplerInfo
@@ -97,28 +96,17 @@ namespace Axton::Vulkan
 			.setMaxLod(1000)
 			.setMaxAnisotropy(1.0f);
 
-		vkImage->m_Sampler = device.createSampler(samplerInfo);
-		AX_ASSERT_CORE(vkImage->m_Sampler, "Failed to create Sampler!");
-
-		VKRenderEngine::GetGraphicsContext()->QueueDeletion([device, vkImage]() {
-			device.destroy(vkImage->m_Image);
-			device.destroy(vkImage->m_ImageView);
-			device.destroy(vkImage->m_Sampler);
-			device.freeMemory(vkImage->m_ImageMemory);
-		});
-
-		return vkImage;
+		m_Sampler = device.createSampler(samplerInfo);
+		AX_ASSERT_CORE(m_Sampler, "Failed to create Sampler!");
 	}
 
-	Ref<VKImageCore> VKImageCore::Create(vk::Image image, const Specs& specs)
+	VKImageCore::VKImageCore(const Specs& specs, vk::Image image)
 	{
-		Ref<VKImageCore> vkImage = CreateRef<VKImageCore>();
-
-		vkImage->m_Image = image;
+		m_Image = image;
 
 		vk::ImageViewCreateInfo createInfo{};
 		createInfo
-			.setImage(vkImage->m_Image)
+			.setImage(m_Image)
 			.setViewType(specs.ViewType)
 			.setFormat(specs.Format)
 			.setComponents({ vk::ComponentSwizzle::eIdentity, vk::ComponentSwizzle::eIdentity, vk::ComponentSwizzle::eIdentity, vk::ComponentSwizzle::eIdentity });
@@ -128,19 +116,13 @@ namespace Axton::Vulkan
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		vkImage->m_ImageView = VKRenderEngine::GetGraphicsContext()->GetDevice().createImageView(createInfo);
-
-		VKRenderEngine::GetGraphicsContext()->QueueDeletion([vkImage]() {
-			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(vkImage->m_Image);
-			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(vkImage->m_ImageView);
-		});
-
-		return vkImage;
+		m_ImageView = VKRenderEngine::GetGraphicsContext()->GetDevice().createImageView(createInfo);
 	}
 
-	void VKImageCore::Destroy()
+	VKImageCore::~VKImageCore()
 	{
-		if (m_ImageView)
-			VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_ImageView);
+		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_ImageView);
+		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Sampler);
+		VKRenderEngine::GetGraphicsContext()->GetDevice().freeMemory(m_ImageMemory);
 	}
 }

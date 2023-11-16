@@ -11,7 +11,7 @@ namespace Axton::Vulkan
 		VKRenderBuffer(const Specs& specs);
 
 		virtual void SetData(void* data, size_t size, uint32_t offset) override;
-		virtual void* MapBufferPtr() override;
+		virtual void* MapBufferPtr(uint32_t offset, size_t size) override;
 		virtual void UnmapBufferPtr() override;
 
 		virtual BufferUsage GetUsage() const override { return m_Specs.Usage; }

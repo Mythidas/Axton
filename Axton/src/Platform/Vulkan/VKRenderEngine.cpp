@@ -164,6 +164,93 @@ namespace Axton::Vulkan
 		m_GraphicsContext->Update();
 	}
 
+	void VKRenderEngine::RenderFrame()
+	{
+		if (m_FramebufferInvalid)
+		{
+			m_GraphicsContext->ClearGraphicsCommands();
+			return;
+		}
+
+		uint32_t currentFrame = m_GraphicsContext->GetCurrentFrame();
+
+		if (m_GraphicsContext->GetDevice().waitForFences({ m_InFlight[currentFrame] }, VK_TRUE, UINT64_MAX) != vk::Result::eSuccess) return;
+
+		if (m_FramebufferResized)
+		{
+			m_FramebufferResized = false;
+			m_Swapchain->Recreate(m_RenderPass->GetRenderPass());
+			m_GraphicsContext->ClearGraphicsCommands();
+			return;
+		}
+
+		vk::Result result = m_GraphicsContext->GetDevice().acquireNextImageKHR(m_Swapchain->GetSwapchain(), UINT64_MAX, m_ImageAvailable[currentFrame], VK_NULL_HANDLE, &m_Swapchain->m_ImageIndex);
+
+		if (result == vk::Result::eErrorOutOfDateKHR)
+		{
+			m_Swapchain->Recreate(m_RenderPass->GetRenderPass());
+			m_GraphicsContext->ClearGraphicsCommands();
+			return;
+		}
+		else if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR)
+		{
+			AX_ASSERT_CORE(false, "Failed to aquire Swapchain Image!");
+			m_GraphicsContext->ClearGraphicsCommands();
+			return;
+		}
+
+		m_GraphicsContext->GetDevice().resetFences({ m_InFlight[currentFrame] });
+
+		vk::CommandBufferBeginInfo beginInfo{};
+		beginInfo
+			.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit)
+			.setPInheritanceInfo(nullptr);
+
+		vk::CommandBuffer buffer = m_GraphicsContext->GetCommandBuffer();
+		buffer.begin(beginInfo);
+
+		vk::ClearValue clearColor(vk::ClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f }));
+		vk::RenderPassBeginInfo renderPassInfo{};
+		renderPassInfo
+			.setRenderPass(m_RenderPass->GetRenderPass())
+			.setFramebuffer(m_Swapchain->GetFramebuffer())
+			.setRenderArea(vk::Rect2D().setOffset({ 0, 0 }).setExtent(m_Swapchain->GetExtent()))
+			.setClearValueCount(1)
+			.setPClearValues(&clearColor);
+
+		m_GraphicsContext->GetCommandBuffer().beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
+		m_GraphicsContext->FlushGraphicsCommands();
+		m_GraphicsContext->GetCommandBuffer().endRenderPass();
+
+		m_GraphicsContext->FlushComputeCommands();
+
+		m_GraphicsContext->GetCommandBuffer().end();
+
+		VKGraphicsContext::QueueSubmitInfo submitInfo{};
+		submitInfo.WaitSemaphores = { m_ImageAvailable[currentFrame] };
+		submitInfo.WaitStages = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
+		submitInfo.SignalSemaphores = { m_RenderFinished[currentFrame] };
+		submitInfo.Fence = m_InFlight[currentFrame];
+		m_GraphicsContext->SubmitGraphicsQueue(submitInfo);
+
+		std::vector<vk::SwapchainKHR> swapchains = { m_Swapchain->GetSwapchain() };
+		submitInfo.WaitSemaphores = { m_RenderFinished[currentFrame] };
+		result = m_GraphicsContext->SubmitPresentQueue(submitInfo, swapchains, m_Swapchain->m_ImageIndex);
+
+		if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR || m_FramebufferResized)
+		{
+			m_FramebufferResized = false;
+			m_Swapchain->Recreate(m_RenderPass->GetRenderPass());
+			return;
+		}
+		else if (result != vk::Result::eSuccess)
+		{
+			AX_ASSERT_CORE(false, "Failed to present Swapchain Image!");
+		}
+
+		m_GraphicsContext->Update();
+	}
+
 	void VKRenderEngine::onWindowResized(int width, int height)
 	{
 		m_FramebufferInvalid = false;

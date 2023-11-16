@@ -56,7 +56,7 @@ public:
 
 		{
 			VoxModelLoader loader("C:\\Programming\\Axton\\Sandbox\\Assets\\Models\\green_cube.vox");
-			Ref<Chunk> chunk = loader.GenChunk(world, { -35, -40, 40 });
+			Ref<Chunk> chunk = loader.GenChunk(world, { -50, -40, 40 });
 			Material mat{ 0.5, 1.0, 0.01, 0.0 };
 			chunk->MaterialIndex = world.AddMaterial(CreateRef<Material>(mat));
 		}
@@ -80,7 +80,6 @@ public:
 			m_CompAssets->Rebuild();
 			return;
 		}
-			
 
 		m_CompPipeline->Dispatch(m_ViewportWidth / (uint32_t)8, m_ViewportHeight / (uint32_t)8, 1);
 	}

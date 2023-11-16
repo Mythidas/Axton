@@ -40,7 +40,7 @@ namespace Axton
 			Time::OnUpdate();
 			m_Window->OnUpdate();
 
-			m_RenderEngine->BeginFrame();
+			//m_RenderEngine->BeginFrame();
 
 			for (Layer* layer : m_LayerStack)
 			{
@@ -65,7 +65,8 @@ namespace Axton
 				m_ImGUILayer->EndUI();
 			}
 
-			m_RenderEngine->EndFrame();
+			//m_RenderEngine->EndFrame();
+			m_RenderEngine->RenderFrame();
 		}
 	}
 

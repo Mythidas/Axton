@@ -22,9 +22,6 @@ namespace Axton::Vulkan
 		vk::DescriptorSetLayoutBinding GetLayoutBinding();
 
 	private:
-		void createImage(UVector3 extents);
-
-	private:
 		Specs m_Specs;
 
 		Ref<VKImageCore> m_ImageCore;

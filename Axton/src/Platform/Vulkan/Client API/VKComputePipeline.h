@@ -10,6 +10,7 @@ namespace Axton::Vulkan
 	{
 	public:
 		VKComputePipeline(const Specs& specs);
+		~VKComputePipeline();
 
 		virtual void Dispatch(uint32_t width, uint32_t height, uint32_t depth) override;
 

@@ -11,6 +11,7 @@ namespace Axton::Vulkan
 	{
 	public:
 		VKGraphicsPipeline(const Specs& specs);
+		~VKGraphicsPipeline();
 
 		virtual void Render(uint32_t count) override;
 
