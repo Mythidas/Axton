@@ -8,6 +8,7 @@ using namespace Axton;
 
 class World
 {
+	friend class RayTraceLayer;
 public:
 	World(uint32_t maxVoxels);
 
@@ -25,7 +26,7 @@ private:
 	std::vector<Ref<Chunk>> m_Chunks;
 	std::vector<Ref<Material>> m_Materials;
 
-	Ref<StorageBuffer> m_VoxelStorage;
-	Ref<StorageBuffer> m_ChunkStorage;
-	Ref<StorageBuffer> m_MaterialStorage;
+	Ref<RenderBuffer> m_VoxelStorage;
+	Ref<RenderBuffer> m_ChunkStorage;
+	Ref<RenderBuffer> m_MaterialStorage;
 };

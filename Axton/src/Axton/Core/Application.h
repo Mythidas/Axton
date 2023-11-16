@@ -3,6 +3,7 @@
 #include "Defines.h"
 #include "Window.h"
 #include "LayerStack.h"
+#include "Axton/Renderer/RenderEngine.h"
 
 namespace Axton
 {
@@ -11,7 +12,7 @@ namespace Axton
 	class Application
 	{
 	public:
-		Application(const Window::Builder& builder);
+		Application(const Window::Specs& specs);
 		virtual ~Application() {}
 
 		void Run();
@@ -23,6 +24,7 @@ namespace Axton
 		void PopOverlay(Layer* overlay) { m_LayerStack.PopOverlay(overlay); }
 
 		Window& GetWindow() { return *m_Window; }
+		ImGUILayer& GetImGUILayer() { return *m_ImGUILayer; }
 
 		static Application& Get() { return *s_Instance; }
 
@@ -30,6 +32,7 @@ namespace Axton
 		static Application* s_Instance;
 
 		Scope<Window> m_Window;
+		Scope<RenderEngine> m_RenderEngine;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 

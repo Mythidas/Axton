@@ -3,7 +3,7 @@
 
 #include "Axton/Core/Assert.h"
 #include "Axton/Event/Events.h"
-#include "Axton/Renderer/RendererAPI.h"
+#include "Axton/Renderer/RenderEngine.h"
 
 namespace Axton
 {
@@ -15,14 +15,13 @@ namespace Axton
 		AX_ASSERT_CORE(glfw, "Failed to Init GLFW");
 
 
-		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		if (RenderEngine::GetAPI() == RenderEngine::API::Vulkan)
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-		m_Context = GraphicsContext::Create();
-		m_Window = glfwCreateWindow((int)specs.Width, (int)specs.Height, specs.Title.c_str(), nullptr, nullptr);
+		m_Window = glfwCreateWindow(specs.Width, specs.Height, specs.Title.c_str(), nullptr, nullptr);
 		AX_ASSERT_CORE(m_Window, "Failed to create GLFW window");
 
-		m_Context->Init(m_Window);
+		glfwMakeContextCurrent(m_Window);
 
 		glfwSwapInterval((int)specs.VSync);
 		glfwSetWindowUserPointer(m_Window, this);
@@ -44,9 +43,9 @@ namespace Axton
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 		{
-			Window::Specs& specs = ((WindowsWindow*)glfwGetWindowUserPointer(window))->m_Specs;
-			specs.Width = width;
-			specs.Height = height;
+			WindowsWindow* wWindow = ((WindowsWindow*)glfwGetWindowUserPointer(window));
+			wWindow->m_Specs.Width = width;
+			wWindow->m_Specs.Height = height;
 
 			Events::OnWindowResize(width, height);
 		});
@@ -88,7 +87,6 @@ namespace Axton
 	void WindowsWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		m_Context->SwapBuffers();
 	}
 
 	void WindowsWindow::SetCursorMode(bool locked)

@@ -1,38 +1,26 @@
 #pragma once
 
 #include "Axton/Core/Defines.h"
+#include "RenderBuffer.h"
 
 namespace Axton
 {
 	class VertexBuffer
 	{
 	public:
-		struct Attribute
+		struct Specs
 		{
-			enum class AttributeFormat
-			{
-				Float, Float2, Float3, Float4,
-				Mat3, Mat4,
-				Int, Int2, Int3, Int4,
-				Bool
-			};
+			size_t Size{ 0 };
+			BufferRate Rate{ BufferRate::Static };
 
-			AttributeFormat Format;
-			bool Normalized;
-
-			uint32_t GetTypeCount() const;
-			uint32_t GetTypeSize() const;
+			Specs& setSize(size_t size) { Size = size; return *this; }
+			Specs& setRate(BufferRate rate) { Rate = rate; return *this; }
+			Ref<VertexBuffer> Build() { return Create(*this); }
 		};
 
-	public:
-		virtual ~VertexBuffer() = default;
-
 		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
+		virtual void SetData(void* data, size_t size, uint32_t offset) = 0;
 
-		virtual void SetLayout(const std::vector<Attribute>& attribs) = 0;
-		virtual void SetData(const void* data, long long size) = 0;
-
-		static Ref<VertexBuffer> Create(const size_t& size);
+		static Ref<VertexBuffer> Create(const VertexBuffer::Specs& specs);
 	};
 }

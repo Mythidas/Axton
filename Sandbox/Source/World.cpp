@@ -4,8 +4,32 @@
 
 World::World(uint32_t maxVoxels)
 {
-	StorageBuffer::Builder voxelBuilder;
-	m_VoxelStorage = voxelBuilder.Size(sizeof(uint32_t) * maxVoxels / 4).Usage(BufferUsage::DYNAM_DRAW).Binding(3).DebugName("VoxelStorage").Build();
+	m_VoxelStorage = RenderBuffer::Specs()
+		.setBinding(3)
+		.setSize(sizeof(uint32_t) * maxVoxels)
+		.setUsage(BufferUsage::ShaderStorage)
+		.setRate(BufferRate::Dyanamic)
+		.setStages(BufferStage::Compute)
+		.setStorage(BufferStorage::Local)
+		.Build();
+
+	m_MaterialStorage = RenderBuffer::Specs()
+		.setBinding(4)
+		.setSize(sizeof(Material) * 5)
+		.setRate(BufferRate::Dyanamic)
+		.setStages(BufferStage::Compute)
+		.setStorage(BufferStorage::Local)
+		.setUsage(BufferUsage::ShaderStorage)
+		.Build();
+
+	m_ChunkStorage = RenderBuffer::Specs()
+		.setBinding(2)
+		.setSize(sizeof(Chunk::Buffer) * 5)
+		.setRate(BufferRate::PerFrame)
+		.setStages(BufferStage::Compute)
+		.setStorage(BufferStorage::Local)
+		.setUsage(BufferUsage::ShaderStorage)
+		.Build();
 }
 
 Ref<Chunk> World::CreateChunk(Vector3 position, IVector3 extents, bool sparse)
@@ -32,13 +56,21 @@ Ref<Chunk> World::CreateChunk(Vector3 position, IVector3 extents, bool sparse)
 size_t World::AddMaterial(Ref<Material> material)
 {
 	m_Materials.push_back(material);
+
+	std::vector<Material> materialBuffers;
+	for (auto& mat : m_Materials)
+		materialBuffers.push_back(*mat.get());
+
+	m_MaterialStorage->SetData(materialBuffers.data(), m_Materials.size() * sizeof(Material), 0);
+
 	return m_Materials.size() - 1;
 }
 
 void World::BeginEdit(Ref<Chunk> chunk)
 {
-	uint32_t* voxelBuffer = static_cast<uint32_t*>(m_VoxelStorage->MapBufferPtr());
-	chunk->BeginEdit(voxelBuffer + chunk->Offset);
+	size_t size = Vector::Magnitude(chunk->Extents) / 4;
+	uint32_t* voxelBuffer = static_cast<uint32_t*>(m_VoxelStorage->MapBufferPtr(chunk->Offset * sizeof(uint32_t), size * sizeof(uint32_t)));
+	chunk->BeginEdit(voxelBuffer);
 }
 
 void World::EndEdit(Ref<Chunk> chunk)
@@ -61,15 +93,5 @@ void World::LoadBuffers(const Camera& camera)
 	for (auto& cMap : chunks)
 		chunkBuffers.push_back(cMap.second);
 	
-	StorageBuffer::Builder chunkBuilder;
-	m_ChunkStorage = chunkBuilder.Size(sizeof(Chunk::Buffer) * chunkBuffers.size()).Usage(BufferUsage::STATIC_DRAW).Binding(2).DebugName("ChunkStorage").Build();
-	m_ChunkStorage->SetData(chunkBuffers.data(), chunkBuffers.size() * sizeof(Chunk::Buffer));
-
-	std::vector<Material> materialBuffers;
-	for (auto& mat : m_Materials)
-		materialBuffers.push_back(*mat.get());
-
-	StorageBuffer::Builder materialBuilder;
-	m_MaterialStorage = materialBuilder.Size(sizeof(Material) * materialBuffers.size()).Usage(BufferUsage::STATIC_DRAW).Binding(4).Build();
-	m_MaterialStorage->SetData(materialBuffers.data(), m_Materials.size() * sizeof(Material));
+	m_ChunkStorage->SetData(chunkBuffers.data(), chunkBuffers.size() * sizeof(Chunk::Buffer), 0);
 }

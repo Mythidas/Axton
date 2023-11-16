@@ -14,7 +14,8 @@ namespace Axton
 		FileSystem(const std::string& path);
 
 		std::string ToString();
-		std::vector<uint8_t> ToBuffer();
+		std::vector<unsigned char> ToBuffer();
+		std::vector<char> ToSignedBuffer();
 
 	private:
 		FS::path m_InternalPath;

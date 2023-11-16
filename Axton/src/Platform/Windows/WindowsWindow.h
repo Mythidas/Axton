@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Axton/Renderer/GraphicsContext.h"
 #include "Axton/Core/Window.h"
 
 #include <GLFW/glfw3.h>
@@ -20,12 +19,10 @@ namespace Axton
 
 		virtual void SetCursorMode(bool locked) override;
 
-		virtual void* GetNativeWindow() const override { return m_Window; }
-		virtual GraphicsContext& GetContext() const override { return *m_Context; }
+		virtual void* GetNativeWindow() override { return m_Window; }
 
 	private:
 		GLFWwindow* m_Window;
 		Window::Specs m_Specs;
-		Scope<GraphicsContext> m_Context;
 	};
 }

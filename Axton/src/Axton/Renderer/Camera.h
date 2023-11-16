@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Axton/Math/Math.h"
+#include "Axton/Math/Matrix.h"
 
 namespace Axton
 {

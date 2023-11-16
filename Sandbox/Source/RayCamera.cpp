@@ -12,7 +12,14 @@ RayCamera::RayCamera(const Camera::Specs& specs)
 
 	RecalculateView();
 
-	m_CameraBuffer = UniformBuffer::Create(sizeof(RayCamera::Buffer), 0);
+	m_CameraBuffer = RenderBuffer::Specs()
+		.setBinding(1)
+		.setRate(BufferRate::PerFrame)
+		.setSize(sizeof(Buffer))
+		.setStages(BufferStage::Compute)
+		.setStorage(BufferStorage::Host)
+		.setUsage(BufferUsage::Uniform)
+		.Build();
 }
 
 void RayCamera::OnUpdate()
@@ -29,7 +36,7 @@ void RayCamera::OnUpdate()
 	buffer.RenderPass = uint32_t(m_RenderMode);
 	buffer.Algorithm = m_Algorithm;
 
-	m_CameraBuffer->SetData(&buffer, sizeof(RayCamera::Buffer));
+	m_CameraBuffer->SetData(&buffer, sizeof(RayCamera::Buffer), 0);
 }
 
 Ray RayCamera::GetRay() const

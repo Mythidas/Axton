@@ -26,8 +26,24 @@ public:
 		m_ViewportWidth = Application::Get().GetWindow().GetWidth();
 		m_ViewportHeight = Application::Get().GetWindow().GetHeight();
 
-		m_FinalImage = Image2D::Create({ m_ViewportWidth, m_ViewportHeight, 0, ImageFormat::Data::RGBA8, ImageFormat::Access::WRITE_ONLY });
-		m_VoxelImage = ComputeShader::Create("C:\\Programming\\Axton\\Axton\\internal\\shaders\\VoxelImageGen.glsl");
+		m_FinalImage = Image::Specs()
+			.setBinding(0)
+			.setExtents({ m_ViewportWidth, m_ViewportHeight, 1 })
+			.setFormat(ImageFormat::RGBA8)
+			.setStages(ImageStages::Compute)
+			.setUsage(ImageUsage::ShaderWrite | ImageUsage::ShaderRead)
+			.setType(ImageType::e2D)
+			.Build();
+
+		m_CompAssets = PipelineAssets::Specs()
+			.setBuffers({ world.m_ChunkStorage, world.m_VoxelStorage, world.m_MaterialStorage, m_Camera.m_CameraBuffer })
+			.setImages({ m_FinalImage })
+			.Build();
+
+		m_CompPipeline = ComputePipeline::Specs()
+			.setShaderPath("C:\\Programming\\Axton\\Axton\\internal\\shaders\\VoxelImageGen.spv")
+			.setAssets(m_CompAssets)
+			.Build();
 
 		Timer timer("Gen All Chunks");
 
@@ -40,7 +56,7 @@ public:
 
 		{
 			VoxModelLoader loader("C:\\Programming\\Axton\\Sandbox\\Assets\\Models\\green_cube.vox");
-			Ref<Chunk> chunk = loader.GenChunk(world, { -35, -40, 40 });
+			Ref<Chunk> chunk = loader.GenChunk(world, { -50, -40, 40 });
 			Material mat{ 0.5, 1.0, 0.01, 0.0 };
 			chunk->MaterialIndex = world.AddMaterial(CreateRef<Material>(mat));
 		}
@@ -59,9 +75,13 @@ public:
 		m_Camera.OnResize(m_ViewportWidth, m_ViewportHeight);
 		world.LoadBuffers(m_Camera);
 
-		m_FinalImage->Resize(m_ViewportWidth, m_ViewportHeight);
+		if (m_FinalImage->Resize({ m_ViewportWidth, m_ViewportHeight, 1 }))
+		{
+			m_CompAssets->Rebuild();
+			return;
+		}
 
-		m_VoxelImage->Dispatch(m_ViewportWidth / (uint32_t)8, m_ViewportHeight / (uint32_t)8, 1);
+		m_CompPipeline->Dispatch(m_ViewportWidth / (uint32_t)8, m_ViewportHeight / (uint32_t)8, 1);
 	}
 
 	virtual void OnRenderUI() override
@@ -138,10 +158,9 @@ public:
 		m_ViewportWidth = (uint32_t)ImGui::GetContentRegionAvail().x;
 		m_ViewportHeight = (uint32_t)ImGui::GetContentRegionAvail().y;
 
-		m_VoxelImage->Barrier();
 		if (m_FinalImage)
 		{
-			ImGui::Image((ImTextureID)m_FinalImage->GetRendererID(), { (float)m_FinalImage->GetWidth(), (float)m_FinalImage->GetHeight() }, ImVec2(0, 1.0f), ImVec2(1.0f, 0));
+			ImGui::Image((ImTextureID)m_FinalImage->GetRendererID(), { (float)m_FinalImage->GetExtents().x, (float)m_FinalImage->GetExtents().y }, ImVec2(0, 1.0f), ImVec2(1.0f, 0));
 		}
 		ImGui::End();
 	}
@@ -150,6 +169,7 @@ private:
 	RayCamera m_Camera;
 	uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
-	Ref<Image2D> m_FinalImage;
-	Ref<ComputeShader> m_VoxelImage;
+	Ref<Image> m_FinalImage;
+	Ref<PipelineAssets> m_CompAssets;
+	Ref<ComputePipeline> m_CompPipeline;
 };

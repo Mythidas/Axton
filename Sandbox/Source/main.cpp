@@ -3,18 +3,26 @@
 
 #include "RayTraceLayer.h"
 #include "imgui/imgui.h"
+#include <glm/gtc/type_ptr.hpp>
+
+using namespace Axton;
 
 class SimpleLayer : public Axton::Layer
 {
 	virtual void OnAttach() override
 	{
-		Axton::Log::Info("Simple Layer");
+		
+	}
+
+	virtual void OnUpdate() override
+	{
+		
 	}
 
 	virtual void OnRenderUI() override
 	{
 		ImGui::Begin("Simple Window");
-		ImGui::Text("Simple Text");
+		ImGui::Text("Yay!");
 		ImGui::End();
 	}
 };
@@ -22,10 +30,10 @@ class SimpleLayer : public Axton::Layer
 class SandboxApplication : public Axton::Application
 {
 public:
-	SandboxApplication(const Axton::Window::Builder& window)
-		: Axton::Application(window)
+	SandboxApplication(const Axton::Window::Specs& specs)
+		: Axton::Application(specs)
 	{
-		//PushLayer(new SimpleLayer());
+		PushLayer(new SimpleLayer());
 		PushLayer(new RayTraceLayer());
 	}
 
@@ -37,8 +45,6 @@ public:
 
 Axton::Application* Axton::CreateApplication()
 {
-	Window::Builder window;
-	window.Title("Sandbox").VSync(false);
-
-	return new SandboxApplication(window);
+	Window::Specs window;
+	return new SandboxApplication(window.setTitle("Sandbox").setVSync(false));
 }

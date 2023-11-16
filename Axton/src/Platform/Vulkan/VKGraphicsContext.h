@@ -1,33 +1,90 @@
 #pragma once
 
-#include "Axton/Renderer/GraphicsContext.h"
+#include "Axton/Core/Defines.h"
+#include "Axton/Utils/Queue.h"
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 #include <vulkan/vulkan.hpp>
+#include <queue>
+#include <functional>
 
 namespace Axton::Vulkan
 {
-	class VKGraphicsContext : public Axton::GraphicsContext
+	class VKGraphicsContext
 	{
+		struct QueueFamilies
+		{
+			std::optional<uint32_t> GraphicsFamily;
+			std::optional<uint32_t> PresentFamily;
+
+			bool IsComplete()
+			{
+				return GraphicsFamily.has_value() && PresentFamily.has_value();
+			}
+		};
 	public:
-		VKGraphicsContext();
+		struct QueueSubmitInfo
+		{
+			std::vector<vk::Semaphore> WaitSemaphores;
+			std::vector<vk::Semaphore> SignalSemaphores;
+			std::vector<vk::PipelineStageFlags> WaitStages;
+			vk::Fence Fence;
+		};
 
-		virtual void Init(void* window) override;
-		virtual void SwapBuffers() override;
+	public:
+		static Ref<VKGraphicsContext> Create(void* windowHandle, const std::vector<const char*> deviceExtensions, const std::vector<const char*> validationLayers);
 
-		vk::Instance& GetVkInstance() { return m_Instance; }
-		vk::SurfaceKHR& GetVkSurface() { return m_Surface; }
+		void Update();
+		void Destroy();
+
+		void QueueDeletion(std::function<void()> func);
+		void QueueGraphicsCommand(std::function<void(vk::CommandBuffer&)> func);
+		void QueueComputeCommand(std::function<void(vk::CommandBuffer&)> func);
+
+		void ClearGraphicsCommands();
+		void FlushGraphicsCommands();
+		void FlushComputeCommands();
+
+		void SubmitGraphicsCommand(std::function<void(vk::CommandBuffer&)> func);
+		void SubmitGraphicsQueue(const QueueSubmitInfo& queueSubmitInfo);
+		vk::Result SubmitPresentQueue(const QueueSubmitInfo& queueSubmitInfo, const std::vector<vk::SwapchainKHR>& swapchains, uint32_t imageIndex);
+
+		uint32_t GetCurrentFrame() { return m_CurrentFrame; }
+		vk::CommandBuffer& GetCommandBuffer() { return m_CommandBuffers[m_CurrentFrame]; }
+		vk::Instance& GetInstance() { return m_Instance; }
+		vk::SurfaceKHR& GetSurface() { return m_Surface; }
+		vk::PhysicalDevice& GetPhysicalDevice() { return m_PhysicalDevice; }
+		vk::Device& GetDevice() { return m_Device; }
+		vk::Queue& GetGraphicsQueue() { return m_GraphicsQueue; }
+		vk::Queue& GetPresentQueue() { return m_PresentQueue; }
+		const std::vector<uint32_t> GetQueueFamilyIndices() { return { m_QueueFamilies.GraphicsFamily.value(), m_QueueFamilies.PresentFamily.value() }; }
 
 	private:
-		GLFWwindow* m_WindowHandle;
+		void createInstance(const std::vector<const char*> validationLayers);
+		void createDebugMessenger();
+		void createSurfaceKHR(void* windowHandle);
+		void createPhysicalDevice(const std::vector<const char*> deviceExtensions);
+		void findQueueFamilies(vk::PhysicalDevice device);
+		void createLogicalDevice(const std::vector<const char*> deviceExtensions, const std::vector<const char*> validationLayers);
+		void createCommandPool();
 
+	private:
 		vk::Instance m_Instance;
-		VkDebugUtilsMessengerEXT m_DebugMessenger;
 		vk::SurfaceKHR m_Surface;
+		vk::DebugUtilsMessengerEXT m_Debug;
+		uint32_t m_CurrentFrame = 0;
+		Queue<std::function<void()>> m_DeletionQueue;
+		Queue<std::function<void(vk::CommandBuffer&)>> m_GraphicsCommandQueue;
+		Queue<std::function<void(vk::CommandBuffer&)>> m_ComputeCommandQueue;
 
-	private:
-		void CreateInstance();
-		void SetupDebugMessenger();
+		vk::PhysicalDevice m_PhysicalDevice;
+		vk::Device m_Device;
+		vk::Queue m_GraphicsQueue;
+		vk::Queue m_PresentQueue;
+		vk::Queue m_ComputeQueue;
+
+		QueueFamilies m_QueueFamilies;
+
+		vk::CommandPool m_CommandPool;
+		std::vector<vk::CommandBuffer> m_CommandBuffers;
 	};
 }

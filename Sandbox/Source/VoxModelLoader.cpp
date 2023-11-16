@@ -52,10 +52,7 @@ Ref<Chunk> VoxModelLoader::GenChunk(World& world, Vector3 position)
 		newChunk->Albedos[i] = GetNextValue(buffer, currentIndex);
 	}
 
-	{
-		Timer timer("Refresh Chunk Nodes");
-		world.EndEdit(newChunk);
-	}
+	world.EndEdit(newChunk);
 
 	return newChunk;
 }

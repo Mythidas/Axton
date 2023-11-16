@@ -9,17 +9,14 @@
 #include "Axton/ImGUI/ImGUILayer.h"
 
 // Renderer
-#include "Axton/Renderer/Renderer2D.h"
 #include "Axton/Renderer/Camera.h"
-#include "Axton/Renderer/Sprite.h"
-#include "Axton/Renderer/SpriteSheet.h"
-#include "Axton/Renderer/ComputeShader.h"
-#include "Axton/Renderer/Image1D.h"
-#include "Axton/Renderer/Image2D.h"
-#include "Axton/Renderer/Image3D.h"
-#include "Axton/Renderer/UniformBuffer.h"
-#include "Axton/Renderer/StorageBuffer.h"
-#include "Axton/Renderer/Texture3D.h"
+#include "Axton/Renderer/GraphicsPipeline.h"
+#include "Axton/Renderer/ComputePipeline.h"
+#include "Axton/Renderer/PipelineAssets.h"
+#include "Axton/Renderer/RenderBuffer.h"
+#include "Axton/Renderer/VertexBuffer.h"
+#include "Axton/Renderer/IndexBuffer.h"
+#include "Axton/Renderer/Image.h"
 
 // Debugging
 #include "Axton/Debug/Log.h"
@@ -27,8 +24,15 @@
 #include "Axton/Debug/MemTracker.h"
 
 // Math
-#include "Axton/Math/Math.h"
+#include "Axton/Math/Ray.h"
+#include "Axton/Math/Vector.h"
+#include "Axton/Math/Quaternion.h"
+#include "Axton/Math/Matrix.h"
+#include "Axton/Math/Interval.h"
+#include "Axton/Math/Mathf.h"
 
 // Utils
 #include "Axton/Utils/FileSystem.h"
 #include "Axton/Utils/Stringf.h"
+#include "Axton/Utils/Bit.h"
+#include "Axton/Utils/Queue.h"

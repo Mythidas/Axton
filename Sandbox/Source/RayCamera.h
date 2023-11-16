@@ -27,6 +27,7 @@ public:
 		Difficulty
 	};
 
+	friend class RayTraceLayer;
 public:
 	RayCamera(const Camera::Specs& specs);
 
@@ -63,5 +64,5 @@ private:
 
 	float m_RotationSpeed = 0.3f;
 
-	Ref<UniformBuffer> m_CameraBuffer;
+	Ref<RenderBuffer> m_CameraBuffer;
 };

@@ -2,7 +2,6 @@
 #include "Input.h"
 #include "Application.h"
 #include "Axton/Event/Events.h"
-#include "Axton/Math/Math.h"
 
 #include <GLFW/glfw3.h>
 
