@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Axton">
+      <UniqueIdentifier>{8F02DB0C-FB16-03BE-C498-A61D306CFFEE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Axton\Core">
+      <UniqueIdentifier>{47181749-33D0-5896-9CD7-31F288AEF386}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Axton\Debug">
+      <UniqueIdentifier>{457C066C-B131-7F61-3A26-7938A6DA7565}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Axton\Event">
+      <UniqueIdentifier>{20F3216C-8CA8-9A61-159D-943881519165}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Axton\ImGUI">
+      <UniqueIdentifier>{B9E2646C-2598-DD61-AE8C-D7381A41D465}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Axton\Math">
+      <UniqueIdentifier>{C8581C49-B410-5E96-1D18-37F209EFF886}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Axton\Renderer">
+      <UniqueIdentifier>{1597CF80-0165-C386-EAF8-33ADD6659FEB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Axton\Utils">
+      <UniqueIdentifier>{2F73426D-9B28-BB62-241D-B53990D1B166}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Vulkan">
+      <UniqueIdentifier>{6AE1DE2D-D66C-4CF2-DF7D-CFE64B88A8F2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Windows">
+      <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Axton.h" />
+    <ClInclude Include="Axton\Core\Application.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\Assert.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\Defines.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\EntryPoint.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\Input.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\KeyCodes.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\Layer.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\LayerStack.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\Time.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Core\Window.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Debug\CoreLog.h">
+      <Filter>Axton\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Debug\Log.h">
+      <Filter>Axton\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Debug\MemTracker.h">
+      <Filter>Axton\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Debug\Timer.h">
+      <Filter>Axton\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Event\Event.h">
+      <Filter>Axton\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Event\Events.h">
+      <Filter>Axton\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\ImGUI\ImGUILayer.h">
+      <Filter>Axton\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Math\Interval.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Math\Mathf.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Math\Matrix.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Math\Quaternion.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Math\Ray.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Math\Vector.h">
+      <Filter>Axton\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Renderer\Camera.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Renderer\Image.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Renderer\RenderEngine.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Utils\Bit.h">
+      <Filter>Axton\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Utils\FileSystem.h">
+      <Filter>Axton\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Utils\Queue.h">
+      <Filter>Axton\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Utils\Stringf.h">
+      <Filter>Axton\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKBuffer.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKGraphicsContext.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKImGUILayer.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKImageCore.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKRenderPass.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKRenderEngine.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\Client API\VKGraphicsPipeline.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKSwapchain.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\WindowsWindow.h">
+      <Filter>Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="axpch.h" />
+    <ClInclude Include="Platform\Vulkan\VKUtils.h" />
+    <ClInclude Include="Axton\Renderer\RendererAPI.h" />
+    <ClInclude Include="Axton\Renderer\GraphicsPipeline.h" />
+    <ClInclude Include="Axton\Renderer\ComputePipeline.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKVertexBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKComputePipeline.h" />
+    <ClInclude Include="Axton\Renderer\RenderBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKRenderBuffer.h" />
+    <ClInclude Include="Axton\Renderer\VertexBuffer.h" />
+    <ClInclude Include="Axton\Renderer\IndexBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKIndexBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKImage.h" />
+    <ClInclude Include="Axton\Renderer\PipelineAssets.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKPipelineAssets.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Axton\Core\Application.cpp">
+      <Filter>Axton\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Core\Input.cpp">
+      <Filter>Axton\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Core\LayerStack.cpp">
+      <Filter>Axton\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Core\Time.cpp">
+      <Filter>Axton\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Core\Window.cpp">
+      <Filter>Axton\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Debug\CoreLog.cpp">
+      <Filter>Axton\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Debug\Log.cpp">
+      <Filter>Axton\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Debug\MemTracker.cpp">
+      <Filter>Axton\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Debug\Timer.cpp">
+      <Filter>Axton\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Event\Events.cpp">
+      <Filter>Axton\Event</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\ImGUI\ImGUI.cpp">
+      <Filter>Axton\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\ImGUI\ImGUILayer.cpp">
+      <Filter>Axton\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Math\Interval.cpp">
+      <Filter>Axton\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Math\Mathf.cpp">
+      <Filter>Axton\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Math\Ray.cpp">
+      <Filter>Axton\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Math\Vector.cpp">
+      <Filter>Axton\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Renderer\RenderEngine.cpp">
+      <Filter>Axton\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Utils\Bit.cpp">
+      <Filter>Axton\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Utils\FileSystem.cpp">
+      <Filter>Axton\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Utils\Stringf.cpp">
+      <Filter>Axton\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKBuffer.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKGraphicsContext.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKImGUILayer.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKImageCore.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKRenderPass.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKRenderEngine.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\Client API\VKGraphicsPipeline.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKSwapchain.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Windows\WindowsWindow.cpp">
+      <Filter>Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="axpch.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKUtils.cpp" />
+    <ClCompile Include="Axton\Renderer\GraphicsPipeline.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKVertexBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\ComputePipeline.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKComputePipeline.cpp" />
+    <ClCompile Include="Axton\Renderer\RenderBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKRenderBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKIndexBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\Image.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKImage.cpp" />
+    <ClCompile Include="Axton\Renderer\PipelineAssets.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKPipelineAssets.cpp" />
+  </ItemGroup>
+</Project>

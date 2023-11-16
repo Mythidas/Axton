@@ -1,0 +1,259 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Dist|x64">
+      <Configuration>Dist</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8F02DB0C-FB16-03BE-C498-A61D306CFFEE}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Axton</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\bin\Debug-windows-x86_64\Axton\</OutDir>
+    <IntDir>..\..\bin-int\Debug-windows-x86_64\Axton\</IntDir>
+    <TargetName>Axton</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\bin\Release-windows-x86_64\Axton\</OutDir>
+    <IntDir>..\..\bin-int\Release-windows-x86_64\Axton\</IntDir>
+    <TargetName>Axton</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <OutDir>..\..\bin\Dist-windows-x86_64\Axton\</OutDir>
+    <IntDir>..\..\bin-int\Dist-windows-x86_64\Axton\</IntDir>
+    <TargetName>Axton</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;AX_PLAT_WINDOWS;AX_DEBUG;AX_ASSERTS_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.243.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;AX_PLAT_WINDOWS;AX_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.243.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;AX_PLAT_WINDOWS;AX_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.243.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Axton.h" />
+    <ClInclude Include="Axton\Core\Application.h" />
+    <ClInclude Include="Axton\Core\Assert.h" />
+    <ClInclude Include="Axton\Core\Defines.h" />
+    <ClInclude Include="Axton\Core\EntryPoint.h" />
+    <ClInclude Include="Axton\Core\Input.h" />
+    <ClInclude Include="Axton\Core\KeyCodes.h" />
+    <ClInclude Include="Axton\Core\Layer.h" />
+    <ClInclude Include="Axton\Core\LayerStack.h" />
+    <ClInclude Include="Axton\Core\Time.h" />
+    <ClInclude Include="Axton\Core\Window.h" />
+    <ClInclude Include="Axton\Debug\CoreLog.h" />
+    <ClInclude Include="Axton\Debug\Log.h" />
+    <ClInclude Include="Axton\Debug\MemTracker.h" />
+    <ClInclude Include="Axton\Debug\Timer.h" />
+    <ClInclude Include="Axton\Event\Event.h" />
+    <ClInclude Include="Axton\Event\Events.h" />
+    <ClInclude Include="Axton\ImGUI\ImGUILayer.h" />
+    <ClInclude Include="Axton\Math\Interval.h" />
+    <ClInclude Include="Axton\Math\Mathf.h" />
+    <ClInclude Include="Axton\Math\Matrix.h" />
+    <ClInclude Include="Axton\Math\Quaternion.h" />
+    <ClInclude Include="Axton\Math\Ray.h" />
+    <ClInclude Include="Axton\Math\Vector.h" />
+    <ClInclude Include="Axton\Renderer\IndexBuffer.h" />
+    <ClInclude Include="Axton\Renderer\PipelineAssets.h" />
+    <ClInclude Include="Axton\Renderer\RenderBuffer.h" />
+    <ClInclude Include="Axton\Renderer\Camera.h" />
+    <ClInclude Include="Axton\Renderer\ComputePipeline.h" />
+    <ClInclude Include="Axton\Renderer\GraphicsPipeline.h" />
+    <ClInclude Include="Axton\Renderer\Image.h" />
+    <ClInclude Include="Axton\Renderer\RenderEngine.h" />
+    <ClInclude Include="Axton\Renderer\RendererAPI.h" />
+    <ClInclude Include="Axton\Renderer\VertexBuffer.h" />
+    <ClInclude Include="Axton\Utils\Bit.h" />
+    <ClInclude Include="Axton\Utils\FileSystem.h" />
+    <ClInclude Include="Axton\Utils\Queue.h" />
+    <ClInclude Include="Axton\Utils\Stringf.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKComputePipeline.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKImage.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKIndexBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKPipelineAssets.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKRenderBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKVertexBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\VKBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\VKGraphicsContext.h" />
+    <ClInclude Include="Platform\Vulkan\VKImGUILayer.h" />
+    <ClInclude Include="Platform\Vulkan\VKImageCore.h" />
+    <ClInclude Include="Platform\Vulkan\VKRenderPass.h" />
+    <ClInclude Include="Platform\Vulkan\VKRenderEngine.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKGraphicsPipeline.h" />
+    <ClInclude Include="Platform\Vulkan\VKSwapchain.h" />
+    <ClInclude Include="Platform\Vulkan\VKUtils.h" />
+    <ClInclude Include="Platform\Windows\WindowsWindow.h" />
+    <ClInclude Include="axpch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Axton\Core\Application.cpp" />
+    <ClCompile Include="Axton\Core\Input.cpp" />
+    <ClCompile Include="Axton\Core\LayerStack.cpp" />
+    <ClCompile Include="Axton\Core\Time.cpp" />
+    <ClCompile Include="Axton\Core\Window.cpp" />
+    <ClCompile Include="Axton\Debug\CoreLog.cpp" />
+    <ClCompile Include="Axton\Debug\Log.cpp" />
+    <ClCompile Include="Axton\Debug\MemTracker.cpp" />
+    <ClCompile Include="Axton\Debug\Timer.cpp" />
+    <ClCompile Include="Axton\Event\Events.cpp" />
+    <ClCompile Include="Axton\ImGUI\ImGUI.cpp" />
+    <ClCompile Include="Axton\ImGUI\ImGUILayer.cpp" />
+    <ClCompile Include="Axton\Math\Interval.cpp" />
+    <ClCompile Include="Axton\Math\Mathf.cpp" />
+    <ClCompile Include="Axton\Math\Ray.cpp" />
+    <ClCompile Include="Axton\Math\Vector.cpp" />
+    <ClCompile Include="Axton\Renderer\Image.cpp" />
+    <ClCompile Include="Axton\Renderer\IndexBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\PipelineAssets.cpp" />
+    <ClCompile Include="Axton\Renderer\RenderBuffer.cpp" />
+    <ClCompile Include="Axton\Renderer\ComputePipeline.cpp" />
+    <ClCompile Include="Axton\Renderer\GraphicsPipeline.cpp" />
+    <ClCompile Include="Axton\Renderer\RenderEngine.cpp" />
+    <ClCompile Include="Axton\Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="Axton\Utils\Bit.cpp" />
+    <ClCompile Include="Axton\Utils\FileSystem.cpp" />
+    <ClCompile Include="Axton\Utils\Stringf.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKComputePipeline.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKImage.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKIndexBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKPipelineAssets.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKRenderBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKVertexBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKGraphicsContext.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKImGUILayer.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKImageCore.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKRenderPass.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKRenderEngine.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKGraphicsPipeline.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKSwapchain.cpp" />
+    <ClCompile Include="Platform\Vulkan\VKUtils.cpp" />
+    <ClCompile Include="Platform\Windows\WindowsWindow.cpp" />
+    <ClCompile Include="axpch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vendor\GLFW\GLFW.vcxproj">
+      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\glad\Glad.vcxproj">
+      <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\vendor\imgui\ImGui.vcxproj">
+      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
