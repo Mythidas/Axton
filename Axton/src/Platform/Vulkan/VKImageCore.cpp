@@ -121,6 +121,7 @@ namespace Axton::Vulkan
 
 	VKImageCore::~VKImageCore()
 	{
+		VKRenderEngine::GetGraphicsContext()->GetDevice().waitIdle();
 		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_ImageView);
 		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Sampler);
 		VKRenderEngine::GetGraphicsContext()->GetDevice().freeMemory(m_ImageMemory);

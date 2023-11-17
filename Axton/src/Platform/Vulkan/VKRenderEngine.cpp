@@ -8,7 +8,8 @@ namespace Axton::Vulkan
 {
 	VKRenderEngine* VKRenderEngine::s_Singleton = nullptr;
 
-	VKRenderEngine::VKRenderEngine(void* windowHandle)
+	VKRenderEngine::VKRenderEngine(void* windowHandle, const Specs& specs)
+		: m_Specs(specs)
 	{
 		AX_ASSERT_CORE(!s_Singleton, "Only one VKRendererAPI can be created!");
 		s_Singleton = this;

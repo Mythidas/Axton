@@ -17,6 +17,7 @@ group "Dependencies"
     include "Axton/vendor/GLFW"
     include "Axton/vendor/glad"
     include "Axton/vendor/imgui"
+    include "Axton/vendor/nrd"
 group ""
 
 group "Core"

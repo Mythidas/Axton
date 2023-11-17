@@ -34,7 +34,7 @@ Ref<Chunk> VoxModelLoader::GenChunk(World& world, Vector3 position)
 	uint32_t xyziChildSize = GetNextValue(buffer, currentIndex);
 	uint32_t xyziCount = GetNextValue(buffer, currentIndex);
 
-	Ref<Chunk> newChunk = world.CreateChunk(position, { extents.y, extents.z, extents.x }, false);
+	Ref<Chunk> newChunk = world.CreateChunk(position, { extents.y, extents.z, extents.x });
 	world.BeginEdit(newChunk);
 
 	for (int i = 0; i < xyziCount; i++)

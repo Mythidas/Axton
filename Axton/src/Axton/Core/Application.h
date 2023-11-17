@@ -12,7 +12,17 @@ namespace Axton
 	class Application
 	{
 	public:
-		Application(const Window::Specs& specs);
+		struct Specs
+		{
+			Window::Specs WindowSpecs;
+			RenderEngine::Specs RenderSpecs;
+
+			Specs& setWindowSpecs(const Window::Specs& specs) { WindowSpecs = specs; return *this; }
+			Specs& setRenderSpecs(const RenderEngine::Specs& specs) { RenderSpecs = specs; return *this; }
+			// Application* Build() { return new Application(*this); } Application only built through CreateApplication;
+		};
+
+		Application(const Specs& specs);
 		virtual ~Application() {}
 
 		void Run();

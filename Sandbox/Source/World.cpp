@@ -27,28 +27,21 @@ World::World(uint32_t maxVoxels)
 		.setSize(sizeof(Chunk::Buffer) * 5)
 		.setRate(BufferRate::PerFrame)
 		.setStages(BufferStage::Compute)
-		.setStorage(BufferStorage::Local)
+		.setStorage(BufferStorage::Host)
 		.setUsage(BufferUsage::ShaderStorage)
 		.Build();
 }
 
-Ref<Chunk> World::CreateChunk(Vector3 position, IVector3 extents, bool sparse)
+Ref<Chunk> World::CreateChunk(Vector3 position, IVector3 extents)
 {
-	if (sparse)
-		m_Chunks.push_back(CreateRef<SparseChunk>(position, extents));
-	else
+	uint32_t offset = 0;
+	if (!m_Chunks.empty())
 	{
-		uint32_t offset = 0;
-		if (!m_Chunks.empty())
-		{
-			offset = m_Chunks.back()->Offset + Vector::Magnitude(m_Chunks.back()->Extents) / 4;
-		}
-
-		m_Chunks.push_back(CreateRef<DenseChunk>(position, extents));
-		m_Chunks.back()->Offset = offset;
-
-		MemTracker::SetSlot("Used VoxelStorage", offset);
+		offset = m_Chunks.back()->Offset + Vector::Magnitude(m_Chunks.back()->Extents) / 4;
 	}
+
+	m_Chunks.push_back(CreateRef<DenseChunk>(position, extents));
+	m_Chunks.back()->Offset = offset;
 
 	return m_Chunks.back();
 }
@@ -81,6 +74,8 @@ void World::EndEdit(Ref<Chunk> chunk)
 
 void World::LoadBuffers(const Camera& camera)
 {
+	if (m_Chunks.empty()) return;
+
 	std::map<float, Chunk::Buffer> chunks;
 
 	for (size_t i = 0; i < m_Chunks.size(); i++)
@@ -92,6 +87,6 @@ void World::LoadBuffers(const Camera& camera)
 	std::vector<Chunk::Buffer> chunkBuffers;
 	for (auto& cMap : chunks)
 		chunkBuffers.push_back(cMap.second);
-	
+
 	m_ChunkStorage->SetData(chunkBuffers.data(), chunkBuffers.size() * sizeof(Chunk::Buffer), 0);
 }

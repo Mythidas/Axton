@@ -115,6 +115,9 @@ namespace Axton::Vulkan
 
 	void VKGraphicsContext::Destroy()
 	{
+		m_Device.waitIdle();
+		m_Device.freeCommandBuffers(m_CommandPool, m_CommandBuffers);
+
 		while (!m_DeletionQueue.Empty())
 		{
 			m_DeletionQueue.Deque()();
@@ -236,7 +239,7 @@ namespace Axton::Vulkan
 			.setApplicationVersion(VK_MAKE_VERSION(0, 1, 0))
 			.setPEngineName("AxtonEngine")
 			.setEngineVersion(VK_MAKE_VERSION(0, 1, 0))
-			.setApiVersion(VK_API_VERSION_1_1);
+			.setApiVersion(VK_API_VERSION_1_2);
 
 		vk::InstanceCreateInfo createInfo{};
 		createInfo

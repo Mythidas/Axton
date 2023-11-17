@@ -16,6 +16,7 @@ namespace Axton::Vulkan
 
 	VKComputePipeline::~VKComputePipeline()
 	{
+		VKRenderEngine::GetGraphicsContext()->GetDevice().waitIdle();
 		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Pipeline);
 		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Layout);
 	}

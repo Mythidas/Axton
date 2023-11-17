@@ -24,7 +24,8 @@ public:
 		Full = 0,
 		Normals,
 		Albedo,
-		Difficulty
+		Difficulty,
+		TestLighting
 	};
 
 	friend class RayTraceLayer;

@@ -11,7 +11,7 @@ namespace Axton::Vulkan
 	class VKRenderEngine : public RenderEngine
 	{
 	public:
-		VKRenderEngine(void* windowHandle);
+		VKRenderEngine(void* windowHandle, const Specs& specs);
 		~VKRenderEngine();
 
 		virtual void BeginFrame() override;
@@ -28,6 +28,7 @@ namespace Axton::Vulkan
 	private:
 		static VKRenderEngine* s_Singleton;
 
+		Specs m_Specs;
 		Ref<VKGraphicsContext> m_GraphicsContext;
 		Ref<VKSwapchain> m_Swapchain;
 		Ref<VKRenderPass> m_RenderPass;

@@ -9,8 +9,8 @@ namespace Axton
 	{
 		switch (RenderEngine::GetAPI())
 		{
-		case RenderEngine::API::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RenderEngine::API::Vulkan:  return new Vulkan::VKImGUILayer();
+		case GraphicsAPI::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); return nullptr;
+		case GraphicsAPI::Vulkan:  return new Vulkan::VKImGUILayer();
 		}
 
 		AX_ASSERT_CORE(false, "Unknown RendererAPI!");

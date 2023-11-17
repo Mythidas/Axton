@@ -18,6 +18,7 @@ namespace Axton::Vulkan
 
 	VKPipelineAssets::~VKPipelineAssets()
 	{
+		VKRenderEngine::GetGraphicsContext()->GetDevice().waitIdle();
 		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_DescriptorPool);
 		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_DescriptorSetLayout);
 	}

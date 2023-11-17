@@ -12,7 +12,7 @@ class World
 public:
 	World(uint32_t maxVoxels);
 
-	Ref<Chunk> CreateChunk(Vector3 position, IVector3 extents, bool sparse);
+	Ref<Chunk> CreateChunk(Vector3 position, IVector3 extents);
 	size_t AddMaterial(Ref<Material> material);
 
 	void BeginEdit(Ref<Chunk> chunk);

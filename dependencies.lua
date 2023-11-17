@@ -7,6 +7,7 @@ IncludeDir["STB"] = "%{wks.location}/Axton/vendor/stb_image"
 IncludeDir["GLM"] = "%{wks.location}/Axton/vendor/glm"
 IncludeDir["LOG"] = "%{wks.location}/Axton/vendor/spdlog/include"
 IncludeDir["IMGUI"] = "%{wks.location}/Axton/vendor/imgui"
+IncludeDir["NRD"] = "%{wks.location}/Axton/vendor/nrd/include"
 IncludeDir["VULKAN"] = "%{VULKAN_SDK}/Include"
 
 LibraryDir = {}

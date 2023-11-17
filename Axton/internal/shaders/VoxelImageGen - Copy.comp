@@ -183,13 +183,64 @@ TValue findBoxTminTmax(vec3 minExtent, vec3 maxExtent, Ray ray)
 	return value;
 }
 
-uint getVoxelInfo(ivec3 index, Chunk chunk)
+uint getVoxelInfoSparse(ivec3 index, Chunk chunk)
+{
+	int currentOffset = int(chunk.VoxelOffset);
+	bvec3 mask;
+	int levels = int(log2(chunk.GridSize.x));
+	int childIndex = 0;
+	int halfSize = 1 << (levels);
+
+	for (int i = 0; i < levels; i++)
+	{
+		childIndex = 0;
+		halfSize = halfSize >> 1;
+
+		if (index.x >= halfSize)
+		{
+			childIndex |= 4;
+			index.x -= halfSize;
+		}
+		if (index.y >= halfSize)
+		{
+			childIndex |= 2;
+			index.y -= halfSize;
+		}
+		if (index.z >= halfSize)
+		{
+			childIndex |= 1;
+			index.z -= halfSize;
+		}
+
+		ivec4 info = ivec4(unpackUnorm4x8(u_Voxels[currentOffset + childIndex].Material) * 255);
+		if (info.w == 1)
+		{
+			return uint(info.x);
+		}
+		else
+		{
+			currentOffset += int(info.x + (info.y * 255) + (info.z * 255 * 255));
+		}
+	}
+	
+	return ivec4(unpackUnorm4x8(u_Voxels[currentOffset].Material) * 255).w;
+}
+
+uint getVoxelInfoDense(ivec3 index, Chunk chunk)
 {
 	uint pIndex = collapseIndex(index, chunk);
 	uint bit = pIndex % 4;
 	uint smallIndex = uint(floor(pIndex / 4)) + chunk.VoxelOffset;
 
 	return uint(bitfieldExtract(u_Voxels[smallIndex].Material, int(bit * 8), 8));
+}
+
+uint getVoxelInfo(ivec3 index, Chunk chunk)
+{
+	if (chunk.Sparse)
+		return getVoxelInfoSparse(index, chunk);
+	else
+		return getVoxelInfoDense(index, chunk);
 }
 
 // Amanatides & Woo 3DDA Traversal
@@ -260,6 +311,189 @@ bool awDDATraversal(Ray ray, Chunk chunk, TValue minMax, inout float closestPoin
 	return false;
 }
 
+struct ST
+{
+	uint Offset;
+	vec3 T0;
+	vec3 T1;
+	uint Info;
+	int Child;
+
+} Stack[10];
+int StackIndex = 0;
+
+int firstIndex(vec3 t0, vec3 tM)
+{
+	bvec3 mask = greaterThan(vec3(max(max(t0.x, t0.y), t0.z)), tM);
+	return (int(mask.z) << 0) | (int(mask.y) << 1) | (int(mask.x) << 2);
+}
+
+int nextIndex(int current, vec3 tM)
+{
+	int index = current;
+
+	if (tM.x < tM.y && tM.x < tM.z)
+		index |= 4;
+	else if (tM.y < tM.z)
+		index |= 2;
+	else
+		index |= 1;
+
+	if (index == current) return 8;
+	return index;
+}
+
+void childTs(int index, ST node, vec3 tM, inout ST child)
+{
+	switch (index)
+	{
+		case 0:
+		{
+			child.T0 = node.T0;
+			child.T1 = tM;
+			break;
+		}
+		case 1:
+		{
+			child.T0 = vec3(node.T0.xy, tM.z);
+			child.T1 = vec3(tM.xy, node.T1.z);
+			break;
+		}
+		case 2:
+		{
+			child.T0 = vec3(node.T0.x, tM.y, node.T0.z);
+			child.T1 = vec3(tM.x, node.T1.y, tM.z);
+			break;
+		}
+		case 3:
+		{
+			child.T0 = vec3(node.T0.x, tM.yz);
+			child.T1 = vec3(tM.x, node.T1.yz);
+			break;
+		}
+		case 4:
+		{
+			child.T0 = vec3(tM.x, node.T0.yz);
+			child.T1 = vec3(node.T1.x, tM.yz);
+			break;
+		}
+		case 5:
+		{
+			child.T0 = vec3(tM.x, node.T0.y, tM.z);
+			child.T1 = vec3(node.T1.x, tM.y, node.T1.z);
+			break;
+		}
+		case 6:
+		{
+			child.T0 = vec3(tM.xy, node.T0.z);
+			child.T1 = vec3(node.T1.xy, tM.z);
+			break;
+		}
+		case 7:
+		{
+			child.T0 = tM;
+			child.T1 = node.T1;
+			break;
+		}
+	}
+}
+
+// Stack based octree traversal inspired by Revelles
+bool octDFSTraversal(Ray ray, Chunk chunk, TValue minMax, inout float closestPoint, inout vec3 closestPosition, inout uint closestMaterial)
+{
+	int mask = 0;
+	if (ray.Direction.x < 0)
+	{
+		mask |= 4;
+	}
+	if (ray.Direction.y < 0)
+	{
+		mask |= 2;
+	}
+	if (ray.Direction.z < 0)
+	{
+		mask |= 1;
+	}
+
+	ST root;
+	root.Offset = chunk.VoxelOffset;
+	root.T0 = minMax.T0;
+	root.T1 = minMax.T1;
+	root.Info = 0;
+	root.Child = -1;
+	StackIndex = 0;
+
+	vec3 tM = (root.T0 + root.T1) * 0.5;
+	root.Child = firstIndex(root.T0, tM);
+	Stack[StackIndex] = root;
+
+	for (int i = 0; i < 250; i++)
+	{
+		MARCHES++;
+		ST node = Stack[StackIndex];
+
+		if (node.T1.x < 0. || node.T1.y < 0. || node.T1.z < 0.)
+		{
+			MARCHES = i;
+			break;
+		}
+
+		ivec4 info = ivec4(unpackUnorm4x8(node.Info) * 255);
+		if (info.w == 1)
+		{
+			if (info.x == 0)
+			{
+				StackIndex--;
+				if (StackIndex < 0) break;
+				continue;
+			}
+
+			closestPoint = max(max(node.T0.x, node.T0.y), node.T0.z);
+			vec3 startPos = getRayPoint(ray, closestPoint + EPSILON * chunk.CamDistance * 0.001);
+			ivec3 currentIndex = ivec3(floor((startPos - chunk.MinExtent) / chunk.VoxelSize));
+			closestPosition = chunk.MinExtent + vec3(currentIndex * chunk.VoxelSize + chunk.VoxelSize * 0.5);
+			closestMaterial = uint(info.x);
+			return true;
+		}
+
+		tM = (node.T0 + node.T1) * 0.5;
+		ST child;
+
+		if (node.Child == 8)
+		{
+			StackIndex--;
+			if (StackIndex < 0) break;
+			continue;
+		}
+
+		child.Info = u_Voxels[node.Offset + (node.Child ^ mask)].Material;
+		childTs(node.Child, node, tM, child);
+		node.Child = nextIndex(node.Child, child.T1);
+
+		tM = (child.T0 + child.T1) * 0.5;
+		child.Child = firstIndex(child.T0, tM);
+		info = ivec4(unpackUnorm4x8(child.Info) * 255);
+		child.Offset = node.Offset + int(info.x + (info.y * 255) + (info.z * 255 * 255));
+		Stack[StackIndex] = node;
+		StackIndex++;
+		Stack[StackIndex] = child;
+	}
+	
+	return false;
+}
+
+bool findClosestVoxel(Ray ray, Chunk chunk, TValue minMax, inout float closestPoint, inout vec3 closestPosition, inout uint closestMaterial)
+{
+	switch (u_Algorithm)
+	{
+		case 0: return awDDATraversal(ray, chunk, minMax, closestPoint, closestPosition, closestMaterial); break;
+		// About 1.5x Faster for VERY Sparse data with lots of empty space
+		// case 1: return octDFSTraversal(ray, chunk, minMax, closestPoint, closestPosition, closestMaterial); break;
+	}
+
+	return false;
+}
+
 RayTracePayload traceBoxes(Ray ray)
 {
 	float closestPoint = 100000000;
@@ -273,7 +507,7 @@ RayTracePayload traceBoxes(Ray ray)
 
 		if (minMax.TMin <= minMax.TMax && minMax.TMin < closestPoint)
 		{
-			if (awDDATraversal(ray, u_Chunks[i], minMax, closestPoint, closestPosition, closestMaterial))
+			if (findClosestVoxel(ray, u_Chunks[i], minMax, closestPoint, closestPosition, closestMaterial))
 			{
 				closestChunk = i;
 			}
@@ -373,51 +607,6 @@ void main()
 				}
 
 				light /= sampleSettings.x;
-
-				break;
-			}
-		case 4: // Test Lighting Pass
-			{
-				Ray primaryRay = getRay(texelCoord);
-				vec3 throughput = vec3(1);
-
-				RayTracePayload primaryPayload = traceBoxes(primaryRay);
-
-				if (primaryPayload.Distance >= 0)
-				{
-					Material primaryMat = u_Materials[u_Chunks[primaryPayload.ObjIndex].MaterialIndex];
-
-					vec3 albedo = unpackUnorm4x8(u_Chunks[primaryPayload.ObjIndex].Albedos[primaryPayload.AlbedoIndex]).xyz;
-					throughput *= albedo;
-					light += primaryMat.Emissive * albedo;
-
-					if (primaryMat.Emissive > 0.0)
-						break;
-
-					Ray sRay;
-					sRay.Origin = primaryPayload.Point + primaryPayload.Normal * EPSILON;
-					sRay.Direction = -sunDir;
-					sRay.InvDirection = 1.0 / sRay.Direction;
-					light += shadowRay(sRay, throughput);
-
-					Ray dRay;
-					dRay.Origin = primaryPayload.Point + primaryPayload.Normal * EPSILON;
-					dRay.Direction = normalize(randInUnitSphere() + primaryPayload.Normal);
-					dRay.InvDirection = 1.0 / dRay.Direction;
-
-					RayTracePayload diffusePayload = traceBoxes(dRay);
-
-					if (diffusePayload.Distance >= 0)
-					{
-						Material diffuseMat = u_Materials[u_Chunks[diffusePayload.ObjIndex].MaterialIndex];
-
-						vec3 diffuseAlbedo = unpackUnorm4x8(u_Chunks[diffusePayload.ObjIndex].Albedos[diffusePayload.AlbedoIndex]).xyz;
-						throughput *= diffuseAlbedo;
-						light += diffuseMat.Emissive * diffuseAlbedo;
-					}
-				}
-
-				light += u_BackgroundColor.xyz * throughput;
 
 				break;
 			}

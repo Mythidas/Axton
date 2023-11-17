@@ -34,6 +34,7 @@ project "Axton"
         "%{IncludeDir.STB}",
         "%{IncludeDir.GLM}",
         "%{IncludeDir.IMGUI}",
+        "%{IncludeDir.NRD}",
         "%{IncludeDir.VULKAN}",
     }
 

@@ -21,7 +21,6 @@
 // Debugging
 #include "Axton/Debug/Log.h"
 #include "Axton/Debug/Timer.h"
-#include "Axton/Debug/MemTracker.h"
 
 // Math
 #include "Axton/Math/Ray.h"

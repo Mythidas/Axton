@@ -15,7 +15,7 @@ namespace Axton
 		AX_ASSERT_CORE(glfw, "Failed to Init GLFW");
 
 
-		if (RenderEngine::GetAPI() == RenderEngine::API::Vulkan)
+		if (RenderEngine::GetAPI() == GraphicsAPI::Vulkan)
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 		m_Window = glfwCreateWindow(specs.Width, specs.Height, specs.Title.c_str(), nullptr, nullptr);

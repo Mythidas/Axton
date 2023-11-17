@@ -4,14 +4,16 @@
 
 namespace Axton
 {
-	RenderEngine::API RenderEngine::s_API = API::Vulkan;
+	GraphicsAPI RenderEngine::s_API = GraphicsAPI::Vulkan;
 
-	Scope<RenderEngine> RenderEngine::Create(void* windowHandle)
+	Scope<RenderEngine> RenderEngine::Create(void* windowHandle, const Specs& specs)
 	{
+		s_API = specs.API;
+
 		switch (s_API)
 		{
-		case RenderEngine::API::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); break;
-		case RenderEngine::API::Vulkan:  return CreateScope<Vulkan::VKRenderEngine>(windowHandle); break;
+		case GraphicsAPI::None:    AX_ASSERT_CORE(false, "RendererAPI::None is currently not supported!"); break;
+		case GraphicsAPI::Vulkan:  return CreateScope<Vulkan::VKRenderEngine>(windowHandle, specs); break;
 		}
 
 		AX_ASSERT_CORE(false, "Uknown Renderer::API!");

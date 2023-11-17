@@ -78,7 +78,6 @@ public:
 		if (m_FinalImage->Resize({ m_ViewportWidth, m_ViewportHeight, 1 }))
 		{
 			m_CompAssets->Rebuild();
-			return;
 		}
 
 		m_CompPipeline->Dispatch(m_ViewportWidth / (uint32_t)8, m_ViewportHeight / (uint32_t)8, 1);
@@ -107,6 +106,8 @@ public:
 			m_Camera.RenderMode(RayCamera::RenderModes::Albedo);
 		if (ImGui::RadioButton("Difficulty", &renderMode, 3))
 			m_Camera.RenderMode(RayCamera::RenderModes::Difficulty);
+		if (ImGui::RadioButton("Test Lighting", &renderMode, 4))
+			m_Camera.RenderMode(RayCamera::RenderModes::TestLighting);
 
 		ImGui::Text("Sample Settings");
 		static int samples = 1;
@@ -117,7 +118,7 @@ public:
 			m_Camera.SampleSettings(settings);
 		}
 		static int bounces = 2;
-		if (ImGui::SliderInt("Bounces", &bounces, 2, 30))
+		if (ImGui::SliderInt("Bounces", &bounces, 1, 30))
 		{
 			uint32_t settings = m_Camera.SampleSettings();
 			settings = Bit::U32_4x8(Bit::Get<uint8_t>(settings, 0), bounces, 0, 0);
@@ -139,17 +140,6 @@ public:
 			ImGui::DragFloat("Emissive", &mat->Emissive, 0.1f);
 
 			ImGui::PopID();
-		}
-
-		ImGui::End();
-
-		ImGui::Begin("Memory Usage");
-
-		MemTracker instance;
-		for (auto const& mem : instance)
-		{
-			ImGui::Text(mem.first.c_str()); ImGui::SameLine();
-			ImGui::Text(": %i", mem.second);
 		}
 
 		ImGui::End();

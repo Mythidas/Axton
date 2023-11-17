@@ -2,7 +2,6 @@
 
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
-#include "RenderBuffer.h"
 #include "PipelineAssets.h"
 #include "Axton/Core/Defines.h"
 

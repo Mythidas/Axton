@@ -30,7 +30,7 @@ class SimpleLayer : public Axton::Layer
 class SandboxApplication : public Axton::Application
 {
 public:
-	SandboxApplication(const Axton::Window::Specs& specs)
+	SandboxApplication(const Axton::Application::Specs& specs)
 		: Axton::Application(specs)
 	{
 		PushLayer(new SimpleLayer());
@@ -45,6 +45,19 @@ public:
 
 Axton::Application* Axton::CreateApplication()
 {
-	Window::Specs window;
-	return new SandboxApplication(window.setTitle("Sandbox").setVSync(false));
+	Window::Specs window{};
+	window
+		.setTitle("Sandbox")
+		.setVSync(false);
+
+	RenderEngine::Specs render{};
+	render
+		.setAPI(Axton::GraphicsAPI::Vulkan);
+
+	Axton::Application::Specs appSpecs{};
+	appSpecs
+		.setWindowSpecs(window)
+		.setRenderSpecs(render);
+
+	return new SandboxApplication(appSpecs);
 }

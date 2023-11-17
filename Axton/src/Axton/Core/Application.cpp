@@ -11,7 +11,7 @@ namespace Axton
 {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(const Window::Specs& specs)
+	Application::Application(const Specs& specs)
 	{
 		AX_ASSERT_CORE(!s_Instance, "Application already exists!");
 		s_Instance = this;
@@ -21,8 +21,8 @@ namespace Axton
 		Time::Construct();
 		Input::Construct();
 
-		m_Window = specs.Build();
-		m_RenderEngine = RenderEngine::Create(m_Window->GetNativeWindow());
+		m_Window = specs.WindowSpecs.Build();
+		m_RenderEngine = specs.RenderSpecs.Build(m_Window->GetNativeWindow());
 
 		m_ImGUILayer = ImGUILayer::Create();
 		PushOverlay(m_ImGUILayer);
