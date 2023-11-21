@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Axton/Core/Defines.h"
+
 #include <vulkan/vulkan.hpp>
 
 namespace Axton::Vulkan

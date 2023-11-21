@@ -6,6 +6,28 @@
 
 namespace Axton::Vulkan
 {
+	namespace Utils
+	{
+		std::vector<const char*> getRequiredExtensions(RenderExtension extensions)
+		{
+			std::vector<const char*> extensionNames;
+
+			if (extensions & RenderExtension::Graphics)
+			{
+				extensionNames.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+			}
+			if (extensions & RenderExtension::RayTracing)
+			{
+				extensionNames.push_back(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
+				extensionNames.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
+				extensionNames.push_back(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+				extensionNames.push_back(VK_KHR_SPIRV_1_4_EXTENSION_NAME);
+			}
+
+			return extensionNames;
+		}
+	}
+
 	VKRenderEngine* VKRenderEngine::s_Singleton = nullptr;
 
 	VKRenderEngine::VKRenderEngine(void* windowHandle, const Specs& specs)
@@ -14,7 +36,7 @@ namespace Axton::Vulkan
 		AX_ASSERT_CORE(!s_Singleton, "Only one VKRendererAPI can be created!");
 		s_Singleton = this;
 
-		m_GraphicsContext = VKGraphicsContext::Create(windowHandle, { VK_KHR_SWAPCHAIN_EXTENSION_NAME }, { "VK_LAYER_KHRONOS_validation" });
+		m_GraphicsContext = VKGraphicsContext::Create(windowHandle, Utils::getRequiredExtensions(specs.Extensions), { "VK_LAYER_KHRONOS_validation" });
 		m_Swapchain = VKSwapchain::Create();
 		m_RenderPass = VKRenderPass::Create(m_Swapchain->GetFormat());
 

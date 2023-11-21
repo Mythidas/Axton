@@ -27,6 +27,7 @@ namespace Axton
 	{
 		R8,
 		RGBA8,
+		RG32F,
 		RGBA32F
 	};
 

@@ -17,6 +17,7 @@ namespace Axton::Vulkan
 			{
 			case ImageFormat::R8: return vk::Format::eR8Srgb;
 			case ImageFormat::RGBA8: return vk::Format::eR8G8B8A8Snorm;
+			case ImageFormat::RG32F: return vk::Format::eR32G32Sfloat;
 			case ImageFormat::RGBA32F: return vk::Format::eR32G32B32A32Sfloat;
 			}
 

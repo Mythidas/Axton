@@ -1,0 +1,21 @@
+#version 450
+
+layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+layout (rgba32f, binding = 0) readonly uniform image2D imgInput;
+layout (rgba32f, binding = 2) writeonly uniform image2D velocityBuffer;
+
+layout (std140, binding = 1) uniform camera
+{
+	vec4 u_CamPosition;
+	vec4 u_BackgroundColor;
+	mat4 u_View;
+	mat4 u_Projection;
+	float u_RandomSeed;
+	uint u_SampleSettings;
+	uint u_RenderPass;
+};
+
+void main()
+{
+	// Write velocityBuffer
+}

@@ -12,10 +12,10 @@ class RayCamera : public Camera
 		Vector4 BackgroundColor{ 1.0f };
 		Matrix4 View{ 0.0f };
 		Matrix4 Projection{ 0.0f };
+		Matrix4 LastViewProjection{ 0.0f };
 		float RandomSeed;
 		uint32_t SampleSettings;
 		uint32_t RenderPass;
-		uint32_t Algorithm;
 	};
 
 public:
@@ -25,7 +25,6 @@ public:
 		Normals,
 		Albedo,
 		Difficulty,
-		TestLighting
 	};
 
 	friend class RayTraceLayer;
@@ -45,9 +44,6 @@ public:
 	Vector3 BackgroundColor() { return m_BackgroundColor; }
 	void BackgroundColor(Vector3 color) { m_BackgroundColor = color; }
 
-	uint32_t Algorithm() { return m_Algorithm; }
-	void Algorithm(uint32_t algorithm) { m_Algorithm = algorithm; }
-
 	uint32_t SampleSettings() { return m_SampleSettings; }
 	void SampleSettings(uint32_t settings) { m_SampleSettings = settings; }
 
@@ -58,10 +54,10 @@ private:
 	Vector2 m_LastMousePosition{ 0.0f };
 	uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
+	Matrix4 m_LastViewProjection{ 0.0f };
 	Vector3 m_BackgroundColor{ 1.0f };
 	RenderModes m_RenderMode{ RenderModes::Full };
 	uint32_t m_SampleSettings = Bit::U32_4x8(1, 2, 0, 0);
-	uint32_t m_Algorithm{ 0 };
 
 	float m_RotationSpeed = 0.3f;
 

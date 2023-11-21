@@ -18,6 +18,7 @@ public:
 	void BeginEdit(Ref<Chunk> chunk);
 	void EndEdit(Ref<Chunk> chunk);
 
+	void UpdateMaterials();
 	void LoadBuffers(const Camera& camera);
 
 	std::vector<Ref<Material>> Materials() { return m_Materials; }

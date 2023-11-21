@@ -112,6 +112,9 @@
     <ClInclude Include="Axton\Renderer\ComputePipeline.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Axton\Renderer\Denoiser.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="Axton\Renderer\GraphicsPipeline.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
@@ -133,9 +136,6 @@
     <ClInclude Include="Axton\Renderer\RenderEngine.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Axton\Renderer\RendererAPI.h">
-      <Filter>Axton\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Axton\Renderer\VertexBuffer.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
@@ -152,6 +152,9 @@
       <Filter>Axton\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Vulkan\Client API\VKComputePipeline.h">
+      <Filter>Platform\Vulkan\Client API</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\Client API\VKDenoiser.h">
       <Filter>Platform\Vulkan\Client API</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Vulkan\Client API\VKGraphicsPipeline.h">
@@ -253,6 +256,9 @@
     <ClCompile Include="Axton\Renderer\ComputePipeline.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Axton\Renderer\Denoiser.cpp">
+      <Filter>Axton\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="Axton\Renderer\GraphicsPipeline.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
@@ -287,6 +293,9 @@
       <Filter>Axton\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Vulkan\Client API\VKComputePipeline.cpp">
+      <Filter>Platform\Vulkan\Client API</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\Client API\VKDenoiser.cpp">
       <Filter>Platform\Vulkan\Client API</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Vulkan\Client API\VKGraphicsPipeline.cpp">

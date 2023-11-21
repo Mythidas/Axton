@@ -4,8 +4,17 @@
 
 World::World(uint32_t maxVoxels)
 {
+	m_ChunkStorage = RenderBuffer::Specs()
+		.setBinding(5)
+		.setSize(sizeof(Chunk::Buffer) * 5)
+		.setRate(BufferRate::PerFrame)
+		.setStages(BufferStage::Compute)
+		.setStorage(BufferStorage::Host)
+		.setUsage(BufferUsage::ShaderStorage)
+		.Build();
+
 	m_VoxelStorage = RenderBuffer::Specs()
-		.setBinding(3)
+		.setBinding(6)
 		.setSize(sizeof(uint32_t) * maxVoxels)
 		.setUsage(BufferUsage::ShaderStorage)
 		.setRate(BufferRate::Dyanamic)
@@ -14,20 +23,11 @@ World::World(uint32_t maxVoxels)
 		.Build();
 
 	m_MaterialStorage = RenderBuffer::Specs()
-		.setBinding(4)
+		.setBinding(7)
 		.setSize(sizeof(Material) * 5)
 		.setRate(BufferRate::Dyanamic)
 		.setStages(BufferStage::Compute)
 		.setStorage(BufferStorage::Local)
-		.setUsage(BufferUsage::ShaderStorage)
-		.Build();
-
-	m_ChunkStorage = RenderBuffer::Specs()
-		.setBinding(2)
-		.setSize(sizeof(Chunk::Buffer) * 5)
-		.setRate(BufferRate::PerFrame)
-		.setStages(BufferStage::Compute)
-		.setStorage(BufferStorage::Host)
 		.setUsage(BufferUsage::ShaderStorage)
 		.Build();
 }
@@ -49,13 +49,7 @@ Ref<Chunk> World::CreateChunk(Vector3 position, IVector3 extents)
 size_t World::AddMaterial(Ref<Material> material)
 {
 	m_Materials.push_back(material);
-
-	std::vector<Material> materialBuffers;
-	for (auto& mat : m_Materials)
-		materialBuffers.push_back(*mat.get());
-
-	m_MaterialStorage->SetData(materialBuffers.data(), m_Materials.size() * sizeof(Material), 0);
-
+	UpdateMaterials();
 	return m_Materials.size() - 1;
 }
 
@@ -70,6 +64,15 @@ void World::EndEdit(Ref<Chunk> chunk)
 {
 	chunk->EndEdit();
 	m_VoxelStorage->UnmapBufferPtr();
+}
+
+void World::UpdateMaterials()
+{
+	std::vector<Material> materialBuffers;
+	for (auto& mat : m_Materials)
+		materialBuffers.push_back(*mat.get());
+
+	m_MaterialStorage->SetData(materialBuffers.data(), m_Materials.size() * sizeof(Material), 0);
 }
 
 void World::LoadBuffers(const Camera& camera)

@@ -9,8 +9,8 @@ namespace Axton
     {
 		switch (RenderEngine::GetAPI())
 		{
-		case GraphicsAPI::None: AX_ASSERT_CORE(false, "API::None currently unsupported!"); return nullptr;
-		case GraphicsAPI::Vulkan: return CreateRef<Vulkan::VKIndexBuffer>(specs);
+		case RenderAPI::None: AX_ASSERT_CORE(false, "API::None currently unsupported!"); return nullptr;
+		case RenderAPI::Vulkan: return CreateRef<Vulkan::VKIndexBuffer>(specs);
 		}
 
 		AX_ASSERT_CORE(false, "Unknown RenderEngine::API! (IndexBuffer)");

@@ -34,8 +34,8 @@ project "Axton"
         "%{IncludeDir.STB}",
         "%{IncludeDir.GLM}",
         "%{IncludeDir.IMGUI}",
-        "%{IncludeDir.NRD}",
         "%{IncludeDir.VULKAN}",
+        "%{IncludeDir.NRD}"
     }
 
     links
@@ -43,7 +43,8 @@ project "Axton"
         "GLFW",
         "Glad",
         "ImGui",
-        "%{Library.VULKAN}"
+        "%{Library.VULKAN}",
+        "%{Library.NRD}",
     }
 
     flags { "NoPCH" }
