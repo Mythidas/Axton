@@ -23,7 +23,7 @@ namespace Axton::Vulkan
 
 	void VKIndexBuffer::Bind() const
 	{
-		VKRenderEngine::GetGraphicsContext()->GetCommandBuffer().bindIndexBuffer(getCurrentBuffer()->GetBuffer(), 0, vk::IndexType::eUint16);
+		VKRenderEngine::GetCommandBuffer().bindIndexBuffer(getCurrentBuffer()->GetBuffer(), 0, vk::IndexType::eUint16);
 	}
 
 	void VKIndexBuffer::SetData(void* data, size_t size, uint32_t offset)
@@ -34,7 +34,7 @@ namespace Axton::Vulkan
 	Ref<VKBuffer> VKIndexBuffer::getCurrentBuffer() const
 	{
 		if (m_Specs.Rate == BufferRate::PerFrame)
-			return m_Buffers[VKRenderEngine::GetGraphicsContext()->GetCurrentFrame()];
+			return m_Buffers[VKRenderEngine::GetCurrentFrame()];
 		else
 			return m_Buffers[0];
 	}

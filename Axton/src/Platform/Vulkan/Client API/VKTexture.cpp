@@ -1,5 +1,5 @@
 #include "axpch.h"
-#include "VKImage.h"
+#include "VKTexture.h"
 #include "../VKRenderEngine.h"
 #include "../VKImGUILayer.h"
 #include "Axton/Math/Mathf.h"
@@ -11,90 +11,90 @@ namespace Axton::Vulkan
 {
 	namespace Utils
 	{
-		vk::Format formatToVulkan(Axton::ImageFormat format)
+		vk::Format formatToVulkan(Axton::TextureFormat format)
 		{
 			switch (format)
 			{
-			case ImageFormat::R8: return vk::Format::eR8Srgb;
-			case ImageFormat::RGBA8: return vk::Format::eR8G8B8A8Snorm;
-			case ImageFormat::RG32F: return vk::Format::eR32G32Sfloat;
-			case ImageFormat::RGBA32F: return vk::Format::eR32G32B32A32Sfloat;
+			case TextureFormat::R8: return vk::Format::eR8Srgb;
+			case TextureFormat::RGBA8: return vk::Format::eR8G8B8A8Snorm;
+			case TextureFormat::RG32F: return vk::Format::eR32G32Sfloat;
+			case TextureFormat::RGBA32F: return vk::Format::eR32G32B32A32Sfloat;
 			}
 
 			return vk::Format::eUndefined;
 		}
 
-		vk::ImageType typeToVulkan(ImageType type)
+		vk::ImageType typeToVulkan(TextureType type)
 		{
 			switch (type)
 			{
-			case ImageType::e1D: return vk::ImageType::e1D;
-			case ImageType::e2D: return vk::ImageType::e2D;
-			case ImageType::e3D: return vk::ImageType::e3D;
+			case TextureType::e1D: return vk::ImageType::e1D;
+			case TextureType::e2D: return vk::ImageType::e2D;
+			case TextureType::e3D: return vk::ImageType::e3D;
 			}
 
 			return vk::ImageType::e2D;
 		}
 
-		vk::ImageViewType viewTypeToVulkan(ImageType type)
+		vk::ImageViewType viewTypeToVulkan(TextureType type)
 		{
 			switch (type)
 			{
-			case ImageType::e1D: return vk::ImageViewType::e1D;
-			case ImageType::e2D: return vk::ImageViewType::e2D;
-			case ImageType::e3D: return vk::ImageViewType::e3D;
+			case TextureType::e1D: return vk::ImageViewType::e1D;
+			case TextureType::e2D: return vk::ImageViewType::e2D;
+			case TextureType::e3D: return vk::ImageViewType::e3D;
 			}
 
 			return vk::ImageViewType::e2D;
 		}
 
-		vk::ImageLayout layoutToVulkan(ImageUsage usage)
+		vk::ImageLayout layoutToVulkan(TextureUsage usage)
 		{
-			if (usage & ImageUsage::ShaderWrite)
+			if (usage & TextureUsage::ShaderWrite)
 				return vk::ImageLayout::eGeneral;
 
 			return vk::ImageLayout::eShaderReadOnlyOptimal;
 		}
 
-		vk::ImageUsageFlags usageToVulkan(ImageUsage usage)
+		vk::ImageUsageFlags usageToVulkan(TextureUsage usage)
 		{
 			vk::ImageUsageFlags flags;
 
-			if (usage & ImageUsage::ShaderRead)
+			if (usage & TextureUsage::ShaderRead)
 				flags |= vk::ImageUsageFlagBits::eSampled;
-			if (usage & ImageUsage::HostWrite)
+			if (usage & TextureUsage::HostWrite)
 				flags |= vk::ImageUsageFlagBits::eTransferDst;
-			if (usage & ImageUsage::ShaderWrite)
+			if (usage & TextureUsage::ShaderWrite)
 				flags |= vk::ImageUsageFlagBits::eStorage;
 
 			return flags;
 		}
 
-		vk::AccessFlags accessToVulkan(ImageUsage usage)
+		vk::AccessFlags accessToVulkan(TextureUsage usage)
 		{
 			vk::AccessFlags flags;
 
-			if (usage & ImageUsage::ShaderRead)
+			if (usage & TextureUsage::ShaderRead)
 				flags |= vk::AccessFlagBits::eShaderRead;
-			if (usage & ImageUsage::ShaderWrite)
+			if (usage & TextureUsage::ShaderWrite)
 				flags |= vk::AccessFlagBits::eShaderWrite;
-			if (usage & ImageUsage::HostRead)
+			if (usage & TextureUsage::HostRead)
 				flags |= vk::AccessFlagBits::eHostRead;
-			if (usage & ImageUsage::HostWrite)
+			if (usage & TextureUsage::HostWrite)
 				flags |= vk::AccessFlagBits::eHostWrite;
 
 			return flags;
 		}
 
-		vk::PipelineStageFlags stagesToVulkan(ImageStages stages)
+		vk::PipelineStageFlags stagesToVulkan(TextureStages stages)
 		{
 			vk::PipelineStageFlags flags;
 
-			if (stages & ImageStages::Graphics)
+			if (stages & TextureStages::Graphics)
 				flags |= vk::PipelineStageFlagBits::eAllGraphics;
-			if (stages & ImageStages::Compute)
+			if (stages & TextureStages::Compute)
 				flags |= vk::PipelineStageFlagBits::eComputeShader;
-			if (stages & ImageStages::RayTracing)
+			if (stages & TextureStages::RayTracing)
 			{
 				flags |= vk::PipelineStageFlagBits::eRayTracingShaderKHR;
 			}
@@ -102,32 +102,32 @@ namespace Axton::Vulkan
 			return flags;
 		}
 
-		vk::DescriptorType descripTypeToVulkan(ImageUsage usage)
+		vk::DescriptorType descripTypeToVulkan(TextureUsage usage)
 		{
-			if (usage & ImageUsage::ShaderWrite)
+			if (usage & TextureUsage::ShaderWrite)
 				return vk::DescriptorType::eStorageImage;
-			else if (usage & ImageUsage::ShaderRead)
+			else if (usage & TextureUsage::ShaderRead)
 				return vk::DescriptorType::eSampler;
 
 			return vk::DescriptorType::eSampledImage;
 		}
 
-		vk::ShaderStageFlags shaderStagesToVulkan(ImageStages stage)
+		vk::ShaderStageFlags shaderStagesToVulkan(TextureStages stage)
 		{
 			vk::ShaderStageFlags flags{};
 
-			if (stage & ImageStages::Graphics)
+			if (stage & TextureStages::Graphics)
 				flags |= vk::ShaderStageFlagBits::eAllGraphics;
-			if (stage & ImageStages::Compute)
+			if (stage & TextureStages::Compute)
 				flags |= vk::ShaderStageFlagBits::eCompute;
-			if (stage & ImageStages::RayTracing)
+			if (stage & TextureStages::RayTracing)
 				flags |= vk::ShaderStageFlagBits::eRaygenKHR;
 
 			return flags;
 		}
 	}
 
-	VKImage::VKImage(const Specs& specs)
+	VKTexture::VKTexture(const Specs& specs)
 		: m_Specs(specs)
 	{
 		UVector3 extents = specs.Extents;
@@ -135,7 +135,7 @@ namespace Axton::Vulkan
 		extents.y = Mathf::Clamp(extents.y, 1U, extents.y);
 		extents.z = Mathf::Clamp(extents.z, 1U, extents.z);
 
-		m_ImageCore = VKImageCore::Specs()
+		m_ImageCore = VKImage::Specs()
 			.setFormat(Utils::formatToVulkan(specs.Format))
 			.setImageType(Utils::typeToVulkan(specs.Type))
 			.setExtent(vk::Extent3D(extents.x, extents.y, extents.z))
@@ -150,7 +150,7 @@ namespace Axton::Vulkan
 		m_DescriptorSet = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(m_ImageCore->GetSampler(), m_ImageCore->GetView(), VK_IMAGE_LAYOUT_GENERAL);
 	}
 
-	bool VKImage::Resize(UVector3 extents)
+	bool VKTexture::Resize(UVector3 extents)
 	{
 		extents.x = Mathf::Clamp(extents.x, 1U, extents.x);
 		extents.y = Mathf::Clamp(extents.y, 1U, extents.y);
@@ -161,7 +161,7 @@ namespace Axton::Vulkan
 
 		m_Specs.Extents = extents;
 
-		m_ImageCore = VKImageCore::Specs()
+		m_ImageCore = VKImage::Specs()
 			.setFormat(Utils::formatToVulkan(m_Specs.Format))
 			.setImageType(Utils::typeToVulkan(m_Specs.Type))
 			.setExtent(vk::Extent3D(m_Specs.Extents.x, m_Specs.Extents.y, m_Specs.Extents.z))
@@ -174,20 +174,20 @@ namespace Axton::Vulkan
 			.Build();
 
 		vk::DescriptorPool imguiPool = static_cast<VKImGUILayer*>(&Application::Get().GetImGUILayer())->GetDescriptorPool();
-		VKRenderEngine::GetGraphicsContext()->GetDevice().freeDescriptorSets(imguiPool, { m_DescriptorSet });
+		VKRenderEngine::GetDevice().freeDescriptorSets(imguiPool, { m_DescriptorSet });
 		m_DescriptorSet = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(m_ImageCore->GetSampler(), m_ImageCore->GetView(), VK_IMAGE_LAYOUT_GENERAL);
 		return true;
 	}
 
-	void VKImage::SetData(void* data, size_t size)
+	void VKTexture::SetData(void* data, size_t size)
 	{
 
 	}
 
-	void VKImage::UpdateDescriptorSet(vk::DescriptorSet& set)
+	void VKTexture::UpdateDescriptorSet(vk::DescriptorSet& set)
 	{
-		vk::DescriptorImageInfo imageInfo{};
-		imageInfo
+		vk::DescriptorImageInfo TextureInfo{};
+		TextureInfo
 			.setImageLayout(Utils::layoutToVulkan(m_Specs.Usage))
 			.setImageView(m_ImageCore->GetView())
 			.setSampler(m_ImageCore->GetSampler());
@@ -199,12 +199,12 @@ namespace Axton::Vulkan
 			.setDstArrayElement(0)
 			.setDescriptorType(Utils::descripTypeToVulkan(m_Specs.Usage))
 			.setDescriptorCount(1)
-			.setPImageInfo(&imageInfo);
+			.setPImageInfo(&TextureInfo);
 
-		VKRenderEngine::GetGraphicsContext()->GetDevice().updateDescriptorSets({ descriptorWrite }, {  });
+		VKRenderEngine::GetDevice().updateDescriptorSets({ descriptorWrite }, {  });
 	}
 
-	vk::DescriptorPoolSize VKImage::GetPoolSize()
+	vk::DescriptorPoolSize VKTexture::GetPoolSize()
 	{
 		vk::DescriptorPoolSize poolSize{};
 		poolSize
@@ -214,7 +214,7 @@ namespace Axton::Vulkan
 		return poolSize;
 	}
 
-	vk::DescriptorSetLayoutBinding VKImage::GetLayoutBinding()
+	vk::DescriptorSetLayoutBinding VKTexture::GetLayoutBinding()
 	{
 		vk::DescriptorSetLayoutBinding layoutBinding{};
 		layoutBinding

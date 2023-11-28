@@ -39,6 +39,4 @@ namespace Axton
 		typedef typename std::remove_reference<T>::type TR;
 		return typeid(TR).name();
 	}
-
-	typedef unsigned char Byte;
 }

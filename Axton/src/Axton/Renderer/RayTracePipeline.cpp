@@ -7,13 +7,15 @@ namespace Axton
 {
 	Ref<RayTracePipeline> RayTracePipeline::Create(const Specs& specs)
 	{
+		AssertCore(false, "RayTracePipeline currently unsupported!");
+
 		switch (RenderEngine::GetAPI())
 		{
-		case RenderAPI::None: AX_ASSERT_CORE(false, "API::None currently unsupported!"); return nullptr;
+		case RenderAPI::None: AssertCore(false, "API::None currently unsupported!"); return nullptr;
 		case RenderAPI::Vulkan: return CreateRef<Vulkan::VKRayTracePipeline>(specs);
 		}
 
-		AX_ASSERT_CORE(false, "Unknown RenderEngine::API! (GraphicsPipeline)");
+		AssertCore(false, "Unknown RenderEngine::API! (GraphicsPipeline)");
 		return nullptr;
 	}
 }

@@ -6,7 +6,7 @@
 
 namespace Axton::Vulkan
 {
-	class VKImageCore
+	class VKImage
 	{
 	public:
 		struct Specs
@@ -35,20 +35,20 @@ namespace Axton::Vulkan
 			Specs& setViewType(vk::ImageViewType viewType) { ViewType = viewType; return *this; }
 			Specs& setAspectFlags(vk::ImageAspectFlags flags) { AspectFlags = flags; return *this; }
 
-			Ref<VKImageCore> Build() { return VKImageCore::Create(*this); }
-			Ref<VKImageCore> Build(vk::Image image) { return VKImageCore::Create(*this, image); }
+			Ref<VKImage> Build() { return VKImage::Create(*this); }
+			Ref<VKImage> Build(vk::Image image) { return VKImage::Create(*this, image); }
 		};
 
-		VKImageCore(const Specs& specs);
-		VKImageCore(const Specs& specs, vk::Image image);
-		~VKImageCore();
+		VKImage(const Specs& specs);
+		VKImage(const Specs& specs, vk::Image image);
+		~VKImage();
 
 		vk::Image& GetImage() { return m_Image; }
 		vk::ImageView& GetView() { return m_ImageView; }
 		vk::Sampler& GetSampler() { return m_Sampler; }
 
-		static Ref<VKImageCore> Create(const Specs& specs) { return CreateRef<VKImageCore>(specs); }
-		static Ref<VKImageCore> Create(const Specs& specs, vk::Image image) { return CreateRef<VKImageCore>(specs, image); }
+		static Ref<VKImage> Create(const Specs& specs) { return CreateRef<VKImage>(specs); }
+		static Ref<VKImage> Create(const Specs& specs, vk::Image image) { return CreateRef<VKImage>(specs, image); }
 
 	private:
 		vk::Image m_Image;

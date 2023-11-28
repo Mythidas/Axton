@@ -33,13 +33,29 @@ namespace Axton::Vulkan
 		}
 
 		VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-			VkDebugUtilsMessageSeverityFlagBitsEXT messaageSeverity,
+			VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 			VkDebugUtilsMessageTypeFlagsEXT messageType,
 			const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 			void* pUserData
 		)
 		{
-			CoreLog::Trace("Validation Layer: {0}\n", pCallbackData->pMessage);
+			if (messageSeverity & VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+			{
+				CoreLog::Error("Validation Layer: {0}\n", pCallbackData->pMessage);
+			}
+			else if (messageSeverity & VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+			{
+				CoreLog::Warn("Validation Layer: {0}\n", pCallbackData->pMessage);
+			}
+			else if (messageSeverity & VkDebugUtilsMessageSeverityFlagBitsEXT::VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
+			{
+				CoreLog::Info("Validation Layer: {0}\n", pCallbackData->pMessage);
+			}
+			else
+			{
+				CoreLog::Trace("Validation Layer: {0}\n", pCallbackData->pMessage);
+			}
+
 			return VK_FALSE;
 		}
 
@@ -254,7 +270,7 @@ namespace Axton::Vulkan
 			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
 			if (!Utils::checkValidationSupport(validationLayers))
-				AX_ASSERT_CORE("Validation layers requested, but not available!");
+				AssertCore(false, "Validation layers requested, but not available!");
 
 			createInfo
 				.setEnabledLayerCount(static_cast<uint32_t>(validationLayers.size()))
@@ -270,7 +286,7 @@ namespace Axton::Vulkan
 			.setPpEnabledExtensionNames(extensions.data());
 
 		m_Instance = vk::createInstance(createInfo);
-		AX_ASSERT_CORE(m_Instance, "Failed to create Instance!");
+		AssertCore(m_Instance, "Failed to create Instance!");
 	}
 
 	void VKGraphicsContext::createDebugMessenger()
@@ -283,7 +299,7 @@ namespace Axton::Vulkan
 			.setPUserData(nullptr);
 
 		vk::Result result = Utils::createDebugUtilsMessenger(m_Instance, &debugInfo, nullptr, &m_Debug);
-		AX_ASSERT_CORE(result == vk::Result::eSuccess, "Failed to create DebugMessengerEXT!");
+		AssertCore(result == vk::Result::eSuccess, "Failed to create DebugMessengerEXT!");
 	}
 
 	void VKGraphicsContext::createSurfaceKHR(void* windowHandle)
@@ -291,7 +307,7 @@ namespace Axton::Vulkan
 		VkSurfaceKHR rawSurface;
 		if (glfwCreateWindowSurface(m_Instance, static_cast<GLFWwindow*>(windowHandle), nullptr, &rawSurface) != VK_SUCCESS)
 		{
-			AX_ASSERT_CORE(false, "Failed to create SurfaceKHR!");
+			AssertCore(false, "Failed to create SurfaceKHR!");
 		}
 
 		m_Surface = rawSurface;
@@ -300,7 +316,7 @@ namespace Axton::Vulkan
 	void VKGraphicsContext::createPhysicalDevice(const std::vector<const char*> deviceExtensions)
 	{
 		std::vector<vk::PhysicalDevice> devices = m_Instance.enumeratePhysicalDevices();
-		AX_ASSERT_CORE(!devices.empty(), "Failed to find GPUs with Vulkan Support!");
+		AssertCore(!devices.empty(), "Failed to find GPUs with Vulkan Support!");
 
 		for (const auto& device : devices)
 		{
@@ -313,7 +329,7 @@ namespace Axton::Vulkan
 			}
 		}
 
-		AX_ASSERT_CORE(m_PhysicalDevice, "Failed to find suitable PhysicalDevice!");
+		AssertCore(m_PhysicalDevice, "Failed to find suitable PhysicalDevice!");
 	}
 
 	void VKGraphicsContext::findQueueFamilies(vk::PhysicalDevice device)
@@ -376,7 +392,7 @@ namespace Axton::Vulkan
 		}
 
 		m_Device = m_PhysicalDevice.createDevice(createInfo);
-		AX_ASSERT_CORE(m_Device, "Failed to create LogicalDevice!");
+		AssertCore(m_Device, "Failed to create LogicalDevice!");
 
 		m_GraphicsQueue = m_Device.getQueue(m_QueueFamilies.GraphicsFamily.value(), 0);
 		m_PresentQueue = m_Device.getQueue(m_QueueFamilies.PresentFamily.value(), 0);

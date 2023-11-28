@@ -2,7 +2,7 @@
 
 #include "Axton/Core/Defines.h"
 #include "RenderBuffer.h"
-#include "Image.h"
+#include "Texture.h"
 
 namespace Axton
 {
@@ -12,10 +12,10 @@ namespace Axton
 		struct Specs
 		{
 			std::vector<Ref<RenderBuffer>> Buffers;
-			std::vector<Ref<Image>> Images;
+			std::vector<Ref<Texture>> Images;
 
 			Specs& setBuffers(const std::vector<Ref<RenderBuffer>>& buffers) { Buffers = buffers; return *this; };
-			Specs& setImages(const std::vector<Ref<Image>>& images) { Images = images; return *this; }
+			Specs& setImages(const std::vector<Ref<Texture>>& images) { Images = images; return *this; }
 			Ref<PipelineAssets> Build() { return Create(*this); }
 		};
 

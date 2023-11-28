@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Axton/Renderer/Image.h"
-#include "../VKImageCore.h"
+#include "Axton/Renderer/Texture.h"
+#include "../VKImage.h"
 
 namespace Axton::Vulkan
 {
-	class VKImage : public Image
+	class VKTexture : public Texture
 	{
 	public:
-		VKImage(const Specs& specs);
+		VKTexture(const Specs& specs);
 
 		virtual bool Resize(UVector3 extents) override;
 		virtual void SetData(void* data, size_t size) override;
@@ -24,7 +24,7 @@ namespace Axton::Vulkan
 	private:
 		Specs m_Specs;
 
-		Ref<VKImageCore> m_ImageCore;
+		Ref<VKImage> m_ImageCore;
 		vk::DescriptorSet m_DescriptorSet;
 	};
 }

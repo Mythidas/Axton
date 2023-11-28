@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "VKPipelineAssets.h"
 #include "VKRenderBuffer.h"
-#include "VKImage.h"
+#include "VKTexture.h"
 #include "../VKRenderEngine.h"
 
 namespace Axton::Vulkan
@@ -18,14 +18,14 @@ namespace Axton::Vulkan
 
 	VKPipelineAssets::~VKPipelineAssets()
 	{
-		VKRenderEngine::GetGraphicsContext()->GetDevice().waitIdle();
-		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_DescriptorPool);
-		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_DescriptorSetLayout);
+		VKRenderEngine::GetDevice().waitIdle();
+		VKRenderEngine::GetDevice().destroy(m_DescriptorPool);
+		VKRenderEngine::GetDevice().destroy(m_DescriptorSetLayout);
 	}
 
 	void VKPipelineAssets::Rebuild()
 	{
-		VKRenderEngine::GetGraphicsContext()->GetDevice().freeDescriptorSets(m_DescriptorPool, m_DescriptorSets);
+		VKRenderEngine::GetDevice().freeDescriptorSets(m_DescriptorPool, m_DescriptorSets);
 		createDescriptorSets();
 	}
 
@@ -36,7 +36,7 @@ namespace Axton::Vulkan
 
 	vk::DescriptorSet& VKPipelineAssets::GetSet()
 	{
-		return m_DescriptorSets[VKRenderEngine::GetGraphicsContext()->GetCurrentFrame()];
+		return m_DescriptorSets[VKRenderEngine::GetCurrentFrame()];
 	}
 
 	void VKPipelineAssets::createDescriptorPool()
@@ -51,7 +51,7 @@ namespace Axton::Vulkan
 
 		for (auto& image : m_Specs.Images)
 		{
-			VKImage* vkImage = static_cast<VKImage*>(image.get());
+			VKTexture* vkImage = static_cast<VKTexture*>(image.get());
 			poolSizes.push_back(vkImage->GetPoolSize());
 		}
 
@@ -62,8 +62,8 @@ namespace Axton::Vulkan
 			.setFlags(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet)
 			.setMaxSets(static_cast<uint32_t>(VKRenderEngine::MAX_FRAMES_IN_FLIGHT));
 
-		m_DescriptorPool = VKRenderEngine::GetGraphicsContext()->GetDevice().createDescriptorPool(createInfo);
-		AX_ASSERT_CORE(m_DescriptorPool, "Failed to create DescriptorPool!");
+		m_DescriptorPool = VKRenderEngine::GetDevice().createDescriptorPool(createInfo);
+		AssertCore(m_DescriptorPool, "Failed to create DescriptorPool!");
 	}
 
 	void VKPipelineAssets::createDescriptorSetLayout()
@@ -78,7 +78,7 @@ namespace Axton::Vulkan
 
 		for (auto& image : m_Specs.Images)
 		{
-			VKImage* vkImage = static_cast<VKImage*>(image.get());
+			VKTexture* vkImage = static_cast<VKTexture*>(image.get());
 			layoutBindings.push_back(vkImage->GetLayoutBinding());
 		}
 
@@ -87,8 +87,8 @@ namespace Axton::Vulkan
 			.setBindingCount(static_cast<uint32_t>(layoutBindings.size()))
 			.setPBindings(layoutBindings.data());
 
-		m_DescriptorSetLayout = VKRenderEngine::GetGraphicsContext()->GetDevice().createDescriptorSetLayout(layoutInfo);
-		AX_ASSERT_CORE(m_DescriptorSetLayout, "Failed to create DescriptorSetLayout!");
+		m_DescriptorSetLayout = VKRenderEngine::GetDevice().createDescriptorSetLayout(layoutInfo);
+		AssertCore(m_DescriptorSetLayout, "Failed to create DescriptorSetLayout!");
 	}
 
 	void VKPipelineAssets::createDescriptorSets()
@@ -101,7 +101,7 @@ namespace Axton::Vulkan
 			.setDescriptorSetCount(static_cast<uint32_t>(layouts.size()))
 			.setPSetLayouts(layouts.data());
 
-		m_DescriptorSets = VKRenderEngine::GetGraphicsContext()->GetDevice().allocateDescriptorSets(allocInfo);
+		m_DescriptorSets = VKRenderEngine::GetDevice().allocateDescriptorSets(allocInfo);
 
 		for (auto& set : m_DescriptorSets)
 		{
@@ -113,7 +113,7 @@ namespace Axton::Vulkan
 
 			for (auto& image : m_Specs.Images)
 			{
-				VKImage* vkImage = static_cast<VKImage*>(image.get());
+				VKTexture* vkImage = static_cast<VKTexture*>(image.get());
 				vkImage->UpdateDescriptorSet(set);
 			}
 		}

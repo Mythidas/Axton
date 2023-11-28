@@ -23,10 +23,10 @@ namespace Axton
 		static bool s_Keys[352];
 		static Vector2 s_MousePosition;
 
-		static void OnKeyPressed(int key);
-		static void OnKeyReleased(int key);
-		static void OnMouseMoved(double x, double y);
-		static void OnMouseButtonPressed(int button);
-		static void OnMouseButtonReleased(int button);
+		static bool onKeyPressed(int key);
+		static bool onKeyReleased(int key);
+		static bool onMouseMoved(double x, double y);
+		static bool onMouseButtonPressed(int button);
+		static bool onMouseButtonReleased(int button);
 	};
 }

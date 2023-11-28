@@ -21,51 +21,28 @@ public:
 	std::vector<Material> Materials;
 	World world{ 10000000 };
 
-	Ref<ComputePipeline> m_Denoiser;
-	Ref<PipelineAssets> m_DenoiserAssets;
-	Ref<Image> m_VelocityBuffer;
-
 	virtual void OnAttach() override
 	{
-		m_ViewportWidth = Application::Get().GetWindow().GetWidth();
-		m_ViewportHeight = Application::Get().GetWindow().GetHeight();
+		m_ViewportWidth = Application::Get().GetWindow()->GetWidth();
+		m_ViewportHeight = Application::Get().GetWindow()->GetHeight();
 
-		m_FinalImage = Image::Specs()
+		m_FinalImage = Texture::Specs()
 			.setBinding(0)
 			.setExtents({ m_ViewportWidth, m_ViewportHeight, 1 })
-			.setFormat(ImageFormat::RGBA32F)
-			.setStages(ImageStages::Compute)
-			.setUsage(ImageUsage::ShaderWrite | ImageUsage::ShaderRead)
-			.setType(ImageType::e2D)
-			.Build();
-
-		m_VelocityBuffer = Image::Specs()
-			.setBinding(1)
-			.setExtents({ m_ViewportWidth, m_ViewportHeight, 1 })
-			.setFormat(ImageFormat::RG32F)
-			.setStages(ImageStages::Compute)
-			.setUsage(ImageUsage::ShaderWrite | ImageUsage::ShaderRead)
-			.setType(ImageType::e2D)
+			.setFormat(TextureFormat::RGBA32F)
+			.setStages(TextureStages::Compute)
+			.setUsage(TextureUsage::ShaderWrite | TextureUsage::ShaderRead)
+			.setType(TextureType::e2D)
 			.Build();
 
 		m_CompAssets = PipelineAssets::Specs()
 			.setBuffers({ world.m_ChunkStorage, world.m_VoxelStorage, world.m_MaterialStorage, m_Camera.m_CameraBuffer })
-			.setImages({ m_FinalImage, m_VelocityBuffer })
+			.setImages({ m_FinalImage })
 			.Build();
 
 		m_CompPipeline = ComputePipeline::Specs()
-			.setShaderPath("C:\\Programming\\Axton\\Axton\\internal\\shaders\\VoxelImageGen.spv")
+			.setShaderPath("..\\..\\Axton\\internal\\shaders\\VoxelImageGen.spv")
 			.setAssets(m_CompAssets)
-			.Build();
-
-		m_DenoiserAssets = PipelineAssets::Specs()
-			.setBuffers({ m_Camera.m_CameraBuffer })
-			.setImages({ m_FinalImage, m_VelocityBuffer })
-			.Build();
-
-		m_Denoiser = ComputePipeline::Specs()
-			.setShaderPath("C:\\Programming\\Axton\\Axton\\internal\\shaders\\Denoiser.spv")
-			.setAssets(m_DenoiserAssets)
 			.Build();
 
 		Timer timer("Gen All Chunks");
@@ -78,14 +55,14 @@ public:
 		//}
 
 		{
-			VoxModelLoader loader("C:\\Programming\\Axton\\Sandbox\\Assets\\Models\\green_cube.vox");
+			VoxModelLoader loader("..\\Assets\\Models\\green_cube.vox");
 			Ref<Chunk> chunk = loader.GenChunk(world, { -50, -40, 30 });
 			Material mat{ 0.5, 1.0, 0.0, 0.7 };
 			chunk->MaterialIndex = world.AddMaterial(CreateRef<Material>(mat));
 		}
 
 		{
-			VoxModelLoader loader("C:\\Programming\\Axton\\Sandbox\\Assets\\Models\\temple.vox");
+			VoxModelLoader loader("..\\Assets\\Models\\temple.vox");
 			Ref<Chunk> chunk = loader.GenChunk(world, { 0, -10, 50 });
 			Material mat{ 0.5, 1.0, 1.0, 0.0 };
 			chunk->MaterialIndex = world.AddMaterial(CreateRef<Material>(mat));
@@ -104,7 +81,6 @@ public:
 		}
 
 		m_CompPipeline->Dispatch(m_ViewportWidth / (uint32_t)8, m_ViewportHeight / (uint32_t)8, 1);
-		m_Denoiser->Dispatch(m_ViewportWidth / (uint32_t)8, m_ViewportHeight / (uint32_t)8, 1);
 	}
 
 	virtual void OnRenderUI() override
@@ -176,7 +152,7 @@ public:
 
 		if (m_FinalImage)
 		{
-			ImGui::Image((ImTextureID)m_FinalImage->GetRendererID(), { (float)m_FinalImage->GetExtents().x, (float)m_FinalImage->GetExtents().y }, ImVec2(0, 1.0f), ImVec2(1.0f, 0));
+			ImGui::Texture((ImTextureID)m_FinalImage->GetRendererID(), { (float)m_FinalImage->GetExtents().x, (float)m_FinalImage->GetExtents().y }, ImVec2(0, 1.0f), ImVec2(1.0f, 0));
 		}
 		ImGui::End();
 	}
@@ -185,7 +161,7 @@ private:
 	RayCamera m_Camera;
 	uint32_t m_ViewportWidth = 0, m_ViewportHeight = 0;
 
-	Ref<Image> m_FinalImage;
+	Ref<Texture> m_FinalImage;
 	Ref<PipelineAssets> m_CompAssets;
 	Ref<ComputePipeline> m_CompPipeline;
 };

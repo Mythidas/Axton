@@ -168,7 +168,7 @@ private:
 	{
 		if (Voxels == nullptr)
 		{
-			AX_ASSERT(false, "Failed to map buffer before editing Voxel Grid!");
+			Log::Error("Failed to map buffer before editing Voxel Grid!");
 			return;
 		}
 

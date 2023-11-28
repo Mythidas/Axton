@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "Input.h"
 #include "Application.h"
-#include "Axton/Event/Events.h"
+#include "Window.h"
 
 #include <GLFW/glfw3.h>
 
@@ -13,11 +13,11 @@ namespace Axton
 
 	Input::Input()
 	{
-		Events::OnKeyPressed += AX_BIND_FNC(Input::OnKeyPressed);
-		Events::OnKeyReleased += AX_BIND_FNC(Input::OnKeyReleased);
-		Events::OnMouseMoved += AX_BIND_FNC(Input::OnMouseMoved);
-		Events::OnMouseButtonPressed += AX_BIND_FNC(Input::OnMouseButtonPressed);
-		Events::OnMouseButtonReleased += AX_BIND_FNC(Input::OnMouseButtonReleased);
+		Window::OnKeyPressed += AX_BIND_FNC(Input::onKeyPressed);
+		Window::OnKeyReleased += AX_BIND_FNC(Input::onKeyReleased);
+		Window::OnMouseMoved += AX_BIND_FNC(Input::onMouseMoved);
+		Window::OnMouseButtonPressed += AX_BIND_FNC(Input::onMouseButtonPressed);
+		Window::OnMouseButtonReleased += AX_BIND_FNC(Input::onMouseButtonReleased);
 	}
 
 	void Input::Construct()
@@ -42,25 +42,28 @@ namespace Axton
 
 	void Input::LockCursor(bool lock)
 	{
-		Application::Get().GetWindow().SetCursorMode(lock);
+		Application::Get().GetWindow()->SetCursorMode(lock);
 	}
 
-	void Input::OnKeyPressed(int key)
+	bool Input::onKeyPressed(int key)
 	{
 		s_Keys[key] = true;
+		return false;
 	}
 
-	void Input::OnKeyReleased(int key)
+	bool Input::onKeyReleased(int key)
 	{
 		s_Keys[key] = false;
+		return false;
 	}
 
-	void Input::OnMouseMoved(double x, double y)
+	bool Input::onMouseMoved(double x, double y)
 	{
 		s_MousePosition = Vector2((float)x, (float)y);
+		return false;
 	}
 
-	void Input::OnMouseButtonPressed(int button)
+	bool Input::onMouseButtonPressed(int button)
 	{
 		if (button == 0)
 			s_Keys[KeyCode::LeftMouseButton] = true;
@@ -68,9 +71,11 @@ namespace Axton
 			s_Keys[KeyCode::RightMouseButton] = true;
 		else if (button == 2)
 			s_Keys[KeyCode::MiddleMouseButton] = true;
+
+		return false;
 	}
 
-	void Input::OnMouseButtonReleased(int button)
+	bool Input::onMouseButtonReleased(int button)
 	{
 		if (button == 0)
 			s_Keys[KeyCode::LeftMouseButton] = false;
@@ -78,5 +83,7 @@ namespace Axton
 			s_Keys[KeyCode::RightMouseButton] = false;
 		else if (button == 2)
 			s_Keys[KeyCode::MiddleMouseButton] = false;
+
+		return false;
 	}
 }

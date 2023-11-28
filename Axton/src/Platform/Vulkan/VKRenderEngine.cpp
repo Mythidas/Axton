@@ -1,6 +1,8 @@
 #include "axpch.h"
 #include "VKRenderEngine.h"
-#include "Axton/Event/Events.h"
+#include "Axton/Core/Window.h"
+#include "Client API/VKSwapchain.h"
+#include "Client API/VKRenderPass.h"
 
 #include <GLFW/glfw3.h>
 
@@ -33,14 +35,10 @@ namespace Axton::Vulkan
 	VKRenderEngine::VKRenderEngine(void* windowHandle, const Specs& specs)
 		: m_Specs(specs)
 	{
-		AX_ASSERT_CORE(!s_Singleton, "Only one VKRendererAPI can be created!");
+		AssertCore(!s_Singleton, "Only one VKRendererAPI can be created!");
 		s_Singleton = this;
 
 		m_GraphicsContext = VKGraphicsContext::Create(windowHandle, Utils::getRequiredExtensions(specs.Extensions), { "VK_LAYER_KHRONOS_validation" });
-		m_Swapchain = VKSwapchain::Create();
-		m_RenderPass = VKRenderPass::Create(m_Swapchain->GetFormat());
-
-		m_Swapchain->CreateFramebuffers(m_RenderPass->GetRenderPass());
 
 		vk::SemaphoreCreateInfo semaphoreInfo{};
 		vk::FenceCreateInfo fenceInfo{};
@@ -56,7 +54,7 @@ namespace Axton::Vulkan
 			m_RenderFinished[i] = m_GraphicsContext->GetDevice().createSemaphore(semaphoreInfo);
 			m_InFlight[i] = m_GraphicsContext->GetDevice().createFence(fenceInfo);
 
-			AX_ASSERT_CORE(m_ImageAvailable[i] && m_RenderFinished[i] && m_InFlight[i], "Failed to create SyncObjects!");
+			AssertCore(m_ImageAvailable[i] && m_RenderFinished[i] && m_InFlight[i], "Failed to create SyncObjects!");
 		}
 
 		m_GraphicsContext->QueueDeletion([this]()
@@ -75,7 +73,7 @@ namespace Axton::Vulkan
 			}
 		});
 
-		Events::OnWindowResize += AX_BIND_FNC(onWindowResized);
+		Window::OnWindowResize += AX_BIND_FNC(onWindowResized);
 	}
 
 	VKRenderEngine::~VKRenderEngine()
@@ -83,112 +81,11 @@ namespace Axton::Vulkan
 		m_GraphicsContext->Destroy();
 	}
 
-	void VKRenderEngine::BeginFrame()
-	{
-		if (m_FramebufferInvalid)
-		{
-			m_FrameInvalid = true;
-			return;
-		}
-
-		uint32_t currentFrame = m_GraphicsContext->GetCurrentFrame();
-
-		if (m_GraphicsContext->GetDevice().waitForFences({ m_InFlight[currentFrame] }, VK_TRUE, UINT64_MAX) != vk::Result::eSuccess)
-		{
-			m_FrameInvalid = true;
-			return;
-		}
-
-		if (m_FramebufferResized)
-		{
-			m_FramebufferResized = false;
-			m_FrameInvalid = true;
-			m_Swapchain->Recreate(m_RenderPass->GetRenderPass());
-			return;
-		}
-
-		vk::Result result = m_GraphicsContext->GetDevice().acquireNextImageKHR(m_Swapchain->GetSwapchain(), UINT64_MAX, m_ImageAvailable[currentFrame], VK_NULL_HANDLE, &m_Swapchain->m_ImageIndex);
-
-		if (result == vk::Result::eErrorOutOfDateKHR)
-		{
-			m_FrameInvalid = true;
-			m_Swapchain->Recreate(m_RenderPass->GetRenderPass());
-			return;
-		}
-		else if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR)
-		{
-			AX_ASSERT_CORE(false, "Failed to aquire Swapchain Image!");
-			m_FrameInvalid = true;
-			return;
-		}
-
-		m_GraphicsContext->GetDevice().resetFences({ m_InFlight[currentFrame] });
-
-		vk::CommandBufferBeginInfo beginInfo{};
-		beginInfo
-			.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit)
-			.setPInheritanceInfo(nullptr);
-
-		vk::CommandBuffer buffer = m_GraphicsContext->GetCommandBuffer();
-		buffer.begin(beginInfo);
-
-		m_GraphicsContext->ClearGraphicsCommands();
-	}
-
-	void VKRenderEngine::EndFrame()
-	{
-		if (m_FrameInvalid)
-		{
-			m_FrameInvalid = false;
-			return;
-		}
-
-		vk::ClearValue clearColor(vk::ClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f }));
-		vk::RenderPassBeginInfo renderPassInfo{};
-		renderPassInfo
-			.setRenderPass(m_RenderPass->GetRenderPass())
-			.setFramebuffer(m_Swapchain->GetFramebuffer())
-			.setRenderArea(vk::Rect2D().setOffset({ 0, 0 }).setExtent(m_Swapchain->GetExtent()))
-			.setClearValueCount(1)
-			.setPClearValues(&clearColor);
-
-		m_GraphicsContext->GetCommandBuffer().beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
-		m_GraphicsContext->FlushGraphicsCommands();
-		m_GraphicsContext->GetCommandBuffer().endRenderPass();
-
-		m_GraphicsContext->FlushComputeCommands();
-
-		m_GraphicsContext->GetCommandBuffer().end();
-
-		uint32_t currentFrame = m_GraphicsContext->GetCurrentFrame();
-
-		VKGraphicsContext::QueueSubmitInfo submitInfo{};
-		submitInfo.WaitSemaphores = { m_ImageAvailable[currentFrame] };
-		submitInfo.WaitStages = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
-		submitInfo.SignalSemaphores = { m_RenderFinished[currentFrame] };
-		submitInfo.Fence = m_InFlight[currentFrame];
-		m_GraphicsContext->SubmitGraphicsQueue(submitInfo);
-
-		std::vector<vk::SwapchainKHR> swapchains = { m_Swapchain->GetSwapchain() };
-		submitInfo.WaitSemaphores = { m_RenderFinished[currentFrame] };
-		vk::Result result = m_GraphicsContext->SubmitPresentQueue(submitInfo, swapchains, m_Swapchain->m_ImageIndex);
-
-		if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR || m_FramebufferResized)
-		{
-			m_FramebufferResized = false;
-			m_Swapchain->Recreate(m_RenderPass->GetRenderPass());
-			return;
-		}
-		else if (result != vk::Result::eSuccess)
-		{
-			AX_ASSERT_CORE(false, "Failed to present Swapchain Image!");
-		}
-
-		m_GraphicsContext->Update();
-	}
-
 	void VKRenderEngine::RenderFrame()
 	{
+		VKSwapchain& vkSwapchain = static_cast<VKSwapchain&>(*GetSwapchain().get());
+		VKRenderPass& vkRenderPass = static_cast<VKRenderPass&>(*GetRenderPass().get());
+
 		if (m_FramebufferInvalid)
 		{
 			m_GraphicsContext->ClearGraphicsCommands();
@@ -202,22 +99,22 @@ namespace Axton::Vulkan
 		if (m_FramebufferResized)
 		{
 			m_FramebufferResized = false;
-			m_Swapchain->Recreate(m_RenderPass->GetRenderPass());
+			GetSwapchain()->Recreate();
 			m_GraphicsContext->ClearGraphicsCommands();
 			return;
 		}
 
-		vk::Result result = m_GraphicsContext->GetDevice().acquireNextImageKHR(m_Swapchain->GetSwapchain(), UINT64_MAX, m_ImageAvailable[currentFrame], VK_NULL_HANDLE, &m_Swapchain->m_ImageIndex);
+		vk::Result result = m_GraphicsContext->GetDevice().acquireNextImageKHR(vkSwapchain, UINT64_MAX, m_ImageAvailable[currentFrame], VK_NULL_HANDLE, &vkSwapchain.m_ImageIndex);
 
 		if (result == vk::Result::eErrorOutOfDateKHR)
 		{
-			m_Swapchain->Recreate(m_RenderPass->GetRenderPass());
+			GetSwapchain()->Recreate();
 			m_GraphicsContext->ClearGraphicsCommands();
 			return;
 		}
 		else if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR)
 		{
-			AX_ASSERT_CORE(false, "Failed to aquire Swapchain Image!");
+			AssertCore(false, "Failed to aquire Swapchain Image!");
 			m_GraphicsContext->ClearGraphicsCommands();
 			return;
 		}
@@ -235,9 +132,9 @@ namespace Axton::Vulkan
 		vk::ClearValue clearColor(vk::ClearColorValue({ 0.0f, 0.0f, 0.0f, 1.0f }));
 		vk::RenderPassBeginInfo renderPassInfo{};
 		renderPassInfo
-			.setRenderPass(m_RenderPass->GetRenderPass())
-			.setFramebuffer(m_Swapchain->GetFramebuffer())
-			.setRenderArea(vk::Rect2D().setOffset({ 0, 0 }).setExtent(m_Swapchain->GetExtent()))
+			.setRenderPass(vkRenderPass)
+			.setFramebuffer(vkSwapchain.m_Framebuffers[vkSwapchain.m_ImageIndex])
+			.setRenderArea(vk::Rect2D().setOffset({ 0, 0 }).setExtent(vkSwapchain.m_Extent))
 			.setClearValueCount(1)
 			.setPClearValues(&clearColor);
 
@@ -256,25 +153,25 @@ namespace Axton::Vulkan
 		submitInfo.Fence = m_InFlight[currentFrame];
 		m_GraphicsContext->SubmitGraphicsQueue(submitInfo);
 
-		std::vector<vk::SwapchainKHR> swapchains = { m_Swapchain->GetSwapchain() };
+		std::vector<vk::SwapchainKHR> swapchains = { vkSwapchain };
 		submitInfo.WaitSemaphores = { m_RenderFinished[currentFrame] };
-		result = m_GraphicsContext->SubmitPresentQueue(submitInfo, swapchains, m_Swapchain->m_ImageIndex);
+		result = m_GraphicsContext->SubmitPresentQueue(submitInfo, swapchains, vkSwapchain.m_ImageIndex);
 
 		if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR || m_FramebufferResized)
 		{
 			m_FramebufferResized = false;
-			m_Swapchain->Recreate(m_RenderPass->GetRenderPass());
+			GetSwapchain()->Recreate();
 			return;
 		}
 		else if (result != vk::Result::eSuccess)
 		{
-			AX_ASSERT_CORE(false, "Failed to present Swapchain Image!");
+			AssertCore(false, "Failed to present Swapchain Image!");
 		}
 
 		m_GraphicsContext->Update();
 	}
 
-	void VKRenderEngine::onWindowResized(int width, int height)
+	bool VKRenderEngine::onWindowResized(int width, int height)
 	{
 		m_FramebufferInvalid = false;
 
@@ -284,5 +181,6 @@ namespace Axton::Vulkan
 		}
 
 		m_FramebufferResized = true;
+		return false;
 	}
 }

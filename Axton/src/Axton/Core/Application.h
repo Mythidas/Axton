@@ -23,7 +23,7 @@ namespace Axton
 		};
 
 		Application(const Specs& specs);
-		virtual ~Application() {}
+		virtual ~Application();
 
 		void Run();
 
@@ -33,8 +33,9 @@ namespace Axton
 		void PopLayer(Layer* layer) { m_LayerStack.PopLayer(layer); }
 		void PopOverlay(Layer* overlay) { m_LayerStack.PopOverlay(overlay); }
 
-		Window& GetWindow() { return *m_Window; }
-		ImGUILayer& GetImGUILayer() { return *m_ImGUILayer; }
+		static Scope<Window>& GetWindow() { return s_Instance->m_Window; }
+		static Scope<RenderEngine>& GetRenderEngine() { return s_Instance->m_RenderEngine; }
+		static ImGUILayer& GetImGUILayer() { return *s_Instance->m_ImGUILayer; }
 
 		static Application& Get() { return *s_Instance; }
 
@@ -49,8 +50,8 @@ namespace Axton
 		ImGUILayer* m_ImGUILayer;
 
 	private:
-		void OnWindowClose();
-		void OnWindowResize(int width, int height);
+		bool OnWindowClose();
+		bool OnWindowResize(int width, int height);
 	};
 
 	// To be defined in CLIENT

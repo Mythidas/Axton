@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Axton/Debug/CoreLog.h"
+#include "Axton/Debug/Assert.h"
 #include "Axton/Debug/Timer.h"
-#include "Axton/Core/Assert.h"
 
 #include <iostream>
 #include <fstream>

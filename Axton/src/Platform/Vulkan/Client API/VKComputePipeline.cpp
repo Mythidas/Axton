@@ -16,14 +16,14 @@ namespace Axton::Vulkan
 
 	VKComputePipeline::~VKComputePipeline()
 	{
-		VKRenderEngine::GetGraphicsContext()->GetDevice().waitIdle();
-		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Pipeline);
-		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Layout);
+		VKRenderEngine::GetDevice().waitIdle();
+		VKRenderEngine::GetDevice().destroy(m_Pipeline);
+		VKRenderEngine::GetDevice().destroy(m_Layout);
 	}
 
 	void VKComputePipeline::Dispatch(uint32_t width, uint32_t height, uint32_t depth)
 	{
-		vk::CommandBuffer buffer = VKRenderEngine::GetGraphicsContext()->GetCommandBuffer();
+		vk::CommandBuffer buffer = VKRenderEngine::GetCommandBuffer();
 
 		VKRenderEngine::GetGraphicsContext()->QueueComputeCommand([width, height, depth, this](vk::CommandBuffer& buffer)
 		{
@@ -46,8 +46,8 @@ namespace Axton::Vulkan
 			.setSetLayoutCount(layout ? 1 : 0)
 			.setPSetLayouts(&layout);
 
-		m_Layout = VKRenderEngine::GetGraphicsContext()->GetDevice().createPipelineLayout(createInfo);
-		AX_ASSERT_CORE(m_Layout, "Failed to create PipelineLayout! (ComputePipeline)");
+		m_Layout = VKRenderEngine::GetDevice().createPipelineLayout(createInfo);
+		AssertCore(m_Layout, "Failed to create PipelineLayout! (ComputePipeline)");
 	}
 
 	void VKComputePipeline::createPipeline()
@@ -60,7 +60,7 @@ namespace Axton::Vulkan
 			.setLayout(m_Layout)
 			.setStage(computeStageInfo);
 
-		m_Pipeline = VKRenderEngine::GetGraphicsContext()->GetDevice().createComputePipelines(VK_NULL_HANDLE, { createInfo }).value[0];
-		AX_ASSERT_CORE(m_Pipeline, "Failed to create Pipeline! (ComputePipeline)");
+		m_Pipeline = VKRenderEngine::GetDevice().createComputePipelines(VK_NULL_HANDLE, { createInfo }).value[0];
+		AssertCore(m_Pipeline, "Failed to create Pipeline! (ComputePipeline)");
 	}
 }

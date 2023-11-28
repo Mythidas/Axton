@@ -11,8 +11,8 @@ namespace Axton::Vulkan
 
 	VKRayTracePipeline::~VKRayTracePipeline()
 	{
-		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Pipeline);
-		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Layout);
+		VKRenderEngine::GetDevice().destroy(m_Pipeline);
+		VKRenderEngine::GetDevice().destroy(m_Layout);
 	}
 
 	void VKRayTracePipeline::createPipelineLayout()

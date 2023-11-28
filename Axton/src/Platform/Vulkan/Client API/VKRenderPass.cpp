@@ -1,16 +1,19 @@
 #include "axpch.h"
 #include "VKRenderPass.h"
-#include "VKRenderEngine.h"
+#include "../VKUtils.h"
+#include "../VKRenderEngine.h"
+
 
 namespace Axton::Vulkan
 {
-	Ref<VKRenderPass> VKRenderPass::Create(vk::Format format)
+	VKRenderPass::VKRenderPass(const Specs& specs)
 	{
-		Ref<VKRenderPass> renderPass = CreateRef<VKRenderPass>();
+		auto availableFormats = VKRenderEngine::GetPhysicalDevice().getSurfaceFormatsKHR(VKRenderEngine::GetSurface());
+		vk::SurfaceFormatKHR format = VKUtils::ChooseSurfaceFormat(availableFormats);
 
 		vk::AttachmentDescription colorAttachment{};
 		colorAttachment
-			.setFormat(format)
+			.setFormat(format.format)
 			.setSamples(vk::SampleCountFlagBits::e1)
 			.setLoadOp(vk::AttachmentLoadOp::eClear)
 			.setStoreOp(vk::AttachmentStoreOp::eStore)
@@ -48,15 +51,13 @@ namespace Axton::Vulkan
 			.setDependencyCount(1)
 			.setPDependencies(&dependency);
 
-		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
-		renderPass->m_RenderPass = device.createRenderPass(renderPassInfo);
-		AX_ASSERT_CORE(renderPass->m_RenderPass, "Failed to create RenderPass!");
+		vk::Device device = VKRenderEngine::GetDevice();
+		m_RenderPass = device.createRenderPass(renderPassInfo);
+		AssertCore(m_RenderPass, "Failed to create RenderPass!");
+	}
 
-		VKRenderEngine::GetGraphicsContext()->QueueDeletion([device, renderPass]()
-		{
-			device.destroy(renderPass->m_RenderPass);
-		});
-
-		return renderPass;
+	VKRenderPass::~VKRenderPass()
+	{
+		VKRenderEngine::GetDevice().destroy(m_RenderPass);
 	}
 }

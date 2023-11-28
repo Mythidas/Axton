@@ -9,7 +9,7 @@ namespace Axton::Vulkan
 	{
 		Ref<VKBuffer> buffer = CreateRef<VKBuffer>();
 		buffer->m_Specs = specs;
-		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
+		vk::Device device = VKRenderEngine::GetDevice();
 
 		vk::BufferCreateInfo bufferInfo{};
 		bufferInfo
@@ -29,28 +29,19 @@ namespace Axton::Vulkan
 		buffer->m_Memory = device.allocateMemory(allocInfo);
 		device.bindBufferMemory(buffer->m_Buffer, buffer->m_Memory, 0);
 
-		if (!specs.Staging)
-		{
-			VKRenderEngine::GetGraphicsContext()->QueueDeletion([device, buffer]()
-			{
-				device.destroy(buffer->m_Buffer);
-				device.freeMemory(buffer->m_Memory);
-			});
-		}
-
 		return buffer;
 	}
 
 	VKBuffer::~VKBuffer()
 	{
-		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Buffer);
-		VKRenderEngine::GetGraphicsContext()->GetDevice().freeMemory(m_Memory);
+		VKRenderEngine::GetDevice().destroy(m_Buffer);
+		VKRenderEngine::GetDevice().freeMemory(m_Memory);
 	}
 
 	void VKBuffer::SetData(void* data, size_t size, uint32_t offset)
 	{
-		AX_ASSERT_CORE(size + offset <= m_Specs.Size, "Size is larger than allocated buffer!");
-		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
+		AssertCore(size + offset <= m_Specs.Size, "Size is larger than allocated buffer!");
+		vk::Device device = VKRenderEngine::GetDevice();
 
 		if (m_Specs.MemProperties & vk::MemoryPropertyFlagBits::eDeviceLocal)
 		{
@@ -84,14 +75,14 @@ namespace Axton::Vulkan
 		}
 		else
 		{
-			AX_ASSERT_CORE(false, "Buffer MemProperties not supported for SetData!");
+			AssertCore(false, "Buffer MemProperties not supported for SetData!");
 		}
 	}
 
 	void* VKBuffer::MapBufferPtr(uint32_t offset, size_t size)
 	{
-		AX_ASSERT_CORE(size + offset <= m_Specs.Size, "Size is larger than allocated buffer!");
-		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
+		AssertCore(size + offset <= m_Specs.Size, "Size is larger than allocated buffer!");
+		vk::Device device = VKRenderEngine::GetDevice();
 
 		if (m_Specs.MemProperties & vk::MemoryPropertyFlagBits::eDeviceLocal)
 		{
@@ -111,14 +102,14 @@ namespace Axton::Vulkan
 		}
 		else
 		{
-			AX_ASSERT_CORE(false, "Buffer MemProperties not supported for SetData!");
+			AssertCore(false, "Buffer MemProperties not supported for SetData!");
 			return nullptr;
 		}
 	}
 
 	void VKBuffer::UnmapBufferPtr()
 	{
-		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
+		vk::Device device = VKRenderEngine::GetDevice();
 
 		if (m_Specs.MemProperties & vk::MemoryPropertyFlagBits::eDeviceLocal)
 		{
@@ -142,7 +133,7 @@ namespace Axton::Vulkan
 		}
 		else
 		{
-			AX_ASSERT_CORE(false, "Buffer MemProperties not supported for SetData!");
+			AssertCore(false, "Buffer MemProperties not supported for SetData!");
 		}
 	}
 }

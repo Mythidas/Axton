@@ -1,8 +1,6 @@
 #include "axpch.h"
 #include "WindowsWindow.h"
 
-#include "Axton/Core/Assert.h"
-#include "Axton/Event/Events.h"
 #include "Axton/Renderer/RenderEngine.h"
 
 namespace Axton
@@ -12,14 +10,14 @@ namespace Axton
 		m_Specs = specs;
 
 		int glfw = glfwInit();
-		AX_ASSERT_CORE(glfw, "Failed to Init GLFW");
+		AssertCore(glfw, "Failed to Init GLFW");
 
 
 		if (RenderEngine::GetAPI() == RenderAPI::Vulkan)
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 		m_Window = glfwCreateWindow(specs.Width, specs.Height, specs.Title.c_str(), nullptr, nullptr);
-		AX_ASSERT_CORE(m_Window, "Failed to create GLFW window");
+		AssertCore(m_Window, "Failed to create GLFW window");
 
 		glfwMakeContextCurrent(m_Window);
 
@@ -38,7 +36,7 @@ namespace Axton
 
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 		{
-			Events::OnWindowClose();
+			Window::OnWindowClose();
 		});
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
@@ -47,30 +45,30 @@ namespace Axton
 			wWindow->m_Specs.Width = width;
 			wWindow->m_Specs.Height = height;
 
-			Events::OnWindowResize(width, height);
+			Window::OnWindowResize(width, height);
 		});
 
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
 			if (action == GLFW_PRESS)
-				Events::OnKeyPressed(key);
+				Window::OnKeyPressed(key);
 			else if (action == GLFW_RELEASE)
-				Events::OnKeyReleased(key);
+				Window::OnKeyReleased(key);
 		});
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos)
 		{
-			Events::OnMouseMoved(xpos, ypos);
+				Window::OnMouseMoved(xpos, ypos);
 		});
 
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 		{
 			if (action == GLFW_PRESS)
 			{
-				Events::OnMouseButtonPressed(button);
+				Window::OnMouseButtonPressed(button);
 			}
 			else if (action == GLFW_RELEASE)
-				Events::OnMouseButtonReleased(button);
+				Window::OnMouseButtonReleased(button);
 		});
 
 		CoreLog::Info("Window Created {0} {1}:{2}", specs.Title, specs.Width, specs.Height);

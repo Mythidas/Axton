@@ -2,6 +2,7 @@
 #include "VKImGUILayer.h"
 #include "VKRenderEngine.h"
 #include "Axton/Core/Application.h"
+#include "Client API/VKRenderPass.h"
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
@@ -35,7 +36,7 @@ namespace Axton::Vulkan
 			.setPoolSizeCount(static_cast<uint32_t>(std::size(poolSizes)))
 			.setPPoolSizes(poolSizes);
 
-		m_DescriptorPool = VKRenderEngine::GetGraphicsContext()->GetDevice().createDescriptorPool(poolInfo);
+		m_DescriptorPool = VKRenderEngine::GetDevice().createDescriptorPool(poolInfo);
 
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -46,7 +47,7 @@ namespace Axton::Vulkan
 
 		ImGui::StyleColorsDark();
 
-		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), true);
+		ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(Application::Get().GetWindow()->GetNativeWindow()), true);
 
 		Ref<VKGraphicsContext> gContext = VKRenderEngine::GetGraphicsContext();
 		ImGui_ImplVulkan_InitInfo initInfo{};
@@ -59,7 +60,8 @@ namespace Axton::Vulkan
 		initInfo.ImageCount = VKRenderEngine::MAX_FRAMES_IN_FLIGHT;
 		initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
-		ImGui_ImplVulkan_Init(&initInfo, VKRenderEngine::GetRenderPass()->GetRenderPass());
+		VKRenderPass& vkRenderPass = static_cast<VKRenderPass&>(*RenderEngine::GetRenderPass().get());
+		ImGui_ImplVulkan_Init(&initInfo, vkRenderPass.operator vk::RenderPass());
 
 		gContext->SubmitGraphicsCommand([&](vk::CommandBuffer buffer)
 		{
@@ -88,7 +90,7 @@ namespace Axton::Vulkan
 	void VKImGUILayer::EndUI() const
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());
+		io.DisplaySize = ImVec2((float)Application::Get().GetWindow()->GetWidth(), (float)Application::Get().GetWindow()->GetHeight());
 
 		ImGui::Render();
 

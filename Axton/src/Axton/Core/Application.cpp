@@ -4,7 +4,6 @@
 #include "Time.h"
 #include "Input.h"
 #include "Axton/Debug/Log.h"
-#include "Axton/Event/Events.h"
 #include "Axton/ImGUI/ImGUILayer.h"
 
 namespace Axton
@@ -13,7 +12,7 @@ namespace Axton
 
 	Application::Application(const Specs& specs)
 	{
-		AX_ASSERT_CORE(!s_Instance, "Application already exists!");
+		AssertCore(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
 		Log::Construct();
@@ -29,8 +28,14 @@ namespace Axton
 
 		CoreLog::Info("Application Created!");
 
-		Events::OnWindowClose += AX_BIND_FNC(Application::OnWindowClose);
-		Events::OnWindowResize += AX_BIND_FNC(Application::OnWindowResize);
+		Window::OnWindowClose += AX_BIND_FNC(Application::OnWindowClose);
+		Window::OnWindowResize += AX_BIND_FNC(Application::OnWindowResize);
+	}
+
+	Application::~Application()
+	{
+		CoreLog::Info("Application Closing...");
+		RenderEngine::Destruct();
 	}
 
 	void Application::Run()
@@ -39,8 +44,6 @@ namespace Axton
 		{
 			Time::OnUpdate();
 			m_Window->OnUpdate();
-
-			//m_RenderEngine->BeginFrame();
 
 			for (Layer* layer : m_LayerStack)
 			{
@@ -65,20 +68,19 @@ namespace Axton
 				m_ImGUILayer->EndUI();
 			}
 
-			//m_RenderEngine->EndFrame();
 			m_RenderEngine->RenderFrame();
 		}
 	}
 
-	void Application::OnWindowClose()
+	bool Application::OnWindowClose()
 	{
 		m_Running = false;
-
-		CoreLog::Info("Application Closing...");
+		return false;
 	}
 
-	void Application::OnWindowResize(int width, int height)
+	bool Application::OnWindowResize(int width, int height)
 	{
 		// RendererAPI::SetViewport(width, height);
+		return false;
 	}
 }

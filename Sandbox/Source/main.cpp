@@ -53,7 +53,7 @@ Axton::Application* Axton::CreateApplication()
 	RenderEngine::Specs render{};
 	render
 		.setAPI(Axton::RenderAPI::Vulkan)
-		.setExtensions(Axton::RenderExtension::RayTracing | Axton::RenderExtension::Compute | Axton::RenderExtension::Graphics);
+		.setExtensions(Axton::RenderExtension::Compute | Axton::RenderExtension::Graphics);
 
 	Axton::Application::Specs appSpecs{};
 	appSpecs

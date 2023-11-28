@@ -1,5 +1,5 @@
 #include "axpch.h"
-#include "VKImageCore.h"
+#include "VKImage.h"
 #include "VKRenderEngine.h"
 #include "VKUtils.h"
 
@@ -37,9 +37,9 @@ namespace Axton::Vulkan
 		}
 	}
 
-	VKImageCore::VKImageCore(const Specs& specs)
+	VKImage::VKImage(const Specs& specs)
 	{
-		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
+		vk::Device device = VKRenderEngine::GetDevice();
 
 		vk::ImageCreateInfo imageInfo{};
 		imageInfo
@@ -55,7 +55,7 @@ namespace Axton::Vulkan
 			.setSamples(vk::SampleCountFlagBits::e1);
 
 		m_Image = device.createImage(imageInfo);
-		AX_ASSERT_CORE(m_Image, "Failed to create Image!");
+		AssertCore(m_Image, "Failed to create Image!");
 
 		vk::MemoryRequirements memRequirements = device.getImageMemoryRequirements(m_Image);
 
@@ -82,7 +82,7 @@ namespace Axton::Vulkan
 		createInfo.subresourceRange.layerCount = 1;
 
 		m_ImageView = device.createImageView(createInfo);
-		AX_ASSERT_CORE(m_ImageView, "Failed to create ImageView!");
+		AssertCore(m_ImageView, "Failed to create ImageView!");
 
 		vk::SamplerCreateInfo samplerInfo{};
 		samplerInfo
@@ -97,10 +97,10 @@ namespace Axton::Vulkan
 			.setMaxAnisotropy(1.0f);
 
 		m_Sampler = device.createSampler(samplerInfo);
-		AX_ASSERT_CORE(m_Sampler, "Failed to create Sampler!");
+		AssertCore(m_Sampler, "Failed to create Sampler!");
 	}
 
-	VKImageCore::VKImageCore(const Specs& specs, vk::Image image)
+	VKImage::VKImage(const Specs& specs, vk::Image image)
 	{
 		m_Image = image;
 
@@ -116,14 +116,14 @@ namespace Axton::Vulkan
 		createInfo.subresourceRange.baseArrayLayer = 0;
 		createInfo.subresourceRange.layerCount = 1;
 
-		m_ImageView = VKRenderEngine::GetGraphicsContext()->GetDevice().createImageView(createInfo);
+		m_ImageView = VKRenderEngine::GetDevice().createImageView(createInfo);
 	}
 
-	VKImageCore::~VKImageCore()
+	VKImage::~VKImage()
 	{
-		VKRenderEngine::GetGraphicsContext()->GetDevice().waitIdle();
-		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_ImageView);
-		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Sampler);
-		VKRenderEngine::GetGraphicsContext()->GetDevice().freeMemory(m_ImageMemory);
+		VKRenderEngine::GetDevice().waitIdle();
+		VKRenderEngine::GetDevice().destroy(m_ImageView);
+		VKRenderEngine::GetDevice().destroy(m_Sampler);
+		VKRenderEngine::GetDevice().freeMemory(m_ImageMemory);
 	}
 }

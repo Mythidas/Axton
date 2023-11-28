@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Defines.h"
+#include "Axton/Utils/Event.h"
 
 #include <string>
 
@@ -24,6 +25,14 @@ namespace Axton
 			bool FixedAspectRatio{ true };
 			bool VSync{ false };
 		};
+
+		static Event<> OnWindowClose; // No arguments
+		static Event<int, int> OnWindowResize; // Width, Height
+		static Event<int> OnKeyPressed; // Key
+		static Event<int> OnKeyReleased; // Key
+		static Event<double, double> OnMouseMoved; // Mouse X, Mouse Y
+		static Event<int> OnMouseButtonPressed; // Button
+		static Event<int> OnMouseButtonReleased; // Button
 
 		virtual ~Window() = default;
 

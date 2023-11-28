@@ -9,13 +9,14 @@ namespace Axton
 	template <typename... Args>
 	class Event
 	{
-		typedef std::function<void(Args...)> Func;
+		typedef std::function<bool(Args...)> Func;
 	public:
 		void operator()(Args... args)
 		{
 			for (auto& callback : m_Callbacks)
 			{
-				callback(args...);
+				if (callback(args...))
+					break;
 			}
 		}
 

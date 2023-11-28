@@ -2,9 +2,9 @@
 #include "VKGraphicsPipeline.h"
 #include "VKRenderBuffer.h"
 #include "VKPipelineAssets.h"
-#include "../VKRenderPass.h"
+#include "VKSwapchain.h"
+#include "VKRenderPass.h"
 #include "../VKRenderEngine.h"
-#include "../VKSwapchain.h"
 #include "../VKUtils.h"
 #include "Axton/Utils/FileSystem.h"
 
@@ -84,16 +84,16 @@ namespace Axton::Vulkan
 
 	VKGraphicsPipeline::~VKGraphicsPipeline()
 	{
-		VKRenderEngine::GetGraphicsContext()->GetDevice().waitIdle();
-		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Pipeline);
-		VKRenderEngine::GetGraphicsContext()->GetDevice().destroy(m_Layout);
+		VKRenderEngine::GetDevice().waitIdle();
+		VKRenderEngine::GetDevice().destroy(m_Pipeline);
+		VKRenderEngine::GetDevice().destroy(m_Layout);
 	}
 
 	void VKGraphicsPipeline::Render(uint32_t count)
 	{
 		VKRenderEngine::GetGraphicsContext()->QueueGraphicsCommand([count, this](vk::CommandBuffer& buffer)
 		{
-			Ref<VKSwapchain> swapchain = VKRenderEngine::GetSwapchain();
+			VKSwapchain& vkSwapchain = static_cast<VKSwapchain&>(*m_Specs.pSwapchain.get());
 
 			buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline);
 
@@ -101,8 +101,8 @@ namespace Axton::Vulkan
 			viewport
 				.setX(0.0f)
 				.setY(0.0f)
-				.setWidth(static_cast<float>(swapchain->GetExtent().width))
-				.setHeight(static_cast<float>(swapchain->GetExtent().height))
+				.setWidth(static_cast<float>(vkSwapchain.GetExtent().Width))
+				.setHeight(static_cast<float>(vkSwapchain.GetExtent().Height))
 				.setMinDepth(0.0f)
 				.setMaxDepth(1.0f);
 
@@ -111,12 +111,12 @@ namespace Axton::Vulkan
 			vk::Rect2D scissor{};
 			scissor
 				.setOffset(vk::Offset2D(0, 0))
-				.setExtent(swapchain->GetExtent());
+				.setExtent(vk::Extent2D(vkSwapchain.GetExtent().Width, vkSwapchain.GetExtent().Height));
 
 			buffer.setScissor(0, { scissor });
 
-			if (m_Specs.VertexBuffer)
-				m_Specs.VertexBuffer->Bind();
+			if (m_Specs.pVertexBuffer)
+				m_Specs.pVertexBuffer->Bind();
 
 			if (!m_Specs.Assets->Empty())
 			{
@@ -124,9 +124,9 @@ namespace Axton::Vulkan
 				buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, m_Layout, 0, { assets->GetSet() }, {});
 			}
 
-			if (m_Specs.IndexBuffer)
+			if (m_Specs.pIndexBuffer)
 			{
-				m_Specs.IndexBuffer->Bind();
+				m_Specs.pIndexBuffer->Bind();
 				buffer.drawIndexed(count, 1, 0, 0, 0);
 			}
 			else
@@ -146,15 +146,15 @@ namespace Axton::Vulkan
 			.setPSetLayouts(&layout)
 			.setPushConstantRangeCount(0);
 
-		m_Layout = VKRenderEngine::GetGraphicsContext()->GetDevice().createPipelineLayout(pipelineLayoutInfo);
-		AX_ASSERT_CORE(m_Layout, "Failed to create PipelineLayout!");
+		m_Layout = VKRenderEngine::GetDevice().createPipelineLayout(pipelineLayoutInfo);
+		AssertCore(m_Layout, "Failed to create PipelineLayout!");
 	}
 
 	void VKGraphicsPipeline::createPipeline()
 	{
-		Ref<VKSwapchain> swapchain = VKRenderEngine::GetSwapchain();
-		Ref<VKRenderPass> renderPass = VKRenderEngine::GetRenderPass();
-		vk::Device device = VKRenderEngine::GetGraphicsContext()->GetDevice();
+		VKSwapchain& vkSwapchain = static_cast<VKSwapchain&>(*m_Specs.pSwapchain.get());
+		VKRenderPass& vkRenderPass = static_cast<VKRenderPass&>(*m_Specs.pSwapchain->GetRenderPass().get());
+		vk::Device device = VKRenderEngine::GetDevice();
 
 		vk::ShaderModule vertShader = VKUtils::CreateShader(m_Specs.VertPath);
 		vk::ShaderModule fragShader = VKUtils::CreateShader(m_Specs.FragPath);
@@ -190,15 +190,15 @@ namespace Axton::Vulkan
 		viewport
 			.setX(0.0f)
 			.setY(0.0f)
-			.setWidth(static_cast<float>(swapchain->GetExtent().width))
-			.setHeight(static_cast<float>(swapchain->GetExtent().height))
+			.setWidth(static_cast<float>(vkSwapchain.GetExtent().Width))
+			.setHeight(static_cast<float>(vkSwapchain.GetExtent().Height))
 			.setMinDepth(0.0f)
 			.setMaxDepth(1.0f);
 
 		vk::Rect2D scissor{};
 		scissor
 			.setOffset(vk::Offset2D(0, 0))
-			.setExtent(swapchain->GetExtent());
+			.setExtent(vk::Extent2D(vkSwapchain.GetExtent().Width, vkSwapchain.GetExtent().Height));
 
 		// Viewport info for Pipeline
 
@@ -277,12 +277,12 @@ namespace Axton::Vulkan
 			.setPColorBlendState(&colorBlending)
 			.setPDynamicState(&dynamicState)
 			.setLayout(m_Layout)
-			.setRenderPass(renderPass->GetRenderPass())
+			.setRenderPass(vkRenderPass)
 			.setSubpass(0)
 			.setBasePipelineHandle(VK_NULL_HANDLE);
 
 		m_Pipeline = device.createGraphicsPipeline(VK_NULL_HANDLE, createInfo).value;
-		AX_ASSERT_CORE(m_Pipeline, "Failed to create GraphicsPipeline!");
+		AssertCore(m_Pipeline, "Failed to create GraphicsPipeline!");
 
 		// Destroy temp shaders
 		device.destroy(vertShader);

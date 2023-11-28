@@ -23,7 +23,7 @@ namespace Axton::Vulkan
 
 	void VKVertexBuffer::Bind() const
 	{
-		VKRenderEngine::GetGraphicsContext()->GetCommandBuffer().bindVertexBuffers(0, { getCurrentBuffer()->GetBuffer()}, {0});
+		VKRenderEngine::GetCommandBuffer().bindVertexBuffers(0, { getCurrentBuffer()->GetBuffer()}, {0});
 	}
 
 	void VKVertexBuffer::SetData(void* data, size_t size, uint32_t offset)
@@ -34,7 +34,7 @@ namespace Axton::Vulkan
 	Ref<VKBuffer> VKVertexBuffer::getCurrentBuffer() const
 	{
 		if (m_Specs.Rate == BufferRate::PerFrame)
-			return m_Buffers[VKRenderEngine::GetGraphicsContext()->GetCurrentFrame()];
+			return m_Buffers[VKRenderEngine::GetCurrentFrame()];
 		else
 			return m_Buffers[0];
 	}

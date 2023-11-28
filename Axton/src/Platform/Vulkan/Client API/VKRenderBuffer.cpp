@@ -113,7 +113,7 @@ namespace Axton::Vulkan
 				.setDescriptorCount(1)
 				.setPBufferInfo(&bufferInfo);
 
-			VKRenderEngine::GetGraphicsContext()->GetDevice().updateDescriptorSets({ descriptorWrite }, {  });
+			VKRenderEngine::GetDevice().updateDescriptorSets({ descriptorWrite }, {  });
 		}
 	}
 
@@ -144,7 +144,7 @@ namespace Axton::Vulkan
 	Ref<VKBuffer> VKRenderBuffer::getCurrentBuffer() const
 	{
 		if (m_Buffers.size() > 1)
-			return m_Buffers[VKRenderEngine::GetGraphicsContext()->GetCurrentFrame()];
+			return m_Buffers[VKRenderEngine::GetCurrentFrame()];
 		else
 			return m_Buffers[0];
 	}

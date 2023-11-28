@@ -5,7 +5,6 @@
 #include "Axton/Core/Layer.h"
 #include "Axton/Core/Input.h"
 #include "Axton/Core/Time.h"
-#include "Axton/Core/Assert.h"
 #include "Axton/ImGUI/ImGUILayer.h"
 
 // Renderer
@@ -16,7 +15,7 @@
 #include "Axton/Renderer/RenderBuffer.h"
 #include "Axton/Renderer/VertexBuffer.h"
 #include "Axton/Renderer/IndexBuffer.h"
-#include "Axton/Renderer/Image.h"
+#include "Axton/Renderer/Texture.h"
 
 // Debugging
 #include "Axton/Debug/Log.h"
