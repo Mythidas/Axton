@@ -4,8 +4,8 @@
 #include "VKPipelineAssets.h"
 #include "VKSwapchain.h"
 #include "VKRenderPass.h"
-#include "../VKRenderEngine.h"
-#include "../VKUtils.h"
+#include "VKRenderEngine.h"
+#include "VKUtils.h"
 #include "Axton/Utils/FileSystem.h"
 
 namespace Axton::Vulkan
@@ -16,6 +16,7 @@ namespace Axton::Vulkan
 		{
 			switch (attribute)
 			{
+			case VertexAttribute::Float: return 4 * 1;
 			case VertexAttribute::Float2: return 4 * 2;
 			case VertexAttribute::Float3: return 4 * 3;
 			case VertexAttribute::Float4: return 4 * 4;
@@ -28,6 +29,7 @@ namespace Axton::Vulkan
 		{
 			switch (attribute)
 			{
+			case VertexAttribute::Float: return vk::Format::eR32Sfloat;
 			case VertexAttribute::Float2: return vk::Format::eR32G32Sfloat;
 			case VertexAttribute::Float3: return vk::Format::eR32G32B32Sfloat;
 			case VertexAttribute::Float4: return vk::Format::eR32G32B32A32Sfloat;

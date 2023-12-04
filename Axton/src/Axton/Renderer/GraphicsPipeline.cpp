@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "GraphicsPipeline.h"
 #include "RenderEngine.h"
-#include "Platform/Vulkan/Client API/VKGraphicsPipeline.h"
+#include "Platform/Vulkan/VKGraphicsPipeline.h"
 
 namespace Axton
 {

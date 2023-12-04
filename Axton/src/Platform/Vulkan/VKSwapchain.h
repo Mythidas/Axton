@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Axton/Renderer/Swapchain.h"
-#include "../VKImage.h"
+#include "VKImage.h"
 
 namespace Axton::Vulkan
 {

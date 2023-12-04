@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "VKTexture.h"
-#include "../VKRenderEngine.h"
-#include "../VKImGUILayer.h"
+#include "VKRenderEngine.h"
+#include "VKImGUILayer.h"
 #include "Axton/Math/Mathf.h"
 #include "Axton/Core/Application.h"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Axton/Renderer/Texture.h"
-#include "../VKImage.h"
+#include "VKImage.h"
 
 namespace Axton::Vulkan
 {

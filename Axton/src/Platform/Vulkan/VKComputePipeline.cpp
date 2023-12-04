@@ -2,8 +2,8 @@
 #include "VKComputePipeline.h"
 #include "VKRenderBuffer.h"
 #include "VKPipelineAssets.h"
-#include "../VKRenderEngine.h"
-#include "../VKUtils.h"
+#include "VKRenderEngine.h"
+#include "VKUtils.h"
 
 namespace Axton::Vulkan
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Axton/Renderer/RenderBuffer.h"
-#include "../VKBuffer.h"
+#include "VKBuffer.h"
 
 namespace Axton::Vulkan
 {
@@ -14,7 +14,9 @@ namespace Axton::Vulkan
 		virtual void* MapBufferPtr(uint32_t offset, size_t size) override;
 		virtual void UnmapBufferPtr() override;
 
-		virtual BufferUsage GetUsage() const override { return m_Specs.Usage; }
+		virtual void Bind() const override;
+
+		virtual const Specs& GetSpecs() const override { return m_Specs; }
 
 		void UpdateDescriptorSet(vk::DescriptorSet& set);
 

@@ -1,6 +1,6 @@
 #include "axpch.h"
 #include "VKRenderBuffer.h"
-#include "../VKRenderEngine.h"
+#include "VKRenderEngine.h"
 
 namespace Axton::Vulkan
 {
@@ -92,6 +92,19 @@ namespace Axton::Vulkan
 	void VKRenderBuffer::UnmapBufferPtr()
 	{
 		getCurrentBuffer()->UnmapBufferPtr();
+	}
+
+	void VKRenderBuffer::Bind() const
+	{
+		if (m_Specs.Usage & BufferUsage::Vertex)
+		{
+			VKRenderEngine::GetCommandBuffer().bindVertexBuffers(0, { getCurrentBuffer()->GetBuffer() }, { 0 });
+		}
+
+		if (m_Specs.Usage & BufferUsage::Index)
+		{
+			VKRenderEngine::GetCommandBuffer().bindIndexBuffer(getCurrentBuffer()->GetBuffer(), 0, vk::IndexType::eUint16);
+		}
 	}
 
 	void VKRenderBuffer::UpdateDescriptorSet(vk::DescriptorSet& set)

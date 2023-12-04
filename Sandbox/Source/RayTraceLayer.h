@@ -47,13 +47,6 @@ public:
 
 		Timer timer("Gen All Chunks");
 
-		//{
-		//	VoxModelLoader loader("C:\\Users\\Mythidas\\Desktop\\MagicaVoxel\\MagicaVoxel-0.99.7.1-win64\\vox\\room.vox");
-		//	Ref<Chunk> chunk = loader.GenChunk(world, { 0, 0, 50 });
-		//	Material mat{ 0.5, 0.1, 1.5, 0.0 };
-		//	chunk->MaterialIndex = world.AddMaterial(CreateRef<Material>(mat));
-		//}
-
 		{
 			VoxModelLoader loader("..\\Assets\\Models\\green_cube.vox");
 			Ref<Chunk> chunk = loader.GenChunk(world, { -50, -40, 30 });
@@ -152,7 +145,7 @@ public:
 
 		if (m_FinalImage)
 		{
-			ImGui::Texture((ImTextureID)m_FinalImage->GetRendererID(), { (float)m_FinalImage->GetExtents().x, (float)m_FinalImage->GetExtents().y }, ImVec2(0, 1.0f), ImVec2(1.0f, 0));
+			ImGui::Image((ImTextureID)m_FinalImage->GetRendererID(), { (float)m_FinalImage->GetExtents().x, (float)m_FinalImage->GetExtents().y }, ImVec2(0, 1.0f), ImVec2(1.0f, 0));
 		}
 		ImGui::End();
 	}

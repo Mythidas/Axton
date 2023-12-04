@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "RenderPass.h"
 #include "RenderEngine.h"
-#include "Platform/Vulkan/Client API/VKRenderPass.h"
+#include "Platform/Vulkan/VKRenderPass.h"
 
 namespace Axton
 {

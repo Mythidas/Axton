@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "VKRenderPass.h"
-#include "../VKUtils.h"
-#include "../VKRenderEngine.h"
+#include "VKUtils.h"
+#include "VKRenderEngine.h"
 
 
 namespace Axton::Vulkan

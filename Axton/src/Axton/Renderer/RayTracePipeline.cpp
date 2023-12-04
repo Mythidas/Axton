@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "RayTracePipeline.h"
 #include "RenderEngine.h"
-#include "Platform/Vulkan/Client API/VKRayTracePipeline.h"
+#include "Platform/Vulkan/VKRayTracePipeline.h"
 
 namespace Axton
 {

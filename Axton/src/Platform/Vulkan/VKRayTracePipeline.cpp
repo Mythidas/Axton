@@ -1,6 +1,6 @@
 #include "axpch.h"
 #include "VKRayTracePipeline.h"
-#include "../VKRenderEngine.h"
+#include "VKRenderEngine.h"
 
 namespace Axton::Vulkan
 {

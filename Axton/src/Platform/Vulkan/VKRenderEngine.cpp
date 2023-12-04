@@ -1,8 +1,8 @@
 #include "axpch.h"
 #include "VKRenderEngine.h"
 #include "Axton/Core/Window.h"
-#include "Client API/VKSwapchain.h"
-#include "Client API/VKRenderPass.h"
+#include "VKSwapchain.h"
+#include "VKRenderPass.h"
 
 #include <GLFW/glfw3.h>
 

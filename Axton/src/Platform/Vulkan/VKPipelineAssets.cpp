@@ -2,7 +2,7 @@
 #include "VKPipelineAssets.h"
 #include "VKRenderBuffer.h"
 #include "VKTexture.h"
-#include "../VKRenderEngine.h"
+#include "VKRenderEngine.h"
 
 namespace Axton::Vulkan
 {

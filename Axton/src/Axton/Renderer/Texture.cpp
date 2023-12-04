@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "Texture.h"
 #include "RenderEngine.h"
-#include "Platform/Vulkan/Client API/VKTexture.h"
+#include "Platform/Vulkan/VKTexture.h"
 
 namespace Axton
 {

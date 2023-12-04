@@ -1,17 +1,19 @@
 #pragma once
 
 #include "Axton/Core/Defines.h"
+#include "Axton/Utils/Flags.h"
 
 namespace Axton
 {
 	enum class BufferUsage
 	{
-		Uniform			= 1 << 0,
-		ShaderStorage	= 1 << 1
+		Vertex			= 1 << 0,
+		Index			= 1 << 1,
+		Uniform			= 1 << 2,
+		ShaderStorage	= 1 << 3
 	};
 
-	BufferUsage operator |(BufferUsage lhs, BufferUsage rhs);
-	bool operator &(BufferUsage lhs, BufferUsage rhs);
+	AX_FLAG_OPERATORS(BufferUsage)
 
 	enum class BufferStage
 	{
@@ -20,8 +22,7 @@ namespace Axton
 		Compute		= 1 << 2
 	};
 
-	BufferStage operator |(BufferStage lhs, BufferStage rhs);
-	bool operator &(BufferStage lhs, BufferStage rhs);
+	AX_FLAG_OPERATORS(BufferStage)
 
 	enum class BufferStorage
 	{
@@ -61,7 +62,9 @@ namespace Axton
 		virtual void* MapBufferPtr(uint32_t offset, size_t size) = 0;
 		virtual void UnmapBufferPtr() = 0;
 
-		virtual BufferUsage GetUsage() const = 0;
+		virtual void Bind() const = 0;
+
+		virtual const Specs& GetSpecs() const = 0;
 
 		static Ref<RenderBuffer> Create(const Specs& specs);
 	};

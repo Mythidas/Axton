@@ -1,7 +1,7 @@
 #include "axpch.h"
 #include "Swapchain.h"
 #include "RenderEngine.h"
-#include "Platform/Vulkan/Client API/VKSwapchain.h"
+#include "Platform/Vulkan/VKSwapchain.h"
 
 namespace Axton
 {

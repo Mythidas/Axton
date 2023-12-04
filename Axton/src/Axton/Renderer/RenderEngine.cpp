@@ -1,5 +1,6 @@
 #include "axpch.h"
 #include "RenderEngine.h"
+#include "GraphicsPipeline.h"
 #include "Platform/Vulkan/VKRenderEngine.h"
 
 namespace Axton
@@ -10,9 +11,19 @@ namespace Axton
 
 	namespace Render
 	{
-		struct Data
+		static const size_t MaxQuadCount = 1000;
+		static const size_t MaxVertexCount = MaxQuadCount * 4;
+		static const size_t MaxIndexCount = MaxQuadCount * 6;
+		static const size_t MaxTextures = 32;
+
+		struct Vertex
 		{
 
+		};
+
+		struct Data
+		{
+			Ref<GraphicsPipeline> QuadPipeline;
 		};
 	}
 
@@ -24,6 +35,58 @@ namespace Axton
 		s_Swapchain = Swapchain::Specs()
 			.setRenderPass(s_RenderPass)
 			.Build();
+
+		Ref<RenderBuffer> vertexBuffer = RenderBuffer::Specs()
+			.setBinding(0)
+			.setRate(BufferRate::PerFrame)
+			.setSize(sizeof(Render::Vertex) * Render::MaxVertexCount)
+			.setStages(BufferStage::Vertex)
+			.setStorage(BufferStorage::Local)
+			.setUsage(BufferUsage::Vertex)
+			.Build();
+
+		Ref<RenderBuffer> indexBuffer = RenderBuffer::Specs()
+			.setBinding(0)
+			.setRate(BufferRate::Static)
+			.setSize(sizeof(uint16_t) * Render::MaxIndexCount)
+			.setStages(BufferStage::Vertex)
+			.setStorage(BufferStorage::Local)
+			.setUsage(BufferUsage::Index)
+			.Build();
+
+		uint16_t* indices = new uint16_t[Render::MaxIndexCount];
+		uint16_t offset = 0;
+		for (size_t i = 0; i < Render::MaxIndexCount; i += 6)
+		{
+			indices[i + 0] = 0 + offset;
+			indices[i + 1] = 1 + offset;
+			indices[i + 2] = 2 + offset;
+
+			indices[i + 3] = 2 + offset;
+			indices[i + 4] = 3 + offset;
+			indices[i + 5] = 0 + offset;
+
+			offset += 4;
+		}
+
+		indexBuffer->SetData(indices, indexBuffer->GetSpecs().Size, 0);
+		delete[] indices;
+
+		Ref<PipelineAssets> quadPiplineAssets = PipelineAssets::Specs()
+			.setBuffers({})
+			.Build();
+
+		s_Data.QuadPipeline = GraphicsPipeline::Specs()
+			.setVertPath()
+			.setFragPath()
+			.setSwapchain(s_Swapchain)
+			.setIndexBuffer(indexBuffer)
+			.setVertexBuffer(vertexBuffer)
+			.setAssets(quadPiplineAssets)
+			.setVertexAttributes({
+				
+			})
+			.Build();
 	}
 
 	void RenderEngine::Destruct()
@@ -32,14 +95,19 @@ namespace Axton
 		s_Swapchain = nullptr;
 	}
 
-	void RenderEngine::BeginBatch()
+	void RenderEngine::BeginFrame(const Camera& camera)
 	{
 
 	}
 
-	void RenderEngine::EndBatch()
+	void RenderEngine::EndFrame()
 	{
 		
+	}
+
+	void RenderEngine::DrawQuad(const Vector3& position, const Vector4& color)
+	{
+
 	}
 
 	Scope<RenderEngine> RenderEngine::Create(void* windowHandle, const Specs& specs)
@@ -57,15 +125,5 @@ namespace Axton
 		Construct();
 		AssertCore(renderEngine != nullptr, "Uknown Renderer::API!");
 		return renderEngine;
-	}
-
-	RenderExtension operator|(RenderExtension lhs, RenderExtension rhs)
-	{
-		return static_cast<RenderExtension>(int(lhs) | int(rhs));
-	}
-
-	bool operator&(RenderExtension lhs, RenderExtension rhs)
-	{
-		return static_cast<bool>(int(lhs) & int(rhs));
 	}
 }
