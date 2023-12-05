@@ -49,7 +49,7 @@ namespace Axton::Vulkan
 				.setStaging(true)
 				.Build();
 
-			void* pData = device.mapMemory(stagingBuffer->m_Memory, offset, size);
+			void* pData = device.mapMemory(stagingBuffer->m_Memory, 0, size);
 			memcpy(pData, data, size);
 			device.unmapMemory(stagingBuffer->m_Memory);
 

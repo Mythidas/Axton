@@ -9,8 +9,14 @@ using namespace Axton;
 
 class SimpleLayer : public Axton::Layer
 {
-	Vector3 position{ 0.0f };
-	Vector3 color{ 1.0f };
+	struct Quad
+	{
+		Vector3 position{ 0.0f };
+		Vector3 color{ 1.0f };
+	};
+
+	Quad q1;
+	Quad q2;
 
 	virtual void OnAttach() override
 	{
@@ -20,7 +26,8 @@ class SimpleLayer : public Axton::Layer
 	virtual void OnUpdate() override
 	{
 		RenderEngine::BeginFrame();
-		RenderEngine::DrawQuad(position, Vector4(color, 1.0f));
+		RenderEngine::DrawQuad(q1.position, Vector4(q1.color, 1.0f));
+		RenderEngine::DrawQuad(q2.position, Vector4(q2.color, 1.0f));
 		RenderEngine::EndFrame();
 	}
 
@@ -28,8 +35,10 @@ class SimpleLayer : public Axton::Layer
 	{
 		ImGui::Begin("Simple Window");
 		ImGui::Text("Yay!");
-		ImGui::DragFloat3("Position", glm::value_ptr(position), 0.1f);
-		ImGui::ColorEdit3("Color", glm::value_ptr(color));
+		ImGui::DragFloat3("Position1", glm::value_ptr(q1.position), 0.1f);
+		ImGui::ColorEdit3("Color1", glm::value_ptr(q1.color));
+		ImGui::DragFloat3("Position2", glm::value_ptr(q2.position), 0.1f);
+		ImGui::ColorEdit3("Color2", glm::value_ptr(q2.color));
 		ImGui::End();
 	}
 };

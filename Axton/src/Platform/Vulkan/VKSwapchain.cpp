@@ -12,10 +12,6 @@ namespace Axton::Vulkan
 		createSwapchain();
 	}
 
-	VKSwapchain::~VKSwapchain()
-	{
-	}
-
 	void VKSwapchain::Destroy()
 	{
 		VKRenderEngine::GetDevice().waitIdle();
@@ -26,8 +22,6 @@ namespace Axton::Vulkan
 		}
 
 		VKRenderEngine::GetDevice().destroy(m_Swapchain);
-
-		m_Images.clear();
 	}
 
 	void VKSwapchain::Recreate()
@@ -37,6 +31,11 @@ namespace Axton::Vulkan
 		for (auto& fb : m_Framebuffers)
 		{
 			VKRenderEngine::GetDevice().destroy(fb);
+		}
+
+		for (auto& image : m_Images)
+		{
+			image->Destroy();
 		}
 
 		VKRenderEngine::GetDevice().destroy(m_Swapchain);

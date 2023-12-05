@@ -11,7 +11,6 @@ namespace Axton::Vulkan
 	{
 	public:
 		VKRenderPass(const Specs& specs);
-		~VKRenderPass();
 
 		virtual void Destroy();
 

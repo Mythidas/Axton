@@ -31,8 +31,8 @@ namespace Axton
 	template<typename T>
 	inline T Queue<T>::Deque()
 	{
-		T item = m_Queue.back();
-		m_Queue.pop_back();
+		T item = m_Queue.front();
+		m_Queue.erase(m_Queue.begin());
 		return item;
 	}
 
@@ -45,7 +45,7 @@ namespace Axton
 	template<typename T>
 	inline void Queue<T>::Remove(size_t index)
 	{
-		m_Queue.erase(std::next(m_Queue.begin(), index));
+		m_Queue.erase(m_Queue.begin() + index);
 	}
 
 	template<typename T>

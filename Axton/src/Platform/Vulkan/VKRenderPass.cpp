@@ -56,10 +56,6 @@ namespace Axton::Vulkan
 		AssertCore(m_RenderPass, "Failed to create RenderPass!");
 	}
 
-	VKRenderPass::~VKRenderPass()
-	{
-	}
-
 	void VKRenderPass::Destroy()
 	{
 		VKRenderEngine::GetDevice().destroy(m_RenderPass);

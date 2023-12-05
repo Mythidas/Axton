@@ -12,7 +12,6 @@ namespace Axton::Vulkan
 
 	public:
 		VKSwapchain(const Specs& specs);
-		~VKSwapchain();
 
 		virtual void Destroy();
 		virtual void Recreate() override;

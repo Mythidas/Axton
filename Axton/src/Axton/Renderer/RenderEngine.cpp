@@ -13,7 +13,7 @@ namespace Axton
 
 	namespace Render
 	{
-		static const size_t MaxQuadCount = 1;
+		static const size_t MaxQuadCount = 1000;
 		static const size_t MaxVertexCount = MaxQuadCount * 4;
 		static const size_t MaxIndexCount = MaxQuadCount * 6;
 		static const size_t MaxTextures = 32;
@@ -30,6 +30,7 @@ namespace Axton
 			Ref<RenderBuffer> QuadVertexBuffer;
 
 			uint32_t IndexCount;
+			uint32_t VertexCount;
 		};
 	}
 
@@ -103,6 +104,7 @@ namespace Axton
 	void RenderEngine::BeginFrame()
 	{
 		s_Data.IndexCount = 0;
+		s_Data.VertexCount = 0;
 	}
 
 	void RenderEngine::EndFrame()
@@ -125,10 +127,11 @@ namespace Axton
 		vertices[3].Position = { position.x - 0.5f, position.y + 0.5f, position.z };
 		vertices[3].Color = color;
 
-		s_Data.QuadVertexBuffer->SetData(vertices, sizeof(Render::Vertex) * 4, 0);
+		s_Data.QuadVertexBuffer->SetData(vertices, sizeof(Render::Vertex) * 4, sizeof(Render::Vertex) * s_Data.VertexCount);
 		delete[] vertices;
 
 		s_Data.IndexCount += 6;
+		s_Data.VertexCount += 4;
 	}
 
 	Scope<RenderEngine> RenderEngine::Create(void* windowHandle, const Specs& specs)
