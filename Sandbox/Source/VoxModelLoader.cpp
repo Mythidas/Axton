@@ -8,7 +8,7 @@ VoxModelLoader::VoxModelLoader(const std::string& path)
 Ref<Chunk> VoxModelLoader::GenChunk(World& world, Vector3 position)
 {
 	FileSystem file(m_Path);
-	std::vector<uint8_t> buffer = file.ToBuffer();
+	std::vector<uint8_t> buffer = file.StreamBuffer();
 
 	size_t currentIndex = 0;
 

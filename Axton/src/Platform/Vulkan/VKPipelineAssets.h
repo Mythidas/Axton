@@ -1,16 +1,18 @@
 #pragma once
 
 #include "Axton/Renderer/PipelineAssets.h"
+#include "VKObject.h"
 
 #include <vulkan/vulkan.hpp>
 
 namespace Axton::Vulkan
 {
-	class VKPipelineAssets : public PipelineAssets
+	class VKPipelineAssets : public PipelineAssets, public VKObject
 	{
 	public:
 		VKPipelineAssets(const Specs& specs);
-		~VKPipelineAssets();
+
+		virtual void Destroy();
 
 		virtual void Rebuild() override;
 		virtual bool Empty() const override;

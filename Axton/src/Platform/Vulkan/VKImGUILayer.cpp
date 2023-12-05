@@ -61,7 +61,7 @@ namespace Axton::Vulkan
 		initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
 		VKRenderPass& vkRenderPass = static_cast<VKRenderPass&>(*RenderEngine::GetRenderPass().get());
-		ImGui_ImplVulkan_Init(&initInfo, vkRenderPass.operator vk::RenderPass());
+		ImGui_ImplVulkan_Init(&initInfo, vkRenderPass.GetRenderPass());
 
 		gContext->SubmitGraphicsCommand([&](vk::CommandBuffer buffer)
 		{
@@ -69,13 +69,6 @@ namespace Axton::Vulkan
 		});
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
-
-		vk::Device device = gContext->GetDevice();
-		gContext->QueueDeletion([device, this]()
-		{
-			device.destroy(m_DescriptorPool);
-			ImGui_ImplVulkan_Shutdown();
-		});
 	}
 
 	void VKImGUILayer::BeginUI() const
@@ -106,5 +99,12 @@ namespace Axton::Vulkan
 		{
 			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), buffer);
 		});
+	}
+
+	void VKImGUILayer::OnDetach()
+	{
+		VKRenderEngine::GetDevice().waitIdle();
+		VKRenderEngine::GetDevice().destroy(m_DescriptorPool);
+		ImGui_ImplVulkan_Shutdown();
 	}
 }

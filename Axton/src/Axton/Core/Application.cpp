@@ -19,6 +19,7 @@ namespace Axton
 		CoreLog::Construct();
 		Time::Construct();
 		Input::Construct();
+		Project::Construct(specs.ProjectSpecs);
 
 		m_Window = specs.WindowSpecs.Build();
 		m_RenderEngine = specs.RenderSpecs.Build(m_Window->GetNativeWindow());
@@ -35,6 +36,8 @@ namespace Axton
 	Application::~Application()
 	{
 		CoreLog::Info("Application Closing...");
+		m_LayerStack.Clear();
+
 		RenderEngine::Destruct();
 	}
 

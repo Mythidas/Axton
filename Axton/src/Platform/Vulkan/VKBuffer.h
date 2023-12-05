@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Axton/Core/Defines.h"
+#include "VKObject.h"
 
 #include <vulkan/vulkan.hpp>
 
 namespace Axton::Vulkan
 {
-	class VKBuffer
+	class VKBuffer : public VKObject
 	{
 	public:
 		struct Specs
@@ -20,11 +21,12 @@ namespace Axton::Vulkan
 			Specs& setUsage(vk::BufferUsageFlags usage) { Usage = usage; return *this; }
 			Specs& setMemProperties(vk::MemoryPropertyFlags props) { MemProperties = props; return *this; }
 			Specs& setStaging(bool staging) { Staging = staging; return *this; }
-			Ref<VKBuffer> Build() { return VKBuffer::Create(*this); }
+			Ref<VKBuffer> Build() { return CreateRef<VKBuffer>(*this); }
 		};
 
-		static Ref<VKBuffer> Create(const Specs& specs);
-		~VKBuffer();
+		VKBuffer(const Specs& specs);
+
+		virtual void Destroy();
 
 		void SetData(void* data, size_t size, uint32_t offset);
 		void* MapBufferPtr(uint32_t offset, size_t size);

@@ -101,9 +101,8 @@ namespace Axton::Vulkan
 	}
 
 	VKImage::VKImage(const Specs& specs, vk::Image image)
+		: m_Image(image)
 	{
-		m_Image = image;
-
 		vk::ImageViewCreateInfo createInfo{};
 		createInfo
 			.setImage(m_Image)
@@ -119,7 +118,7 @@ namespace Axton::Vulkan
 		m_ImageView = VKRenderEngine::GetDevice().createImageView(createInfo);
 	}
 
-	VKImage::~VKImage()
+	void VKImage::Destroy()
 	{
 		VKRenderEngine::GetDevice().waitIdle();
 		VKRenderEngine::GetDevice().destroy(m_ImageView);

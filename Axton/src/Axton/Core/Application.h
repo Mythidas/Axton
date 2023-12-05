@@ -2,6 +2,7 @@
 
 #include "Defines.h"
 #include "Window.h"
+#include "Project.h"
 #include "LayerStack.h"
 #include "Axton/Renderer/RenderEngine.h"
 
@@ -16,9 +17,11 @@ namespace Axton
 		{
 			Window::Specs WindowSpecs;
 			RenderEngine::Specs RenderSpecs;
+			Project::Specs ProjectSpecs;
 
 			Specs& setWindowSpecs(const Window::Specs& specs) { WindowSpecs = specs; return *this; }
 			Specs& setRenderSpecs(const RenderEngine::Specs& specs) { RenderSpecs = specs; return *this; }
+			Specs& setProjectSpecs(const Project::Specs& specs) { ProjectSpecs = specs; return *this; }
 			// Application* Build() { return new Application(*this); } Application only built through CreateApplication;
 		};
 

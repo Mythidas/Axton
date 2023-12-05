@@ -72,7 +72,7 @@ namespace Axton::Vulkan
 		vk::Device device = VKRenderEngine::GetDevice();
 
 		FileSystem fs(path);
-		std::vector<char> buffer = fs.ToSignedBuffer();
+		std::vector<char> buffer = fs.StreamSignedBuffer();
 
 		vk::ShaderModuleCreateInfo createInfo{};
 		createInfo

@@ -1,6 +1,8 @@
 #include "axpch.h"
 #include "RenderEngine.h"
 #include "GraphicsPipeline.h"
+#include "Axton/Core/Project.h"
+#include "Axton/Core/Application.h"
 #include "Platform/Vulkan/VKRenderEngine.h"
 
 namespace Axton
@@ -11,19 +13,23 @@ namespace Axton
 
 	namespace Render
 	{
-		static const size_t MaxQuadCount = 1000;
+		static const size_t MaxQuadCount = 1;
 		static const size_t MaxVertexCount = MaxQuadCount * 4;
 		static const size_t MaxIndexCount = MaxQuadCount * 6;
 		static const size_t MaxTextures = 32;
 
 		struct Vertex
 		{
-
+			Vector3 Position;
+			Vector4 Color;
 		};
 
 		struct Data
 		{
 			Ref<GraphicsPipeline> QuadPipeline;
+			Ref<RenderBuffer> QuadVertexBuffer;
+
+			uint32_t IndexCount;
 		};
 	}
 
@@ -36,7 +42,7 @@ namespace Axton
 			.setRenderPass(s_RenderPass)
 			.Build();
 
-		Ref<RenderBuffer> vertexBuffer = RenderBuffer::Specs()
+		s_Data.QuadVertexBuffer = RenderBuffer::Specs()
 			.setBinding(0)
 			.setRate(BufferRate::PerFrame)
 			.setSize(sizeof(Render::Vertex) * Render::MaxVertexCount)
@@ -72,19 +78,18 @@ namespace Axton
 		indexBuffer->SetData(indices, indexBuffer->GetSpecs().Size, 0);
 		delete[] indices;
 
-		Ref<PipelineAssets> quadPiplineAssets = PipelineAssets::Specs()
-			.setBuffers({})
-			.Build();
+		Ref<PipelineAssets> quadAssets = PipelineAssets::Specs().Build();
 
 		s_Data.QuadPipeline = GraphicsPipeline::Specs()
-			.setVertPath()
-			.setFragPath()
+			.setVertPath(Project::GetAssetsPath().ToString() + "/Shaders/vert.spv")
+			.setFragPath(Project::GetAssetsPath().ToString() + "/Shaders/frag.spv")
 			.setSwapchain(s_Swapchain)
 			.setIndexBuffer(indexBuffer)
-			.setVertexBuffer(vertexBuffer)
-			.setAssets(quadPiplineAssets)
+			.setVertexBuffer(s_Data.QuadVertexBuffer)
+			.setAssets(quadAssets)
 			.setVertexAttributes({
-				
+				VertexAttribute::Float3,
+				VertexAttribute::Float4,
 			})
 			.Build();
 	}
@@ -95,19 +100,35 @@ namespace Axton
 		s_Swapchain = nullptr;
 	}
 
-	void RenderEngine::BeginFrame(const Camera& camera)
+	void RenderEngine::BeginFrame()
 	{
-
+		s_Data.IndexCount = 0;
 	}
 
 	void RenderEngine::EndFrame()
 	{
-		
+		s_Data.QuadPipeline->Render(s_Data.IndexCount);
 	}
 
 	void RenderEngine::DrawQuad(const Vector3& position, const Vector4& color)
 	{
+		Render::Vertex* vertices = new Render::Vertex[4];
+		vertices[0].Position = { position.x - 0.5f, position.y - 0.5f, position.z };
+		vertices[0].Color = color;
 
+		vertices[1].Position = { position.x + 0.5f, position.y - 0.5f, position.z };
+		vertices[1].Color = color;
+
+		vertices[2].Position = { position.x + 0.5f, position.y + 0.5f, position.z };
+		vertices[2].Color = color;
+
+		vertices[3].Position = { position.x - 0.5f, position.y + 0.5f, position.z };
+		vertices[3].Color = color;
+
+		s_Data.QuadVertexBuffer->SetData(vertices, sizeof(Render::Vertex) * 4, 0);
+		delete[] vertices;
+
+		s_Data.IndexCount += 6;
 	}
 
 	Scope<RenderEngine> RenderEngine::Create(void* windowHandle, const Specs& specs)

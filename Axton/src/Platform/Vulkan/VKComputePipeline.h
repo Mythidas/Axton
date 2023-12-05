@@ -1,17 +1,19 @@
 #pragma once
 
 #include "Axton/Renderer/ComputePipeline.h"
+#include "VKObject.h"
 
 #include <vulkan/vulkan.hpp>
 
 namespace Axton::Vulkan
 {
-	class VKComputePipeline : public ComputePipeline
+	class VKComputePipeline : public ComputePipeline, public VKObject
 	{
 	public:
 		VKComputePipeline(const Specs& specs);
 		~VKComputePipeline();
 
+		virtual void Destroy();
 		virtual void Dispatch(uint32_t width, uint32_t height, uint32_t depth) override;
 
 	private:

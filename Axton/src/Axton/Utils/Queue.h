@@ -1,6 +1,6 @@
 #pragma once
 
-#include <queue>
+#include <vector>
 
 namespace Axton
 {
@@ -10,36 +10,61 @@ namespace Axton
 	public:
 		void Enque(const T& item);
 		T Deque();
+		T& Top();
 
+		void Remove(size_t index);
+		void Remove(const T& item);
 		void Clear();
 		bool Empty();
 		size_t Size();
 
 	private:
-		std::queue<T> m_Queue;
+		std::vector<T> m_Queue;
 	};
 
 	template<typename T>
 	inline void Queue<T>::Enque(const T& item)
 	{
-		m_Queue.push(item);
+		m_Queue.push_back(item);
 	}
 
 	template<typename T>
 	inline T Queue<T>::Deque()
 	{
-		T item = m_Queue.front();
-		m_Queue.pop();
+		T item = m_Queue.back();
+		m_Queue.pop_back();
 		return item;
+	}
+
+	template<typename T>
+	inline T& Queue<T>::Top()
+	{
+		return m_Queue.back();
+	}
+
+	template<typename T>
+	inline void Queue<T>::Remove(size_t index)
+	{
+		m_Queue.erase(std::next(m_Queue.begin(), index));
+	}
+
+	template<typename T>
+	inline void Queue<T>::Remove(const T& item)
+	{
+		for (size_t i = 0; i < Size(); i++)
+		{
+			if (m_Queue[i] == item)
+			{
+				Remove(i);
+				break;
+			}
+		}
 	}
 
 	template<typename T>
 	inline void Queue<T>::Clear()
 	{
-		while (!m_Queue.empty())
-		{
-			m_Queue.pop();
-		}
+		m_Queue.clear();
 	}
 
 	template<typename T>

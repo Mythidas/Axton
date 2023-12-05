@@ -35,6 +35,7 @@ namespace Axton
 			static int Int(int min, int max);
 			static uint32_t UInt32();
 			static uint32_t UInt32(uint32_t min, uint32_t max);
+			static uint64_t UInt64();
 		};
 	};
 

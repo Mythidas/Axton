@@ -13,6 +13,7 @@ namespace Axton::Vulkan
 
 		virtual void BeginUI() const override;
 		virtual void EndUI() const override;
+		virtual void OnDetach() override;
 
 		vk::DescriptorPool& GetDescriptorPool() { return m_DescriptorPool; }
 

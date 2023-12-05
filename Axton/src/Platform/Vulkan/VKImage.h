@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Axton/Core/Defines.h"
+#include "VKObject.h"
 
 #include <vulkan/vulkan.hpp>
 
 namespace Axton::Vulkan
 {
-	class VKImage
+	class VKImage : public VKObject
 	{
 	public:
 		struct Specs
@@ -41,7 +42,8 @@ namespace Axton::Vulkan
 
 		VKImage(const Specs& specs);
 		VKImage(const Specs& specs, vk::Image image);
-		~VKImage();
+
+		virtual void Destroy();
 
 		vk::Image& GetImage() { return m_Image; }
 		vk::ImageView& GetView() { return m_ImageView; }

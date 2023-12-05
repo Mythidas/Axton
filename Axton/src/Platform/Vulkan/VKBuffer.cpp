@@ -5,10 +5,9 @@
 
 namespace Axton::Vulkan
 {
-	Ref<VKBuffer> VKBuffer::Create(const Specs& specs)
+	VKBuffer::VKBuffer(const Specs& specs)
+		: m_Specs(specs)
 	{
-		Ref<VKBuffer> buffer = CreateRef<VKBuffer>();
-		buffer->m_Specs = specs;
 		vk::Device device = VKRenderEngine::GetDevice();
 
 		vk::BufferCreateInfo bufferInfo{};
@@ -17,22 +16,20 @@ namespace Axton::Vulkan
 			.setUsage(specs.Usage)
 			.setSharingMode(vk::SharingMode::eExclusive);
 
-		buffer->m_Buffer = device.createBuffer(bufferInfo);
+		m_Buffer = device.createBuffer(bufferInfo);
 
-		vk::MemoryRequirements memRequirements = device.getBufferMemoryRequirements(buffer->m_Buffer);
+		vk::MemoryRequirements memRequirements = device.getBufferMemoryRequirements(m_Buffer);
 
 		vk::MemoryAllocateInfo allocInfo{};
 		allocInfo
 			.setAllocationSize(memRequirements.size)
 			.setMemoryTypeIndex(VKUtils::FindMemoryType(memRequirements.memoryTypeBits, specs.MemProperties));
 
-		buffer->m_Memory = device.allocateMemory(allocInfo);
-		device.bindBufferMemory(buffer->m_Buffer, buffer->m_Memory, 0);
-
-		return buffer;
+		m_Memory = device.allocateMemory(allocInfo);
+		device.bindBufferMemory(m_Buffer, m_Memory, 0);
 	}
 
-	VKBuffer::~VKBuffer()
+	void VKBuffer::Destroy()
 	{
 		VKRenderEngine::GetDevice().destroy(m_Buffer);
 		VKRenderEngine::GetDevice().freeMemory(m_Memory);
@@ -66,6 +63,8 @@ namespace Axton::Vulkan
 
 				commandBuffer.copyBuffer(stagingBuffer->m_Buffer, m_Buffer, { copyRegion });
 			});
+
+			stagingBuffer->Destroy();
 		}
 		else if (m_Specs.MemProperties & vk::MemoryPropertyFlagBits::eHostVisible && m_Specs.MemProperties & vk::MemoryPropertyFlagBits::eHostCoherent)
 		{
@@ -102,7 +101,7 @@ namespace Axton::Vulkan
 		}
 		else
 		{
-			AssertCore(false, "Buffer MemProperties not supported for SetData!");
+			AssertCore(false, "Buffer MemProperties not supported for MapBufferPtr!");
 			return nullptr;
 		}
 	}
@@ -115,7 +114,6 @@ namespace Axton::Vulkan
 		{
 			device.unmapMemory(m_StagingBuffer->m_Memory);
 
-			// TODO: This might need the dst offset for unmapping?
 			VKRenderEngine::GetGraphicsContext()->SubmitGraphicsCommand([this](vk::CommandBuffer& commandBuffer)
 			{
 				vk::BufferCopy copyRegion{};
@@ -133,7 +131,7 @@ namespace Axton::Vulkan
 		}
 		else
 		{
-			AssertCore(false, "Buffer MemProperties not supported for SetData!");
+			AssertCore(false, "Buffer MemProperties not supported for UnmapBufferPtr!");
 		}
 	}
 }

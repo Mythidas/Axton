@@ -2,17 +2,19 @@
 
 #include "Axton/Core/Defines.h"
 #include "Axton/Renderer/GraphicsPipeline.h"
+#include "VKObject.h"
 
 #include <vulkan/vulkan.hpp>
 
 namespace Axton::Vulkan
 {
-	class VKGraphicsPipeline : public GraphicsPipeline
+	class VKGraphicsPipeline : public GraphicsPipeline, public VKObject
 	{
 	public:
 		VKGraphicsPipeline(const Specs& specs);
 		~VKGraphicsPipeline();
 
+		virtual void Destroy();
 		virtual void Render(uint32_t count) override;
 
 		vk::Pipeline& GetPipeline() { return m_Pipeline; }

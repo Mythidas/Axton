@@ -9,6 +9,9 @@ using namespace Axton;
 
 class SimpleLayer : public Axton::Layer
 {
+	Vector3 position{ 0.0f };
+	Vector3 color{ 1.0f };
+
 	virtual void OnAttach() override
 	{
 		
@@ -16,13 +19,17 @@ class SimpleLayer : public Axton::Layer
 
 	virtual void OnUpdate() override
 	{
-		
+		RenderEngine::BeginFrame();
+		RenderEngine::DrawQuad(position, Vector4(color, 1.0f));
+		RenderEngine::EndFrame();
 	}
 
 	virtual void OnRenderUI() override
 	{
 		ImGui::Begin("Simple Window");
 		ImGui::Text("Yay!");
+		ImGui::DragFloat3("Position", glm::value_ptr(position), 0.1f);
+		ImGui::ColorEdit3("Color", glm::value_ptr(color));
 		ImGui::End();
 	}
 };
@@ -34,7 +41,7 @@ public:
 		: Axton::Application(specs)
 	{
 		PushLayer(new SimpleLayer());
-		PushLayer(new RayTraceLayer());
+		//PushLayer(new RayTraceLayer());
 	}
 
 	~SandboxApplication()

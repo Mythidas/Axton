@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Axton/Math/Matrix.h"
+#include "Axton/Math/Vector.h"
 
 namespace Axton
 {

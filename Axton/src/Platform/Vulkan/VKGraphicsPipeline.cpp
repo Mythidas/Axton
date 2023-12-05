@@ -86,6 +86,10 @@ namespace Axton::Vulkan
 
 	VKGraphicsPipeline::~VKGraphicsPipeline()
 	{
+	}
+
+	void VKGraphicsPipeline::Destroy()
+	{
 		VKRenderEngine::GetDevice().waitIdle();
 		VKRenderEngine::GetDevice().destroy(m_Pipeline);
 		VKRenderEngine::GetDevice().destroy(m_Layout);

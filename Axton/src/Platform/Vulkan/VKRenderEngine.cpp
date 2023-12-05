@@ -57,28 +57,34 @@ namespace Axton::Vulkan
 			AssertCore(m_ImageAvailable[i] && m_RenderFinished[i] && m_InFlight[i], "Failed to create SyncObjects!");
 		}
 
-		m_GraphicsContext->QueueDeletion([this]()
-		{
-			for (auto& semaphore : m_ImageAvailable)
-			{
-				m_GraphicsContext->GetDevice().destroy(semaphore);
-			}
-			for (auto& semaphore : m_RenderFinished)
-			{
-				m_GraphicsContext->GetDevice().destroy(semaphore);
-			}
-			for (auto& fence : m_InFlight)
-			{
-				m_GraphicsContext->GetDevice().destroy(fence);
-			}
-		});
-
 		Window::OnWindowResize += AX_BIND_FNC(onWindowResized);
 	}
 
 	VKRenderEngine::~VKRenderEngine()
 	{
+		m_GraphicsContext->GetDevice().waitIdle();
+
+		for (auto& semaphore : m_ImageAvailable)
+		{
+			m_GraphicsContext->GetDevice().destroy(semaphore);
+		}
+		for (auto& semaphore : m_RenderFinished)
+		{
+			m_GraphicsContext->GetDevice().destroy(semaphore);
+		}
+		for (auto& fence : m_InFlight)
+		{
+			m_GraphicsContext->GetDevice().destroy(fence);
+		}
+
+		while (!m_Objects.Empty())
+		{
+			m_Objects.Deque()->Destroy();
+		}
+
 		m_GraphicsContext->Destroy();
+
+		CoreLog::Info("RenderEngine Released");
 	}
 
 	void VKRenderEngine::RenderFrame()
@@ -169,6 +175,16 @@ namespace Axton::Vulkan
 		}
 
 		m_GraphicsContext->Update();
+	}
+
+	void VKRenderEngine::RegisterObject(VKObject* obj)
+	{
+		s_Singleton->m_Objects.Enque(obj);
+	}
+
+	void VKRenderEngine::UnregisterObject(VKObject* obj)
+	{
+		s_Singleton->m_Objects.Remove(obj);
 	}
 
 	bool VKRenderEngine::onWindowResized(int width, int height)

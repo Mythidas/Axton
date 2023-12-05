@@ -40,10 +40,12 @@ namespace Axton
 			Scope<RenderEngine> Build(void* windowHandle) const { return Create(windowHandle, *this); }
 		};
 
+		virtual ~RenderEngine() = default;
+
 		static void Construct();
 		static void Destruct();
 
-		static void BeginFrame(const Camera& camera);
+		static void BeginFrame();
 		static void EndFrame();
 
 		static void DrawQuad(const Vector3& position, const Vector4& color);

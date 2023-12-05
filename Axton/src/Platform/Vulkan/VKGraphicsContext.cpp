@@ -134,22 +134,12 @@ namespace Axton::Vulkan
 		m_Device.waitIdle();
 		m_Device.freeCommandBuffers(m_CommandPool, m_CommandBuffers);
 
-		while (!m_DeletionQueue.Empty())
-		{
-			m_DeletionQueue.Deque()();
-		}
-
 		m_Device.destroy(m_CommandPool);
 		m_Device.destroy();
 
 		Utils::destroyDebugUtilsMessenger(m_Instance, m_Debug);
 		m_Instance.destroySurfaceKHR(m_Surface);
 		m_Instance.destroy();
-	}
-
-	void VKGraphicsContext::QueueDeletion(std::function<void()> func)
-	{
-		m_DeletionQueue.Enque(func);
 	}
 
 	void VKGraphicsContext::QueueGraphicsCommand(std::function<void(vk::CommandBuffer&)> func)

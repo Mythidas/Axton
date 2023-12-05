@@ -7,8 +7,7 @@ namespace Axton
 	class LayerStack
 	{
 	public:
-		LayerStack();
-		~LayerStack();
+		void Clear();
 
 		void PushLayer(class Layer* layer);
 		void PushOverlay(class Layer* overlay);

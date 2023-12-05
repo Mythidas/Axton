@@ -16,7 +16,7 @@ namespace Axton::Vulkan
 		createDescriptorSets();
 	}
 
-	VKPipelineAssets::~VKPipelineAssets()
+	void VKPipelineAssets::Destroy()
 	{
 		VKRenderEngine::GetDevice().waitIdle();
 		VKRenderEngine::GetDevice().destroy(m_DescriptorPool);

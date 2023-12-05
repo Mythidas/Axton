@@ -14,6 +14,10 @@ namespace Axton::Vulkan
 
 	VKSwapchain::~VKSwapchain()
 	{
+	}
+
+	void VKSwapchain::Destroy()
+	{
 		VKRenderEngine::GetDevice().waitIdle();
 
 		for (auto& fb : m_Framebuffers)
@@ -116,7 +120,7 @@ namespace Axton::Vulkan
 			VKRenderPass& vkRenderPass = static_cast<VKRenderPass&>(*m_Specs.pRenderPass);
 			vk::FramebufferCreateInfo createInfo{};
 			createInfo
-				.setRenderPass(vkRenderPass)
+				.setRenderPass(vkRenderPass.GetRenderPass())
 				.setAttachmentCount(1)
 				.setPAttachments(attachments)
 				.setWidth(m_Extent.width)

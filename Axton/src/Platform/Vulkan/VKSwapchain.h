@@ -2,10 +2,11 @@
 
 #include "Axton/Renderer/Swapchain.h"
 #include "VKImage.h"
+#include "VKObject.h"
 
 namespace Axton::Vulkan
 {
-	class VKSwapchain : public Swapchain
+	class VKSwapchain : public Swapchain, public VKObject
 	{
 		friend class VKRenderEngine;
 
@@ -13,6 +14,7 @@ namespace Axton::Vulkan
 		VKSwapchain(const Specs& specs);
 		~VKSwapchain();
 
+		virtual void Destroy();
 		virtual void Recreate() override;
 
 		virtual Extent2D GetExtent() const override { return Extent2D(m_Extent.width, m_Extent.height); }

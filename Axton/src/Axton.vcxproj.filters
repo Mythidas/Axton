@@ -10,9 +10,6 @@
     <Filter Include="Axton\Debug">
       <UniqueIdentifier>{457C066C-B131-7F61-3A26-7938A6DA7565}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Axton\Event">
-      <UniqueIdentifier>{20F3216C-8CA8-9A61-159D-943881519165}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Axton\ImGUI">
       <UniqueIdentifier>{B9E2646C-2598-DD61-AE8C-D7381A41D465}</UniqueIdentifier>
     </Filter>
@@ -30,9 +27,6 @@
     </Filter>
     <Filter Include="Platform\Vulkan">
       <UniqueIdentifier>{6AE1DE2D-D66C-4CF2-DF7D-CFE64B88A8F2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Platform\Vulkan\Client API">
-      <UniqueIdentifier>{725DD52E-5E6D-81FF-C726-E61DB3557098}</UniqueIdentifier>
     </Filter>
     <Filter Include="Platform\Windows">
       <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
@@ -61,11 +55,17 @@
     <ClInclude Include="Axton\Core\LayerStack.h">
       <Filter>Axton\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Axton\Core\Project.h">
+      <Filter>Axton\Core</Filter>
+    </ClInclude>
     <ClInclude Include="Axton\Core\Time.h">
       <Filter>Axton\Core</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Core\Window.h">
       <Filter>Axton\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Debug\Assert.h">
+      <Filter>Axton\Debug</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Debug\CoreLog.h">
       <Filter>Axton\Debug</Filter>
@@ -76,11 +76,11 @@
     <ClInclude Include="Axton\Debug\Timer.h">
       <Filter>Axton\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="Axton\Utils\Event.h">
-      <Filter>Axton\Event</Filter>
-    </ClInclude>
     <ClInclude Include="Axton\ImGUI\ImGUILayer.h">
       <Filter>Axton\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Math\Extent.h">
+      <Filter>Axton\Math</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Math\Interval.h">
       <Filter>Axton\Math</Filter>
@@ -109,12 +109,6 @@
     <ClInclude Include="Axton\Renderer\GraphicsPipeline.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Axton\Renderer\Texture.h">
-      <Filter>Axton\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Axton\Renderer\IndexBuffer.h">
-      <Filter>Axton\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Axton\Renderer\PipelineAssets.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
@@ -127,13 +121,25 @@
     <ClInclude Include="Axton\Renderer\RenderEngine.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Axton\Renderer\VertexBuffer.h">
+    <ClInclude Include="Axton\Renderer\RenderPass.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Renderer\Swapchain.h">
+      <Filter>Axton\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Renderer\Texture.h">
       <Filter>Axton\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Utils\Bit.h">
       <Filter>Axton\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Axton\Utils\Event.h">
+      <Filter>Axton\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="Axton\Utils\FileSystem.h">
+      <Filter>Axton\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Axton\Utils\Flags.h">
       <Filter>Axton\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Axton\Utils\Queue.h">
@@ -142,34 +148,19 @@
     <ClInclude Include="Axton\Utils\Stringf.h">
       <Filter>Axton\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Platform\Vulkan\VKComputePipeline.h">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClInclude>
-    <ClInclude Include="Platform\Vulkan\VKGraphicsPipeline.h">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClInclude>
-    <ClInclude Include="Platform\Vulkan\VKTexture.h">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClInclude>
-    <ClInclude Include="Platform\Vulkan\VKIndexBuffer.h">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClInclude>
-    <ClInclude Include="Platform\Vulkan\VKPipelineAssets.h">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClInclude>
-    <ClInclude Include="Platform\Vulkan\VKRayTracePipeline.h">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClInclude>
-    <ClInclude Include="Platform\Vulkan\VKRenderBuffer.h">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClInclude>
-    <ClInclude Include="Platform\Vulkan\VKVertexBuffer.h">
-      <Filter>Platform\Vulkan\Client API</Filter>
+    <ClInclude Include="Axton\Utils\UUID.h">
+      <Filter>Axton\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Vulkan\VKBuffer.h">
       <Filter>Platform\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKComputePipeline.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
     <ClInclude Include="Platform\Vulkan\VKGraphicsContext.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKGraphicsPipeline.h">
       <Filter>Platform\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Vulkan\VKImGUILayer.h">
@@ -178,7 +169,28 @@
     <ClInclude Include="Platform\Vulkan\VKImage.h">
       <Filter>Platform\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKObject.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKPipelineAssets.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKRayTracePipeline.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKRenderBuffer.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
     <ClInclude Include="Platform\Vulkan\VKRenderEngine.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKRenderPass.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKSwapchain.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform\Vulkan\VKTexture.h">
       <Filter>Platform\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="Platform\Vulkan\VKUtils.h">
@@ -188,13 +200,6 @@
       <Filter>Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="axpch.h" />
-    <ClInclude Include="Axton\Debug\Assert.h" />
-    <ClInclude Include="Axton\Renderer\Swapchain.h" />
-    <ClInclude Include="Axton\Renderer\RenderPass.h" />
-    <ClInclude Include="Platform\Vulkan\VKSwapchain.h" />
-    <ClInclude Include="Platform\Vulkan\VKRenderPass.h" />
-    <ClInclude Include="Axton\Math\Extent.h" />
-    <ClInclude Include="Axton\Utils\Flags.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Axton\Core\Application.cpp">
@@ -204,6 +209,9 @@
       <Filter>Axton\Core</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Core\LayerStack.cpp">
+      <Filter>Axton\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Core\Project.cpp">
       <Filter>Axton\Core</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Core\Time.cpp">
@@ -245,12 +253,6 @@
     <ClCompile Include="Axton\Renderer\GraphicsPipeline.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Axton\Renderer\Texture.cpp">
-      <Filter>Axton\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Axton\Renderer\IndexBuffer.cpp">
-      <Filter>Axton\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Axton\Renderer\PipelineAssets.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
@@ -263,7 +265,13 @@
     <ClCompile Include="Axton\Renderer\RenderEngine.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Axton\Renderer\VertexBuffer.cpp">
+    <ClCompile Include="Axton\Renderer\RenderPass.cpp">
+      <Filter>Axton\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Renderer\Swapchain.cpp">
+      <Filter>Axton\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Axton\Renderer\Texture.cpp">
       <Filter>Axton\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Axton\Utils\Bit.cpp">
@@ -275,34 +283,19 @@
     <ClCompile Include="Axton\Utils\Stringf.cpp">
       <Filter>Axton\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Platform\Vulkan\VKComputePipeline.cpp">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClCompile>
-    <ClCompile Include="Platform\Vulkan\VKGraphicsPipeline.cpp">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClCompile>
-    <ClCompile Include="Platform\Vulkan\VKTexture.cpp">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClCompile>
-    <ClCompile Include="Platform\Vulkan\VKIndexBuffer.cpp">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClCompile>
-    <ClCompile Include="Platform\Vulkan\VKPipelineAssets.cpp">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClCompile>
-    <ClCompile Include="Platform\Vulkan\VKRayTracePipeline.cpp">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClCompile>
-    <ClCompile Include="Platform\Vulkan\VKRenderBuffer.cpp">
-      <Filter>Platform\Vulkan\Client API</Filter>
-    </ClCompile>
-    <ClCompile Include="Platform\Vulkan\VKVertexBuffer.cpp">
-      <Filter>Platform\Vulkan\Client API</Filter>
+    <ClCompile Include="Axton\Utils\UUID.cpp">
+      <Filter>Axton\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Vulkan\VKBuffer.cpp">
       <Filter>Platform\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKComputePipeline.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
     <ClCompile Include="Platform\Vulkan\VKGraphicsContext.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKGraphicsPipeline.cpp">
       <Filter>Platform\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Vulkan\VKImGUILayer.cpp">
@@ -311,7 +304,28 @@
     <ClCompile Include="Platform\Vulkan\VKImage.cpp">
       <Filter>Platform\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKObject.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKPipelineAssets.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKRayTracePipeline.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKRenderBuffer.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
     <ClCompile Include="Platform\Vulkan\VKRenderEngine.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKRenderPass.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKSwapchain.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform\Vulkan\VKTexture.cpp">
       <Filter>Platform\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Vulkan\VKUtils.cpp">
@@ -321,9 +335,5 @@
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="axpch.cpp" />
-    <ClCompile Include="Axton\Renderer\Swapchain.cpp" />
-    <ClCompile Include="Axton\Renderer\RenderPass.cpp" />
-    <ClCompile Include="Platform\Vulkan\VKSwapchain.cpp" />
-    <ClCompile Include="Platform\Vulkan\VKRenderPass.cpp" />
   </ItemGroup>
 </Project>

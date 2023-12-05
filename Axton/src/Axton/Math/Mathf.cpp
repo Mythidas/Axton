@@ -51,4 +51,12 @@ namespace Axton
 		static std::mt19937 generator;
 		return distribution(generator);
 	}
+
+	uint64_t Mathf::Random::UInt64()
+	{
+		static std::random_device s_Random64;
+		static std::mt19937_64 generator_64(s_Random64());
+		static std::uniform_int_distribution<uint32_t> distribution;
+		return distribution(generator_64);
+	}
 }

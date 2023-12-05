@@ -1,6 +1,9 @@
 #pragma once
-#include "VKGraphicsContext.h"
+
 #include "Axton/Renderer/RenderEngine.h"
+#include "VKGraphicsContext.h"
+#include "VKObject.h"
+#include "Axton/Utils/Queue.h"
 
 #include <vulkan/vulkan.hpp>
 
@@ -10,9 +13,12 @@ namespace Axton::Vulkan
 	{
 	public:
 		VKRenderEngine(void* windowHandle, const Specs& specs);
-		~VKRenderEngine();
+		virtual ~VKRenderEngine() override;
 
 		virtual void RenderFrame() override;
+
+		static void RegisterObject(VKObject* obj);
+		static void UnregisterObject(VKObject* obj);
 
 		static vk::CommandBuffer& GetCommandBuffer() { return s_Singleton->m_GraphicsContext->GetCommandBuffer(); }
 		static vk::Instance& GetInstance() { return s_Singleton->m_GraphicsContext->GetInstance(); }
@@ -30,6 +36,7 @@ namespace Axton::Vulkan
 
 		Specs m_Specs;
 		Ref<VKGraphicsContext> m_GraphicsContext;
+		Queue<VKObject*> m_Objects;
 
 		std::vector<vk::Semaphore> m_ImageAvailable;
 		std::vector<vk::Semaphore> m_RenderFinished;

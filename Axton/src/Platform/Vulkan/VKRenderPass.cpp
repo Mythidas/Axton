@@ -58,6 +58,10 @@ namespace Axton::Vulkan
 
 	VKRenderPass::~VKRenderPass()
 	{
+	}
+
+	void VKRenderPass::Destroy()
+	{
 		VKRenderEngine::GetDevice().destroy(m_RenderPass);
 	}
 }

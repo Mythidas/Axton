@@ -13,14 +13,19 @@ namespace Axton
 		m_InternalPath = path;
 	}
 
-	std::vector<unsigned char> FileSystem::ToBuffer()
+	std::string FileSystem::StreamString()
 	{
-		std::ifstream stream(m_InternalPath.c_str(), std::ios::binary);
-		if (!stream.is_open())
-		{
-			CoreLog::Warn("Failed to open file {0}", m_InternalPath.string());
-			return std::vector<unsigned char>();
-		}
+		std::ifstream stream = getStream();
+
+		std::stringstream buffer;
+		buffer << stream.rdbuf();
+		stream.close();
+		return buffer.str();
+	}
+
+	std::vector<unsigned char> FileSystem::StreamBuffer()
+	{
+		std::ifstream stream = getStream(true);
 
 		std::vector<unsigned char> buffer;
 		unsigned char value = 0;
@@ -33,14 +38,9 @@ namespace Axton
 		return buffer;
 	}
 
-	std::vector<char> FileSystem::ToSignedBuffer()
+	std::vector<char> FileSystem::StreamSignedBuffer()
 	{
-		std::ifstream stream(m_InternalPath.c_str(), std::ios::binary);
-		if (!stream.is_open())
-		{
-			CoreLog::Warn("Failed to open file {0}", m_InternalPath.string());
-			return std::vector<char>();
-		}
+		std::ifstream stream = getStream(true);
 
 		std::vector<char> buffer;
 		char value = 0;
@@ -53,18 +53,27 @@ namespace Axton
 		return buffer;
 	}
 
-	std::string FileSystem::ToString()
+	std::ifstream FileSystem::getStream(bool binary)
 	{
-		std::ifstream stream(m_InternalPath.c_str());
-		if (!stream.is_open())
+		if (binary)
 		{
-			CoreLog::Warn("Failed to open file {0}", m_InternalPath.string());
-			return std::string();
-		}
+			std::ifstream stream(m_InternalPath.c_str(), std::ios::binary);
+			if (!stream.is_open())
+			{
+				CoreLog::Warn("Failed to open file {0}", m_InternalPath.string());
+			}
 
-		std::stringstream buffer;
-		buffer << stream.rdbuf();
-		stream.close();
-		return buffer.str();
+			return stream;
+		}
+		else
+		{
+			std::ifstream stream(m_InternalPath.c_str());
+			if (!stream.is_open())
+			{
+				CoreLog::Warn("Failed to open file {0}", m_InternalPath.string());
+			}
+
+			return stream;
+		}
 	}
 }

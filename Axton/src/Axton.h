@@ -13,8 +13,6 @@
 #include "Axton/Renderer/ComputePipeline.h"
 #include "Axton/Renderer/PipelineAssets.h"
 #include "Axton/Renderer/RenderBuffer.h"
-#include "Axton/Renderer/VertexBuffer.h"
-#include "Axton/Renderer/IndexBuffer.h"
 #include "Axton/Renderer/Texture.h"
 
 // Debugging

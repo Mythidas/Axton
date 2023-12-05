@@ -4,7 +4,6 @@
 #include "Axton/Utils/Queue.h"
 
 #include <vulkan/vulkan.hpp>
-#include <queue>
 #include <functional>
 
 namespace Axton::Vulkan
@@ -36,7 +35,6 @@ namespace Axton::Vulkan
 		void Update();
 		void Destroy();
 
-		void QueueDeletion(std::function<void()> func);
 		void QueueGraphicsCommand(std::function<void(vk::CommandBuffer&)> func);
 		void QueueComputeCommand(std::function<void(vk::CommandBuffer&)> func);
 
@@ -72,7 +70,6 @@ namespace Axton::Vulkan
 		vk::SurfaceKHR m_Surface;
 		vk::DebugUtilsMessengerEXT m_Debug;
 		uint32_t m_CurrentFrame = 0;
-		Queue<std::function<void()>> m_DeletionQueue;
 		Queue<std::function<void(vk::CommandBuffer&)>> m_GraphicsCommandQueue;
 		Queue<std::function<void(vk::CommandBuffer&)>> m_ComputeCommandQueue;
 

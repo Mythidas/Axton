@@ -12,6 +12,8 @@ namespace Axton::Vulkan
 
 			switch (specs.Usage)
 			{
+			case Axton::BufferUsage::Vertex: flags |= vk::BufferUsageFlagBits::eVertexBuffer; break;
+			case Axton::BufferUsage::Index: flags |= vk::BufferUsageFlagBits::eIndexBuffer; break;
 			case Axton::BufferUsage::Uniform: flags |= vk::BufferUsageFlagBits::eUniformBuffer; break;
 			case Axton::BufferUsage::ShaderStorage: flags |= vk::BufferUsageFlagBits::eStorageBuffer; break;
 			}

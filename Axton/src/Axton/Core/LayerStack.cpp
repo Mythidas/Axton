@@ -3,14 +3,11 @@
 
 namespace Axton
 {
-	LayerStack::LayerStack()
-	{
-	}
-
-	LayerStack::~LayerStack()
+	void LayerStack::Clear()
 	{
 		for (Layer* layer : m_Layers)
 		{
+			layer->OnDetach();
 			delete layer;
 		}
 	}
