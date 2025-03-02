@@ -76,7 +76,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;AX_PLAT_WINDOWS;AX_DEBUG;AX_ASSERTS_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.243.0\Include;..\vendor\nrd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.268.0\Include;..\vendor\nrd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -88,7 +88,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;..\vendor\nrd\Lib\Debug\NRD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\VulkanSDK\1.3.268.0\Lib\vulkan-1.lib;..\vendor\nrd\Lib\Debug\NRD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -96,7 +96,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;AX_PLAT_WINDOWS;AX_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.243.0\Include;..\vendor\nrd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.268.0\Include;..\vendor\nrd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -112,7 +112,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;..\vendor\nrd\Lib\Release\NRD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\VulkanSDK\1.3.268.0\Lib\vulkan-1.lib;..\vendor\nrd\Lib\Release\NRD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -120,7 +120,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;AX_PLAT_WINDOWS;AX_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.243.0\Include;..\vendor\nrd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\vendor\spdlog\include;..\vendor\GLFW\include;..\vendor\glad\include;..\vendor\stb_image;..\vendor\glm;..\vendor\imgui;C:\VulkanSDK\1.3.268.0\Include;..\vendor\nrd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -136,7 +136,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>C:\VulkanSDK\1.3.243.0\Lib\vulkan-1.lib;..\vendor\nrd\Lib\Dist\NRD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\VulkanSDK\1.3.268.0\Lib\vulkan-1.lib;..\vendor\nrd\Lib\Dist\NRD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -154,9 +154,8 @@
     <ClInclude Include="Axton\Debug\CoreLog.h" />
     <ClInclude Include="Axton\Debug\Log.h" />
     <ClInclude Include="Axton\Debug\Timer.h" />
-    <ClInclude Include="Axton\Math\Extent.h" />
-    <ClInclude Include="Axton\Utils\Event.h" />
     <ClInclude Include="Axton\ImGUI\ImGUILayer.h" />
+    <ClInclude Include="Axton\Math\Extent.h" />
     <ClInclude Include="Axton\Math\Interval.h" />
     <ClInclude Include="Axton\Math\Mathf.h" />
     <ClInclude Include="Axton\Math\Matrix.h" />
@@ -166,28 +165,29 @@
     <ClInclude Include="Axton\Renderer\Camera.h" />
     <ClInclude Include="Axton\Renderer\ComputePipeline.h" />
     <ClInclude Include="Axton\Renderer\GraphicsPipeline.h" />
-    <ClInclude Include="Axton\Renderer\RenderPass.h" />
-    <ClInclude Include="Axton\Renderer\Swapchain.h" />
-    <ClInclude Include="Axton\Renderer\Texture.h" />
     <ClInclude Include="Axton\Renderer\IndexBuffer.h" />
     <ClInclude Include="Axton\Renderer\PipelineAssets.h" />
     <ClInclude Include="Axton\Renderer\RayTracePipeline.h" />
     <ClInclude Include="Axton\Renderer\RenderBuffer.h" />
     <ClInclude Include="Axton\Renderer\RenderEngine.h" />
+    <ClInclude Include="Axton\Renderer\RenderPass.h" />
+    <ClInclude Include="Axton\Renderer\Swapchain.h" />
+    <ClInclude Include="Axton\Renderer\Texture.h" />
     <ClInclude Include="Axton\Renderer\VertexBuffer.h" />
     <ClInclude Include="Axton\Utils\Bit.h" />
+    <ClInclude Include="Axton\Utils\Event.h" />
     <ClInclude Include="Axton\Utils\FileSystem.h" />
     <ClInclude Include="Axton\Utils\Queue.h" />
     <ClInclude Include="Axton\Utils\Stringf.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKComputePipeline.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKGraphicsPipeline.h" />
-    <ClInclude Include="Platform\Vulkan\Client API\VKRenderPass.h" />
-    <ClInclude Include="Platform\Vulkan\Client API\VKSwapchain.h" />
-    <ClInclude Include="Platform\Vulkan\Client API\VKTexture.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKIndexBuffer.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKPipelineAssets.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKRayTracePipeline.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKRenderBuffer.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKRenderPass.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKSwapchain.h" />
+    <ClInclude Include="Platform\Vulkan\Client API\VKTexture.h" />
     <ClInclude Include="Platform\Vulkan\Client API\VKVertexBuffer.h" />
     <ClInclude Include="Platform\Vulkan\VKBuffer.h" />
     <ClInclude Include="Platform\Vulkan\VKGraphicsContext.h" />
@@ -215,27 +215,27 @@
     <ClCompile Include="Axton\Math\Vector.cpp" />
     <ClCompile Include="Axton\Renderer\ComputePipeline.cpp" />
     <ClCompile Include="Axton\Renderer\GraphicsPipeline.cpp" />
-    <ClCompile Include="Axton\Renderer\RenderPass.cpp" />
-    <ClCompile Include="Axton\Renderer\Swapchain.cpp" />
-    <ClCompile Include="Axton\Renderer\Texture.cpp" />
     <ClCompile Include="Axton\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="Axton\Renderer\PipelineAssets.cpp" />
     <ClCompile Include="Axton\Renderer\RayTracePipeline.cpp" />
     <ClCompile Include="Axton\Renderer\RenderBuffer.cpp" />
     <ClCompile Include="Axton\Renderer\RenderEngine.cpp" />
+    <ClCompile Include="Axton\Renderer\RenderPass.cpp" />
+    <ClCompile Include="Axton\Renderer\Swapchain.cpp" />
+    <ClCompile Include="Axton\Renderer\Texture.cpp" />
     <ClCompile Include="Axton\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="Axton\Utils\Bit.cpp" />
     <ClCompile Include="Axton\Utils\FileSystem.cpp" />
     <ClCompile Include="Axton\Utils\Stringf.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKComputePipeline.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKGraphicsPipeline.cpp" />
-    <ClCompile Include="Platform\Vulkan\Client API\VKRenderPass.cpp" />
-    <ClCompile Include="Platform\Vulkan\Client API\VKSwapchain.cpp" />
-    <ClCompile Include="Platform\Vulkan\Client API\VKTexture.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKIndexBuffer.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKPipelineAssets.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKRayTracePipeline.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKRenderBuffer.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKRenderPass.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKSwapchain.cpp" />
+    <ClCompile Include="Platform\Vulkan\Client API\VKTexture.cpp" />
     <ClCompile Include="Platform\Vulkan\Client API\VKVertexBuffer.cpp" />
     <ClCompile Include="Platform\Vulkan\VKBuffer.cpp" />
     <ClCompile Include="Platform\Vulkan\VKGraphicsContext.cpp" />
